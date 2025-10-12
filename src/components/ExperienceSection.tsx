@@ -280,7 +280,7 @@ export const ExperienceSection = ({
                                         </div>
 
                                         <div className="flex gap-2">
-                                          {isInProgress ? (
+                                          {isInProgress && (
                                             <Dialog>
                                               <DialogTrigger asChild>
                                                 <Button 
@@ -375,21 +375,22 @@ export const ExperienceSection = ({
                                                 </ScrollArea>
                                               </DialogContent>
                                             </Dialog>
-                                          ) : (
-                                            <>
-                                              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                                <Lock className="w-3 h-3" />
-                                                <span>Inizia per sbloccare</span>
-                                              </div>
-                                              <ActivityStatusActions
-                                                itineraryId={itineraryId}
-                                                dayNumber={day.day}
-                                                activityIndex={index}
-                                                currentStatus={status}
-                                                onStatusChange={onStatusChange}
-                                              />
-                                            </>
                                           )}
+                                          
+                                          {!isInProgress && !isCompleted && (
+                                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                              <Lock className="w-3 h-3" />
+                                              <span>Inizia per sbloccare</span>
+                                            </div>
+                                          )}
+                                          
+                                          <ActivityStatusActions
+                                            itineraryId={itineraryId}
+                                            dayNumber={day.day}
+                                            activityIndex={index}
+                                            currentStatus={status}
+                                            onStatusChange={onStatusChange}
+                                          />
                                         </div>
                                       </div>
                                     </div>
