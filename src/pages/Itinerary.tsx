@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { ArrowLeft, MapPin, Calendar, Users, Sparkles, Clock, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { ActivityMap } from "@/components/ActivityMap";
+import { ShareItineraryDialog } from "@/components/ShareItineraryDialog";
 
 interface Activity {
   time: string;
@@ -38,6 +39,7 @@ interface AIContent {
 
 interface ItineraryData {
   id: string;
+  user_id: string;
   title: string;
   destination: string;
   start_date: string;
@@ -116,6 +118,12 @@ const Itinerary = () => {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Torna alla Dashboard
           </Button>
+          {itinerary && user?.id === itinerary.user_id && (
+            <ShareItineraryDialog
+              itineraryId={itinerary.id}
+              itineraryTitle={itinerary.title}
+            />
+          )}
         </div>
       </header>
 

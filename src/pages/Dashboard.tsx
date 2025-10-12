@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
-import { Plus, Calendar, MapPin, LogOut, Sparkles } from "lucide-react";
+import { Plus, Calendar, MapPin, LogOut, Sparkles, User } from "lucide-react";
 import { toast } from "sonner";
 
 interface Itinerary {
@@ -76,10 +76,16 @@ const Dashboard = () => {
               <p className="text-sm text-muted-foreground">Benvenuto, {user?.email?.split('@')[0]}</p>
             </div>
           </div>
-          <Button variant="ghost" onClick={handleSignOut}>
-            <LogOut className="w-4 h-4 mr-2" />
-            Esci
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="ghost" onClick={() => navigate("/profile")}>
+              <User className="w-4 h-4 mr-2" />
+              Profilo
+            </Button>
+            <Button variant="ghost" onClick={handleSignOut}>
+              <LogOut className="w-4 h-4 mr-2" />
+              Esci
+            </Button>
+          </div>
         </div>
       </header>
 
