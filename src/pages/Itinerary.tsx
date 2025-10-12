@@ -280,7 +280,7 @@ const Itinerary = () => {
         {itinerary.ai_content && (
           <>
             <div className="mb-8">
-              <Accordion type="single" collapsible defaultValue="overview">
+              <Accordion type="single" collapsible>
                 <AccordionItem value="overview" className="border rounded-lg shadow-soft bg-card">
                   <AccordionTrigger className="px-6 py-4 hover:no-underline">
                     <div className="flex items-center gap-3">
@@ -543,44 +543,56 @@ const Itinerary = () => {
               ))}
             </div>
 
-            <Card className="shadow-elevated">
-              <CardHeader>
-                <CardTitle className="text-2xl">📋 Informazioni Pratiche</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div>
-                  <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
-                    <span>🗓️</span>
-                    <span>Periodo Migliore</span>
-                  </h3>
-                  <p className="text-muted-foreground leading-relaxed">{itinerary.ai_content.practical_info.best_time}</p>
-                </div>
-                <Separator />
-                <div>
-                  <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
-                    <span>🚌</span>
-                    <span>Come Spostarsi</span>
-                  </h3>
-                  <p className="text-muted-foreground leading-relaxed">{itinerary.ai_content.practical_info.getting_around}</p>
-                </div>
-                <Separator />
-                <div>
-                  <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
-                    <span>💰</span>
-                    <span>Consigli sul Budget</span>
-                  </h3>
-                  <p className="text-muted-foreground leading-relaxed">{itinerary.ai_content.practical_info.budget_tips}</p>
-                </div>
-                <Separator />
-                <div>
-                  <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
-                    <span>🍝</span>
-                    <span>Cucina Locale</span>
-                  </h3>
-                  <p className="text-muted-foreground leading-relaxed">{itinerary.ai_content.practical_info.local_cuisine}</p>
-                </div>
-              </CardContent>
-            </Card>
+            <Accordion type="single" collapsible>
+              <AccordionItem value="practical-info" className="border rounded-lg shadow-soft bg-card">
+                <AccordionTrigger className="px-6 py-4 hover:no-underline">
+                  <div className="flex items-center gap-3">
+                    <Sparkles className="w-6 h-6 text-accent" />
+                    <div className="text-left">
+                      <h2 className="text-xl font-bold">Cosa sapere</h2>
+                      <p className="text-sm text-muted-foreground font-normal">
+                        Informazioni pratiche per il tuo viaggio
+                      </p>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-6">
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
+                        <span>🗓️</span>
+                        <span>Periodo Migliore</span>
+                      </h3>
+                      <p className="text-muted-foreground leading-relaxed">{itinerary.ai_content.practical_info.best_time}</p>
+                    </div>
+                    <Separator />
+                    <div>
+                      <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
+                        <span>🚌</span>
+                        <span>Come Spostarsi</span>
+                      </h3>
+                      <p className="text-muted-foreground leading-relaxed">{itinerary.ai_content.practical_info.getting_around}</p>
+                    </div>
+                    <Separator />
+                    <div>
+                      <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
+                        <span>💰</span>
+                        <span>Consigli sul Budget</span>
+                      </h3>
+                      <p className="text-muted-foreground leading-relaxed">{itinerary.ai_content.practical_info.budget_tips}</p>
+                    </div>
+                    <Separator />
+                    <div>
+                      <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
+                        <span>🍝</span>
+                        <span>Cucina Locale</span>
+                      </h3>
+                      <p className="text-muted-foreground leading-relaxed">{itinerary.ai_content.practical_info.local_cuisine}</p>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </>
         )}
 
