@@ -6,13 +6,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/hooks/useAuth";
-import { ArrowLeft, MapPin, Calendar, Users, Sparkles, Clock, Loader2 } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, Users, Sparkles, Clock, Loader2, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { ActivityMap } from "@/components/ActivityMap";
 import { ShareItineraryDialog } from "@/components/ShareItineraryDialog";
 import { ActivityStatusBadge } from "@/components/ActivityStatusBadge";
 import { ActivityStatusActions } from "@/components/ActivityStatusActions";
 import { ExperienceSection } from "@/components/ExperienceSection";
+import { getActivityIcon } from "@/utils/activityIcons";
+import { cn } from "@/lib/utils";
 
 interface Activity {
   time: string;
@@ -189,31 +191,76 @@ const Itinerary = () => {
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <div className="flex items-start justify-between mb-4">
-            <div>
-              <h1 className="text-4xl font-bold mb-4">{itinerary.title}</h1>
-              <div className="flex flex-wrap gap-4 text-muted-foreground">
-                <div className="flex items-center">
-                  <MapPin className="w-4 h-4 mr-2" />
-                  {itinerary.destination}
-                </div>
-                <div className="flex items-center">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  {new Date(itinerary.start_date).toLocaleDateString('it-IT')} - {new Date(itinerary.end_date).toLocaleDateString('it-IT')}
-                  <span className="ml-2">({daysDifference} {daysDifference === 1 ? 'giorno' : 'giorni'})</span>
-                </div>
-                <div className="flex items-center">
-                  <Users className="w-4 h-4 mr-2" />
-                  {itinerary.participants_count} {itinerary.participants_type && `(${itinerary.participants_type})`}
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h1 className="text-4xl font-bold mb-4">{itinerary.title}</h1>
+                <div className="flex flex-wrap gap-4 text-muted-foreground">
+                  <div className="flex items-center">
+                    <MapPin className="w-4 h-4 mr-2" />
+                    {itinerary.destination}
+                  </div>
+                  <div className="flex items-center">
+                    <Calendar className="w-4 h-4 mr-2" />
+                    {new Date(itinerary.start_date).toLocaleDateString('it-IT')} - {new Date(itinerary.end_date).toLocaleDateString('it-IT')}
+                    <span className="ml-2">({daysDifference} {daysDifference === 1 ? 'giorno' : 'giorni'})</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Users className="w-4 h-4 mr-2" />
+                    {itinerary.participants_count} {itinerary.participants_type && `(${itinerary.participants_type})`}
+                  </div>
                 </div>
               </div>
+              <Badge variant={itinerary.status === "generated" || itinerary.status === "in_progress" ? "default" : "secondary"} className="text-sm">
+                {itinerary.status === "generating" && <Loader2 className="mr-2 h-3 w-3 animate-spin" />}
+                {itinerary.status === "draft" ? "Bozza" : 
+                 itinerary.status === "generating" ? "Generazione..." : 
+                 itinerary.status === "in_progress" ? "In Corso" : "Completato"}
+              </Badge>
             </div>
-            <Badge variant={itinerary.status === "generated" ? "default" : "secondary"} className="text-sm">
-              {itinerary.status === "generating" && <Loader2 className="mr-2 h-3 w-3 animate-spin" />}
-              {itinerary.status === "draft" ? "Bozza" : 
-               itinerary.status === "generating" ? "Generazione..." : "Completato"}
-            </Badge>
-          </div>
+
+            {/* Day Progress Wizard */}
+            {itinerary.ai_content && (
+              <div className="mt-8 mb-8 p-6 bg-card rounded-xl border shadow-soft">
+                <h3 className="text-lg font-semibold mb-6">Progressione Itinerario</h3>
+                <div className="flex items-center justify-between gap-2 overflow-x-auto pb-2">
+                  {itinerary.ai_content.days.map((day, index) => {
+                    const dayActivities = day.activities.map((_, actIndex) => 
+                      getActivityStatus(day.day, actIndex)
+                    );
+                    const completedCount = dayActivities.filter(s => s === "completed").length;
+                    const inProgressCount = dayActivities.filter(s => s === "in_progress").length;
+                    const totalActivities = day.activities.length;
+                    const isCompleted = completedCount === totalActivities;
+                    const isInProgress = inProgressCount > 0 || completedCount > 0;
+                    
+                    return (
+                      <div key={day.day} className="flex items-center flex-1 min-w-[120px]">
+                        <div className="flex flex-col items-center flex-1">
+                          <div className={cn(
+                            "w-12 h-12 rounded-full flex items-center justify-center font-bold mb-2 transition-all",
+                            isCompleted ? "bg-green-500 text-white" :
+                            isInProgress ? "bg-primary text-white" :
+                            "bg-muted text-muted-foreground"
+                          )}>
+                            {isCompleted ? <CheckCircle2 className="w-6 h-6" /> : day.day}
+                          </div>
+                          <span className="text-xs font-medium text-center">Giorno {day.day}</span>
+                          <span className="text-xs text-muted-foreground mt-1">
+                            {completedCount}/{totalActivities}
+                          </span>
+                        </div>
+                        {index < itinerary.ai_content!.days.length - 1 && (
+                          <div className={cn(
+                            "h-1 flex-1 mx-2 rounded transition-all",
+                            isCompleted ? "bg-green-500" : "bg-muted"
+                          )} />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
         </div>
 
         {itinerary.status === "generating" && (
@@ -283,11 +330,18 @@ const Itinerary = () => {
                   <CardContent className="pt-6 space-y-6">
                     {day.activities.map((activity, index) => {
                       const activityStatus = getActivityStatus(day.day, index);
+                      const { icon: ActivityIcon, color: iconColor } = getActivityIcon(activity.title, activity.description);
                       return (
                         <div key={index}>
                           {index > 0 && <Separator className="my-6" />}
                           <div className="space-y-3">
                             <div className="flex items-start gap-4">
+                              <div className={cn(
+                                "flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center",
+                                "bg-gradient-to-br from-background to-muted border shadow-soft"
+                              )}>
+                                <ActivityIcon className={cn("h-6 w-6", iconColor)} />
+                              </div>
                               <div className="flex-1">
                                 <div className="flex items-center gap-3 mb-2">
                                   <div className="flex items-center gap-2 text-muted-foreground">
