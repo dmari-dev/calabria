@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/hooks/useAuth";
 import { ArrowLeft, MapPin, Calendar, Users, Sparkles, Clock, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { ActivityMap } from "@/components/ActivityMap";
 
 interface Activity {
   time: string;
@@ -226,6 +227,7 @@ const Itinerary = () => {
                                   </p>
                                 </div>
                               )}
+                              <ActivityMap title={activity.title} location={activity.title} />
                             </div>
                           </div>
                         </div>
