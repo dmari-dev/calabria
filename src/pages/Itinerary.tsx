@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/hooks/useAuth";
-import { ArrowLeft, MapPin, Calendar, Users, Sparkles, Clock, Loader2, CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, Users, Sparkles, Clock, Loader2, CheckCircle2, ChevronLeft, ChevronRight, Navigation, Map, Edit } from "lucide-react";
 import { toast } from "sonner";
 import { ActivityMap } from "@/components/ActivityMap";
 import { ShareItineraryDialog } from "@/components/ShareItineraryDialog";
@@ -15,6 +15,13 @@ import { ActivityStatusActions } from "@/components/ActivityStatusActions";
 import { ExperienceSection } from "@/components/ExperienceSection";
 import { getActivityIcon } from "@/utils/activityIcons";
 import { cn } from "@/lib/utils";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 interface Activity {
   time: string;
@@ -67,6 +74,7 @@ const Itinerary = () => {
     Record<string, "pending" | "in_progress" | "completed">
   >({});
   const [selectedDay, setSelectedDay] = useState<number>(1);
+  const [activityImages, setActivityImages] = useState<Record<string, string[]>>({});
 
   useEffect(() => {
     if (id) {
@@ -74,6 +82,31 @@ const Itinerary = () => {
       loadActivityStatuses();
     }
   }, [id]);
+
+  useEffect(() => {
+    if (itinerary?.ai_content?.days) {
+      loadActivityImages();
+    }
+  }, [itinerary?.ai_content]);
+
+  const loadActivityImages = async () => {
+    // Simulazione caricamento immagini - in produzione queste verrebbero da un database o API
+    const mockImages: Record<string, string[]> = {};
+    if (itinerary?.ai_content?.days) {
+      itinerary.ai_content.days.forEach((day) => {
+        day.activities.forEach((_, index) => {
+          const key = `${day.day}-${index}`;
+          // Placeholder images - sostituire con vere immagini
+          mockImages[key] = [
+            "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=800&q=80",
+            "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=800&q=80",
+            "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80"
+          ];
+        });
+      });
+    }
+    setActivityImages(mockImages);
+  };
 
   useEffect(() => {
     if (!id) return;
@@ -369,50 +402,119 @@ const Itinerary = () => {
                       {day.activities.map((activity, index) => {
                         const activityStatus = getActivityStatus(day.day, index);
                         const { icon: ActivityIcon, color: iconColor } = getActivityIcon(activity.title, activity.description);
+                        const imageKey = `${day.day}-${index}`;
+                        const images = activityImages[imageKey] || [];
+                        
                         return (
-                          <Card key={index} className="inline-flex flex-col flex-1 min-w-[320px] shadow-soft hover:shadow-elevated transition-shadow">
-                            <CardContent className="p-6">
-                              <div className="flex items-start gap-4 mb-4">
-                                <div className={cn(
-                                  "flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center",
-                                  "bg-gradient-to-br from-background to-muted border shadow-soft"
-                                )}>
-                                  <ActivityIcon className={cn("h-6 w-6", iconColor)} />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-2 mb-2 flex-wrap">
-                                    <div className="flex items-center gap-2 text-muted-foreground">
-                                      <Clock className="h-4 w-4" />
-                                      <span className="font-semibold text-sm">{activity.time}</span>
-                                    </div>
-                                    <Badge variant="secondary" className="text-xs">
-                                      {activity.duration}
-                                    </Badge>
-                                    <ActivityStatusBadge status={activityStatus} />
+                          <Card key={index} className="inline-flex flex-col flex-1 min-w-[340px] max-w-[400px] shadow-soft hover:shadow-elevated transition-all">
+                            <CardContent className="p-0">
+                              {/* Header con Stato */}
+                              <div className="flex items-center justify-between p-4 border-b">
+                                <div className="flex items-center gap-3">
+                                  <div className={cn(
+                                    "w-10 h-10 rounded-lg flex items-center justify-center",
+                                    "bg-gradient-to-br from-background to-muted border"
+                                  )}>
+                                    <ActivityIcon className={cn("h-5 w-5", iconColor)} />
                                   </div>
-                                  <h4 className="font-bold text-lg mb-2">{activity.title}</h4>
+                                  <div>
+                                    <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+                                      <Clock className="h-3 w-3" />
+                                      <span>{activity.time}</span>
+                                      <span>•</span>
+                                      <span>{activity.duration}</span>
+                                    </div>
+                                  </div>
                                 </div>
+                                <ActivityStatusBadge status={activityStatus} />
                               </div>
-                              <p className="text-muted-foreground leading-relaxed mb-4">{activity.description}</p>
-                              {activity.tips && (
-                                <div className="p-4 bg-accent/10 border border-accent/20 rounded-lg mb-4">
-                                  <p className="text-sm">
-                                    <span className="font-semibold">💡 Consiglio Pratico:</span> {activity.tips}
-                                  </p>
+
+                              {/* Slider Foto */}
+                              {images.length > 0 && (
+                                <div className="relative">
+                                  <Carousel className="w-full">
+                                    <CarouselContent>
+                                      {images.map((img, imgIndex) => (
+                                        <CarouselItem key={imgIndex}>
+                                          <div className="aspect-[16/9] relative">
+                                            <img
+                                              src={img}
+                                              alt={`${activity.title} ${imgIndex + 1}`}
+                                              className="w-full h-full object-cover"
+                                            />
+                                          </div>
+                                        </CarouselItem>
+                                      ))}
+                                    </CarouselContent>
+                                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                                      {images.map((_, dotIndex) => (
+                                        <div
+                                          key={dotIndex}
+                                          className="w-1.5 h-1.5 rounded-full bg-white/60 transition-all"
+                                        />
+                                      ))}
+                                    </div>
+                                    <CarouselPrevious className="left-2" />
+                                    <CarouselNext className="right-2" />
+                                  </Carousel>
                                 </div>
                               )}
-                              <ActivityMap title={activity.title} location={activity.title} />
-                              {user?.id === itinerary.user_id && (
-                                <div className="mt-4 pt-4 border-t">
-                                  <ActivityStatusActions
-                                    itineraryId={itinerary.id}
-                                    dayNumber={day.day}
-                                    activityIndex={index}
-                                    currentStatus={activityStatus}
-                                    onStatusChange={loadActivityStatuses}
-                                  />
+
+                              {/* Contenuto */}
+                              <div className="p-4 space-y-3">
+                                <h4 className="font-bold text-base leading-tight">{activity.title}</h4>
+                                <p className="text-muted-foreground line-clamp-2">{activity.description}</p>
+                                
+                                {activity.tips && (
+                                  <div className="p-3 bg-accent/10 border border-accent/20 rounded-lg">
+                                    <p className="text-xs">
+                                      <span className="font-semibold">💡 Tip:</span> {activity.tips}
+                                    </p>
+                                  </div>
+                                )}
+
+                                {/* Pulsanti Azioni */}
+                                <div className="flex gap-2 pt-2">
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    className="flex-1"
+                                    onClick={() => {
+                                      const query = encodeURIComponent(activity.title);
+                                      window.open(`https://www.google.com/maps/dir/?api=1&destination=${query}`, '_blank');
+                                    }}
+                                  >
+                                    <Navigation className="w-4 h-4 mr-2" />
+                                    Indicazioni
+                                  </Button>
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    className="flex-1"
+                                    onClick={() => {
+                                      const query = encodeURIComponent(activity.title);
+                                      window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
+                                    }}
+                                  >
+                                    <Map className="w-4 h-4 mr-2" />
+                                    Mappa
+                                  </Button>
                                 </div>
-                              )}
+
+                                {/* Edit Button per owner */}
+                                {user?.id === itinerary.user_id && (
+                                  <div className="pt-2 border-t">
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm" 
+                                      className="w-full justify-start"
+                                    >
+                                      <Edit className="w-4 h-4 mr-2" />
+                                      Modifica tappa
+                                    </Button>
+                                  </div>
+                                )}
+                              </div>
                             </CardContent>
                           </Card>
                         );
