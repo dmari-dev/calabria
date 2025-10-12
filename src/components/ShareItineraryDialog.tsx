@@ -5,14 +5,13 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Share2 } from "lucide-react";
+import { Share2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -21,63 +20,65 @@ interface ShareItineraryDialogProps {
   itineraryTitle: string;
 }
 
-export const ShareItineraryDialog = ({
-  itineraryId,
-  itineraryTitle,
-}: ShareItineraryDialogProps) => {
+export const ShareItineraryDialog = ({ itineraryId, itineraryTitle }: ShareItineraryDialogProps) => {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleShare = async () => {
-    if (!email) {
-      toast.error("Inserisci un'email");
+    if (!email.trim()) {
+      toast.error("Inserisci un indirizzo email");
       return;
     }
 
-    // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      toast.error("Email non valida");
+      toast.error("Inserisci un indirizzo email valido");
       return;
     }
 
     if (email === user?.email) {
-      toast.error("Non puoi condividere con te stesso");
+      toast.error("Non puoi condividere l'itinerario con te stesso");
       return;
     }
 
     setLoading(true);
     try {
-      // Check if already shared
       const { data: existing } = await supabase
         .from("itinerary_shares")
-        .select("id")
+        .select("id, status")
         .eq("itinerary_id", itineraryId)
         .eq("shared_with_email", email)
-        .maybeSingle();
+        .single();
 
       if (existing) {
-        toast.error("Itinerario già condiviso con questo utente");
-        setLoading(false);
+        if (existing.status === "pending") {
+          toast.error("Hai già inviato un invito a questo indirizzo email");
+        } else if (existing.status === "accepted") {
+          toast.error("Questo itinerario è già condiviso con questo utente");
+        } else {
+          toast.error("L'invito è stato precedentemente rifiutato");
+        }
         return;
       }
 
-      // Create share
-      const { error } = await supabase.from("itinerary_shares").insert({
-        itinerary_id: itineraryId,
-        owner_id: user?.id,
-        shared_with_email: email,
-        status: "pending",
-      });
+      const { error } = await supabase
+        .from("itinerary_shares")
+        .insert({
+          itinerary_id: itineraryId,
+          owner_id: user?.id,
+          shared_with_email: email,
+          status: "pending"
+        });
 
       if (error) throw error;
 
-      toast.success("Invito inviato con successo");
+      toast.success("Invito inviato con successo!");
       setEmail("");
       setOpen(false);
     } catch (error: any) {
+      console.error("Error sharing itinerary:", error);
       toast.error("Errore nell'invio dell'invito");
     } finally {
       setLoading(false);
@@ -92,7 +93,7 @@ export const ShareItineraryDialog = ({
           Condividi
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Condividi Itinerario</DialogTitle>
           <DialogDescription>
@@ -105,23 +106,35 @@ export const ShareItineraryDialog = ({
             <Input
               id="email"
               type="email"
-              placeholder="amico@esempio.com"
+              placeholder="amico@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleShare()}
             />
             <p className="text-xs text-muted-foreground">
-              Verrà inviato un invito a questa email
+              Il tuo amico riceverà un invito per visualizzare questo itinerario
             </p>
           </div>
         </div>
-        <DialogFooter>
+        <div className="flex justify-end gap-2">
           <Button variant="outline" onClick={() => setOpen(false)}>
             Annulla
           </Button>
-          <Button onClick={handleShare} disabled={loading}>
-            {loading ? "Invio..." : "Invia Invito"}
+          <Button
+            onClick={handleShare}
+            disabled={loading}
+            className="bg-gradient-hero"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Invio...
+              </>
+            ) : (
+              "Invia Invito"
+            )}
           </Button>
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );
