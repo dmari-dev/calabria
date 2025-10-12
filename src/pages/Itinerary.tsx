@@ -12,6 +12,7 @@ import { ActivityMap } from "@/components/ActivityMap";
 import { ShareItineraryDialog } from "@/components/ShareItineraryDialog";
 import { ActivityStatusBadge } from "@/components/ActivityStatusBadge";
 import { ActivityStatusActions } from "@/components/ActivityStatusActions";
+import { ExperienceSection } from "@/components/ExperienceSection";
 
 interface Activity {
   time: string;
@@ -257,6 +258,16 @@ const Itinerary = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {itinerary.status === "in_progress" && (
+              <ExperienceSection
+                itineraryId={itinerary.id}
+                destination={itinerary.destination}
+                days={itinerary.ai_content.days}
+                activityStatuses={activityStatuses}
+                getActivityStatus={getActivityStatus}
+              />
+            )}
 
             <div className="space-y-6 mb-8">
               {itinerary.ai_content.days.map((day) => (

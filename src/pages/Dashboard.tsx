@@ -9,6 +9,7 @@ import { Plus, Calendar, MapPin, LogOut, Sparkles, User, FileEdit, PlayCircle, A
 import { toast } from "sonner";
 import { ItineraryStatusBadge } from "@/components/ItineraryStatusBadge";
 import { ItineraryActions } from "@/components/ItineraryActions";
+import { ItinerarySelectionDialog } from "@/components/ItinerarySelectionDialog";
 
 interface Itinerary {
   id: string;
@@ -25,6 +26,7 @@ const Dashboard = () => {
   const { user, loading: authLoading, signOut } = useAuth();
   const [itineraries, setItineraries] = useState<Itinerary[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showItinerarySelection, setShowItinerarySelection] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -56,6 +58,21 @@ const Dashboard = () => {
   const handleSignOut = async () => {
     await signOut();
     toast.success("Disconnesso con successo");
+  };
+
+  const handleExperienceClick = () => {
+    const inProgressItineraries = itineraries.filter(it => it.status === 'in_progress');
+    
+    if (inProgressItineraries.length === 0) {
+      // Caso 3: Nessun itinerario in corso -> vai a creazione
+      navigate("/create-itinerary");
+    } else if (inProgressItineraries.length === 1) {
+      // Caso 2: Un solo itinerario -> vai direttamente all'itinerario
+      navigate(`/itinerary/${inProgressItineraries[0].id}`);
+    } else {
+      // Caso 1: Più itinerari -> mostra dialog di selezione
+      setShowItinerarySelection(true);
+    }
   };
 
   if (authLoading || loading) {
@@ -101,15 +118,13 @@ const Dashboard = () => {
                 Gestisci e crea nuovi itinerari culturali personalizzati
               </p>
             </div>
-            {itineraries.some(it => it.status === 'in_progress') && (
-              <Button 
-                onClick={() => navigate("/experience")}
-                className="bg-gradient-hero hover:opacity-90"
-              >
-                <Sparkles className="w-4 h-4 mr-2" />
-                Experience
-              </Button>
-            )}
+            <Button 
+              onClick={handleExperienceClick}
+              className="bg-gradient-hero hover:opacity-90"
+            >
+              <Sparkles className="w-4 h-4 mr-2" />
+              Experience
+            </Button>
           </div>
         </div>
 
@@ -256,6 +271,12 @@ const Dashboard = () => {
             </TabsContent>
           ))}
         </Tabs>
+
+        <ItinerarySelectionDialog
+          open={showItinerarySelection}
+          onOpenChange={setShowItinerarySelection}
+          itineraries={itineraries.filter(it => it.status === 'in_progress')}
+        />
       </main>
     </div>
   );
