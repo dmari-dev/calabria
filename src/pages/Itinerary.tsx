@@ -390,17 +390,6 @@ const Itinerary = () => {
               </div>
             </div>
 
-            {itinerary.status === "in_progress" && (
-              <ExperienceSection
-                itineraryId={itinerary.id}
-                destination={itinerary.destination}
-                days={itinerary.ai_content.days}
-                activityStatuses={activityStatuses}
-                getActivityStatus={getActivityStatus}
-                onStatusChange={loadActivityStatuses}
-              />
-            )}
-
             <div className="mb-8">
               <Accordion type="single" collapsible>
                 {itinerary.ai_content.days
@@ -546,6 +535,17 @@ const Itinerary = () => {
                 ))}
               </Accordion>
             </div>
+
+            {itinerary.status === "in_progress" && (
+              <ExperienceSection
+                itineraryId={itinerary.id}
+                destination={itinerary.destination}
+                days={itinerary.ai_content.days}
+                activityStatuses={activityStatuses}
+                getActivityStatus={getActivityStatus}
+                onStatusChange={loadActivityStatuses}
+              />
+            )}
 
             <Accordion type="single" collapsible>
               <AccordionItem value="practical-info" className="border rounded-lg shadow-soft bg-card">
