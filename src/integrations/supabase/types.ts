@@ -17,6 +17,7 @@ export type Database = {
       itineraries: {
         Row: {
           ai_content: Json | null
+          archived_at: string | null
           created_at: string
           destination: string
           end_date: string
@@ -33,6 +34,7 @@ export type Database = {
         }
         Insert: {
           ai_content?: Json | null
+          archived_at?: string | null
           created_at?: string
           destination: string
           end_date: string
@@ -49,6 +51,7 @@ export type Database = {
         }
         Update: {
           ai_content?: Json | null
+          archived_at?: string | null
           created_at?: string
           destination?: string
           end_date?: string
