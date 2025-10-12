@@ -137,7 +137,7 @@ const Onboarding = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <RadioGroup value={travelStyle} onValueChange={setTravelStyle}>
+              <RadioGroup value={travelStyle} onValueChange={(value) => setTravelStyle(value)}>
                 <div className="flex items-center space-x-3 p-4 rounded-lg border-2 border-border hover:border-primary/50 transition-colors">
                   <RadioGroupItem value="relaxed" id="relaxed" />
                   <Label htmlFor="relaxed" className="flex-1 cursor-pointer">
