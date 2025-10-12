@@ -378,6 +378,7 @@ const Itinerary = () => {
                 days={itinerary.ai_content.days}
                 activityStatuses={activityStatuses}
                 getActivityStatus={getActivityStatus}
+                onStatusChange={loadActivityStatuses}
               />
             )}
 

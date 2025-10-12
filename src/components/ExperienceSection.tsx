@@ -3,9 +3,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, Loader2 } from "lucide-react";
+import { Sparkles, Loader2, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { ActivityStatusBadge } from "@/components/ActivityStatusBadge";
+import { ActivityStatusActions } from "@/components/ActivityStatusActions";
 import {
   Accordion,
   AccordionContent,
@@ -41,6 +42,7 @@ interface ExperienceSectionProps {
   days: DayPlan[];
   activityStatuses: Record<string, "pending" | "in_progress" | "completed">;
   getActivityStatus: (dayNumber: number, activityIndex: number) => "pending" | "in_progress" | "completed";
+  onStatusChange: () => void;
 }
 
 export const ExperienceSection = ({
@@ -49,6 +51,7 @@ export const ExperienceSection = ({
   days,
   activityStatuses,
   getActivityStatus,
+  onStatusChange,
 }: ExperienceSectionProps) => {
   const [selectedActivity, setSelectedActivity] = useState<{
     title: string;
@@ -115,122 +118,150 @@ export const ExperienceSection = ({
                   <Badge variant="secondary">Giorno {day.day}</Badge>
                   <span className="text-sm">{day.title}</span>
                 </h3>
-                <div className="grid gap-2">
+                <div className="flex flex-wrap gap-3">
                   {day.activities.map((activity, index) => {
                     const status = getActivityStatus(day.day, index);
+                    const isInProgress = status === "in_progress";
+                    
                     return (
-                      <Dialog key={index}>
-                        <DialogTrigger asChild>
-                          <Card
-                            className="cursor-pointer hover:shadow-md transition-shadow"
-                            onClick={() =>
-                              loadActivityDetail(
-                                activity.title,
-                                activity.description,
-                                destination
-                              )
-                            }
-                          >
-                            <CardContent className="p-3">
-                              <div className="flex items-start justify-between gap-3">
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-2 mb-1">
-                                    <span className="text-xs text-muted-foreground font-medium">
-                                      {activity.time}
-                                    </span>
-                                    <ActivityStatusBadge status={status} />
-                                  </div>
-                                  <h4 className="font-semibold text-sm mb-1">
-                                    {activity.title}
-                                  </h4>
-                                  <p className="text-xs text-muted-foreground line-clamp-1">
-                                    {activity.description}
-                                  </p>
+                      <Card 
+                        key={index}
+                        className="flex-1 min-w-[280px] max-w-[350px] hover:shadow-md transition-shadow"
+                      >
+                        <CardContent className="p-4">
+                          <div className="space-y-3">
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className="text-xs text-muted-foreground font-medium">
+                                    {activity.time}
+                                  </span>
+                                  <ActivityStatusBadge status={status} />
                                 </div>
-                                <Button variant="ghost" size="sm" className="flex-shrink-0">
-                                  <Sparkles className="w-4 h-4" />
-                                </Button>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-2xl max-h-[80vh]">
-                          <DialogHeader>
-                            <DialogTitle className="text-2xl">
-                              {selectedActivity?.title}
-                            </DialogTitle>
-                            <DialogDescription>
-                              {selectedActivity?.destination}
-                            </DialogDescription>
-                          </DialogHeader>
-                          <ScrollArea className="max-h-[60vh] pr-4">
-                            {loadingDetail ? (
-                              <div className="flex flex-col items-center justify-center py-12 space-y-4">
-                                <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                                <p className="text-sm text-muted-foreground">
-                                  Generazione di contenuti multimediali...
+                                <h4 className="font-semibold text-sm mb-2">
+                                  {activity.title}
+                                </h4>
+                                <p className="text-xs text-muted-foreground line-clamp-2">
+                                  {activity.description}
                                 </p>
                               </div>
-                            ) : (
-                              <div className="space-y-6">
-                                <div>
-                                  <h4 className="font-semibold mb-2">Descrizione</h4>
-                                  <p className="text-muted-foreground leading-relaxed">
-                                    {selectedActivity?.description}
-                                  </p>
-                                </div>
+                            </div>
 
-                                {activityImage && (
-                                  <div>
-                                    <h4 className="font-semibold mb-3 flex items-center gap-2">
-                                      📸 Foto del Luogo
-                                    </h4>
-                                    <img
-                                      src={activityImage}
-                                      alt={selectedActivity?.title}
-                                      className="w-full rounded-lg shadow-md"
-                                    />
-                                  </div>
-                                )}
-
-                                {activityDetail && (
-                                  <div>
-                                    <h4 className="font-semibold mb-2 flex items-center gap-2">
-                                      <Sparkles className="w-4 h-4 text-accent" />
-                                      Dettagli e Curiosità
-                                    </h4>
-                                    <div className="prose prose-sm max-w-none text-muted-foreground">
-                                      {activityDetail.split("\n").map((paragraph, i) => (
-                                        <p key={i} className="mb-3 leading-relaxed">
-                                          {paragraph}
+                            {/* CTA basata sullo stato */}
+                            {isInProgress ? (
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    className="w-full"
+                                    onClick={() =>
+                                      loadActivityDetail(
+                                        activity.title,
+                                        activity.description,
+                                        destination
+                                      )
+                                    }
+                                  >
+                                    <Sparkles className="w-4 h-4 mr-2" />
+                                    Scopri dettagli
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent className="max-w-2xl max-h-[80vh]">
+                                  <DialogHeader>
+                                    <DialogTitle className="text-2xl">
+                                      {selectedActivity?.title}
+                                    </DialogTitle>
+                                    <DialogDescription>
+                                      {selectedActivity?.destination}
+                                    </DialogDescription>
+                                  </DialogHeader>
+                                  <ScrollArea className="max-h-[60vh] pr-4">
+                                    {loadingDetail ? (
+                                      <div className="flex flex-col items-center justify-center py-12 space-y-4">
+                                        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                                        <p className="text-sm text-muted-foreground">
+                                          Generazione di contenuti multimediali...
                                         </p>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
+                                      </div>
+                                    ) : (
+                                      <div className="space-y-6">
+                                        <div>
+                                          <h4 className="font-semibold mb-2">Descrizione</h4>
+                                          <p className="text-muted-foreground leading-relaxed">
+                                            {selectedActivity?.description}
+                                          </p>
+                                        </div>
 
-                                {youtubeSearchUrl && (
-                                  <div>
-                                    <h4 className="font-semibold mb-3 flex items-center gap-2">
-                                      🎥 Video e Tour
-                                    </h4>
-                                    <Button
-                                      variant="outline"
-                                      className="w-full"
-                                      onClick={() => window.open(youtubeSearchUrl, "_blank")}
-                                    >
-                                      Cerca video su YouTube
-                                    </Button>
-                                    <p className="text-xs text-muted-foreground mt-2">
-                                      Scopri tour virtuali e guide video di {selectedActivity?.title}
-                                    </p>
-                                  </div>
-                                )}
+                                        {activityImage && (
+                                          <div>
+                                            <h4 className="font-semibold mb-3 flex items-center gap-2">
+                                              📸 Foto del Luogo
+                                            </h4>
+                                            <img
+                                              src={activityImage}
+                                              alt={selectedActivity?.title}
+                                              className="w-full rounded-lg shadow-md"
+                                            />
+                                          </div>
+                                        )}
+
+                                        {activityDetail && (
+                                          <div>
+                                            <h4 className="font-semibold mb-2 flex items-center gap-2">
+                                              <Sparkles className="w-4 h-4 text-accent" />
+                                              Dettagli e Curiosità
+                                            </h4>
+                                            <div className="prose prose-sm max-w-none text-muted-foreground">
+                                              {activityDetail.split("\n").map((paragraph, i) => (
+                                                <p key={i} className="mb-3 leading-relaxed">
+                                                  {paragraph}
+                                                </p>
+                                              ))}
+                                            </div>
+                                          </div>
+                                        )}
+
+                                        {youtubeSearchUrl && (
+                                          <div>
+                                            <h4 className="font-semibold mb-3 flex items-center gap-2">
+                                              🎥 Video e Tour
+                                            </h4>
+                                            <Button
+                                              variant="outline"
+                                              className="w-full"
+                                              onClick={() => window.open(youtubeSearchUrl, "_blank")}
+                                            >
+                                              Cerca video su YouTube
+                                            </Button>
+                                            <p className="text-xs text-muted-foreground mt-2">
+                                              Scopri tour virtuali e guide video di {selectedActivity?.title}
+                                            </p>
+                                          </div>
+                                        )}
+                                      </div>
+                                    )}
+                                  </ScrollArea>
+                                </DialogContent>
+                              </Dialog>
+                            ) : (
+                              <div className="space-y-3 pt-3 border-t">
+                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                  <Lock className="w-3 h-3" />
+                                  <span>Inizia l'attività per sbloccare i dettagli completi</span>
+                                </div>
+                                <ActivityStatusActions
+                                  itineraryId={itineraryId}
+                                  dayNumber={day.day}
+                                  activityIndex={index}
+                                  currentStatus={status}
+                                  onStatusChange={onStatusChange}
+                                />
                               </div>
                             )}
-                          </ScrollArea>
-                        </DialogContent>
-                      </Dialog>
+                          </div>
+                        </CardContent>
+                      </Card>
                     );
                   })}
                 </div>
