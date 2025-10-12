@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/hooks/useAuth";
-import { ArrowLeft, MapPin, Calendar, Users, Sparkles, Clock, Loader2, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, Users, Sparkles, Clock, Loader2, CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { ActivityMap } from "@/components/ActivityMap";
 import { ShareItineraryDialog } from "@/components/ShareItineraryDialog";
@@ -66,6 +66,7 @@ const Itinerary = () => {
   const [activityStatuses, setActivityStatuses] = useState<
     Record<string, "pending" | "in_progress" | "completed">
   >({});
+  const [selectedDay, setSelectedDay] = useState<number>(1);
 
   useEffect(() => {
     if (id) {
@@ -221,7 +222,28 @@ const Itinerary = () => {
             {/* Day Progress Wizard */}
             {itinerary.ai_content && (
               <div className="mt-8 mb-8 p-6 bg-card rounded-xl border shadow-soft">
-                <h3 className="text-lg font-semibold mb-6">Progressione Itinerario</h3>
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-semibold">Progressione Itinerario</h3>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSelectedDay(Math.max(1, selectedDay - 1))}
+                      disabled={selectedDay === 1}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <span className="text-sm font-medium px-3">Giorno {selectedDay}</span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSelectedDay(Math.min(itinerary.ai_content!.days.length, selectedDay + 1))}
+                      disabled={selectedDay === itinerary.ai_content.days.length}
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
                 <div className="flex items-center justify-between gap-2 overflow-x-auto pb-2">
                   {itinerary.ai_content.days.map((day, index) => {
                     const dayActivities = day.activities.map((_, actIndex) => 
@@ -232,23 +254,33 @@ const Itinerary = () => {
                     const totalActivities = day.activities.length;
                     const isCompleted = completedCount === totalActivities;
                     const isInProgress = inProgressCount > 0 || completedCount > 0;
+                    const isSelected = selectedDay === day.day;
                     
                     return (
                       <div key={day.day} className="flex items-center flex-1 min-w-[120px]">
-                        <div className="flex flex-col items-center flex-1">
+                        <button
+                          onClick={() => setSelectedDay(day.day)}
+                          className="flex flex-col items-center flex-1 transition-all hover:scale-105"
+                        >
                           <div className={cn(
-                            "w-12 h-12 rounded-full flex items-center justify-center font-bold mb-2 transition-all",
-                            isCompleted ? "bg-green-500 text-white" :
-                            isInProgress ? "bg-primary text-white" :
-                            "bg-muted text-muted-foreground"
+                            "w-12 h-12 rounded-full flex items-center justify-center font-bold mb-2 transition-all border-2",
+                            isSelected ? "ring-4 ring-primary/30" : "",
+                            isCompleted ? "bg-green-500 text-white border-green-600" :
+                            isInProgress ? "bg-primary text-white border-primary" :
+                            "bg-muted text-muted-foreground border-muted"
                           )}>
-                            {isCompleted ? <CheckCircle2 className="w-6 h-6" /> : day.day}
+                            {isCompleted ? <CheckCircle2 className="w-6 h-6" /> : <Calendar className="w-5 h-5" />}
                           </div>
-                          <span className="text-xs font-medium text-center">Giorno {day.day}</span>
+                          <span className={cn(
+                            "text-xs font-medium text-center",
+                            isSelected ? "text-primary font-bold" : ""
+                          )}>
+                            Giorno {day.day}
+                          </span>
                           <span className="text-xs text-muted-foreground mt-1">
                             {completedCount}/{totalActivities}
                           </span>
-                        </div>
+                        </button>
                         {index < itinerary.ai_content!.days.length - 1 && (
                           <div className={cn(
                             "h-1 flex-1 mx-2 rounded transition-all",
@@ -294,11 +326,13 @@ const Itinerary = () => {
                 <p className="text-lg mb-6 leading-relaxed">{itinerary.ai_content.overview}</p>
                 <div className="mt-6">
                   <h3 className="font-semibold text-lg mb-4">✨ Highlights del Viaggio</h3>
-                  <div className="grid gap-3">
+                  <div className="flex flex-wrap gap-4">
                     {itinerary.ai_content.highlights.map((highlight, index) => (
-                      <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-accent/30">
-                        <span className="text-primary font-bold mt-0.5">•</span>
-                        <span className="flex-1">{highlight}</span>
+                      <div key={index} className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 flex-1 min-w-[280px]">
+                        <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center">
+                          <MapPin className="h-5 w-5 text-accent" />
+                        </div>
+                        <span className="flex-1 text-sm leading-relaxed">{highlight}</span>
                       </div>
                     ))}
                   </div>
@@ -317,67 +351,73 @@ const Itinerary = () => {
             )}
 
             <div className="space-y-6 mb-8">
-              {itinerary.ai_content.days.map((day) => (
+              {itinerary.ai_content.days
+                .filter(day => day.day === selectedDay)
+                .map((day) => (
                 <Card key={day.day} className="shadow-soft">
                   <CardHeader className="bg-gradient-hero/5">
                     <CardTitle className="flex items-center gap-3">
                       <Badge variant="default" className="text-base px-4 py-1.5 bg-gradient-hero">
+                        <Calendar className="w-4 h-4 mr-2" />
                         Giorno {day.day}
                       </Badge>
                       <span className="text-xl">{day.title}</span>
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="pt-6 space-y-6">
-                    {day.activities.map((activity, index) => {
-                      const activityStatus = getActivityStatus(day.day, index);
-                      const { icon: ActivityIcon, color: iconColor } = getActivityIcon(activity.title, activity.description);
-                      return (
-                        <div key={index}>
-                          {index > 0 && <Separator className="my-6" />}
-                          <div className="space-y-3">
-                            <div className="flex items-start gap-4">
-                              <div className={cn(
-                                "flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center",
-                                "bg-gradient-to-br from-background to-muted border shadow-soft"
-                              )}>
-                                <ActivityIcon className={cn("h-6 w-6", iconColor)} />
-                              </div>
-                              <div className="flex-1">
-                                <div className="flex items-center gap-3 mb-2">
-                                  <div className="flex items-center gap-2 text-muted-foreground">
-                                    <Clock className="h-4 w-4" />
-                                    <span className="font-semibold text-sm">{activity.time}</span>
-                                  </div>
-                                  <Badge variant="secondary" className="text-xs">
-                                    {activity.duration}
-                                  </Badge>
-                                  <ActivityStatusBadge status={activityStatus} />
+                  <CardContent className="pt-6">
+                    <div className="flex flex-wrap gap-4">
+                      {day.activities.map((activity, index) => {
+                        const activityStatus = getActivityStatus(day.day, index);
+                        const { icon: ActivityIcon, color: iconColor } = getActivityIcon(activity.title, activity.description);
+                        return (
+                          <Card key={index} className="inline-flex flex-col flex-1 min-w-[320px] shadow-soft hover:shadow-elevated transition-shadow">
+                            <CardContent className="p-6">
+                              <div className="flex items-start gap-4 mb-4">
+                                <div className={cn(
+                                  "flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center",
+                                  "bg-gradient-to-br from-background to-muted border shadow-soft"
+                                )}>
+                                  <ActivityIcon className={cn("h-6 w-6", iconColor)} />
                                 </div>
-                                <h4 className="font-bold text-lg mb-2">{activity.title}</h4>
-                                <p className="text-muted-foreground leading-relaxed">{activity.description}</p>
-                                {activity.tips && (
-                                  <div className="mt-4 p-4 bg-amber/10 border border-amber/20 rounded-lg">
-                                    <p className="text-sm">
-                                      <span className="font-semibold">💡 Consiglio Pratico:</span> {activity.tips}
-                                    </p>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 mb-2 flex-wrap">
+                                    <div className="flex items-center gap-2 text-muted-foreground">
+                                      <Clock className="h-4 w-4" />
+                                      <span className="font-semibold text-sm">{activity.time}</span>
+                                    </div>
+                                    <Badge variant="secondary" className="text-xs">
+                                      {activity.duration}
+                                    </Badge>
+                                    <ActivityStatusBadge status={activityStatus} />
                                   </div>
-                                )}
-                                <ActivityMap title={activity.title} location={activity.title} />
+                                  <h4 className="font-bold text-lg mb-2">{activity.title}</h4>
+                                </div>
                               </div>
-                              {user?.id === itinerary.user_id && (
-                                <ActivityStatusActions
-                                  itineraryId={itinerary.id}
-                                  dayNumber={day.day}
-                                  activityIndex={index}
-                                  currentStatus={activityStatus}
-                                  onStatusChange={loadActivityStatuses}
-                                />
+                              <p className="text-muted-foreground leading-relaxed mb-4">{activity.description}</p>
+                              {activity.tips && (
+                                <div className="p-4 bg-accent/10 border border-accent/20 rounded-lg mb-4">
+                                  <p className="text-sm">
+                                    <span className="font-semibold">💡 Consiglio Pratico:</span> {activity.tips}
+                                  </p>
+                                </div>
                               )}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
+                              <ActivityMap title={activity.title} location={activity.title} />
+                              {user?.id === itinerary.user_id && (
+                                <div className="mt-4 pt-4 border-t">
+                                  <ActivityStatusActions
+                                    itineraryId={itinerary.id}
+                                    dayNumber={day.day}
+                                    activityIndex={index}
+                                    currentStatus={activityStatus}
+                                    onStatusChange={loadActivityStatuses}
+                                  />
+                                </div>
+                              )}
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
+                    </div>
                   </CardContent>
                 </Card>
               ))}
