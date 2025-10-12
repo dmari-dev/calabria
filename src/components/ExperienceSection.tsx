@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, Loader2, Lock } from "lucide-react";
+import { Sparkles, Loader2, Lock, Calendar, Layers } from "lucide-react";
 import { toast } from "sonner";
 import { ActivityStatusBadge } from "@/components/ActivityStatusBadge";
 import { ActivityStatusActions } from "@/components/ActivityStatusActions";
@@ -131,6 +131,14 @@ export const ExperienceSection = ({
 
                 const handleCompleteDay = async () => {
                   try {
+                    const { data: { user } } = await supabase.auth.getUser();
+                    
+                    if (!user) {
+                      toast.error("Devi essere autenticato");
+                      return;
+                    }
+
+                    // Segna tutte le attività del giorno come completate
                     for (const { index } of sortedActivities) {
                       const { error } = await supabase
                         .from("activity_statuses")
@@ -139,15 +147,21 @@ export const ExperienceSection = ({
                           day_number: day.day,
                           activity_index: index,
                           status: "completed",
-                          user_id: (await supabase.auth.getUser()).data.user?.id
+                          user_id: user.id
+                        }, {
+                          onConflict: 'itinerary_id,day_number,activity_index'
                         });
 
-                      if (error) throw error;
+                      if (error) {
+                        console.error("Error completing activity:", error);
+                        throw error;
+                      }
                     }
                     
                     toast.success(`Giorno ${day.day} completato!`);
                     onStatusChange();
                   } catch (error: any) {
+                    console.error("Error in handleCompleteDay:", error);
                     toast.error("Errore nel completare il giorno");
                   }
                 };
@@ -160,29 +174,51 @@ export const ExperienceSection = ({
                   >
                     <AccordionTrigger className="px-4 py-3 hover:no-underline">
                       <div className="flex items-center justify-between w-full pr-4">
-                        <div className="flex items-center gap-3">
-                          <Badge variant={isAllCompleted ? "default" : "secondary"}>
-                            Giorno {day.day}
+                        <div className="flex items-center gap-4">
+                          {/* Calendar icon + Day number */}
+                          <div className="flex items-center gap-2">
+                            <div className={cn(
+                              "w-10 h-10 rounded-lg flex items-center justify-center",
+                              isAllCompleted ? "bg-green-500/20" : "bg-primary/10"
+                            )}>
+                              <Calendar className={cn(
+                                "w-5 h-5",
+                                isAllCompleted ? "text-green-600" : "text-primary"
+                              )} />
+                            </div>
+                            <span className="text-2xl font-bold">
+                              {day.day.toString().padStart(2, '0')}
+                            </span>
+                          </div>
+                          
+                          <div className="text-left">
+                            <span className="text-sm font-medium block">{day.title}</span>
+                            {/* Progress con icona Layers */}
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+                              <Layers className="w-3 h-3" />
+                              <span>{completedCount}/{totalActivities} tappe completate</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {!isAllCompleted && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleCompleteDay();
+                            }}
+                          >
+                            Concludi giorno
+                          </Button>
+                        )}
+                        
+                        {isAllCompleted && (
+                          <Badge variant="default" className="bg-green-500">
+                            Completato
                           </Badge>
-                          <span className="text-sm font-medium">{day.title}</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <span className="text-xs text-muted-foreground">
-                            {completedCount}/{totalActivities} completate
-                          </span>
-                          {!isAllCompleted && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleCompleteDay();
-                              }}
-                            >
-                              Concludi giorno
-                            </Button>
-                          )}
-                        </div>
+                        )}
                       </div>
                     </AccordionTrigger>
                     <AccordionContent className="px-4 pb-4">
