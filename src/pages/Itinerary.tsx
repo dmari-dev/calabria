@@ -22,6 +22,12 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 interface Activity {
   time: string;
@@ -273,30 +279,43 @@ const Itinerary = () => {
 
         {itinerary.ai_content && (
           <>
-            <Card className="mb-8 shadow-elevated">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-2xl">
-                  <Sparkles className="h-6 w-6 text-amber" />
-                  Panoramica del Viaggio
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-lg mb-6 leading-relaxed">{itinerary.ai_content.overview}</p>
-                <div className="mt-6">
-                  <h3 className="font-semibold text-lg mb-4">✨ Highlights del Viaggio</h3>
-                  <div className="flex flex-wrap gap-4">
-                    {itinerary.ai_content.highlights.map((highlight, index) => (
-                      <div key={index} className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 flex-1 min-w-[280px]">
-                        <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center">
-                          <MapPin className="h-5 w-5 text-accent" />
-                        </div>
-                        <span className="flex-1 text-sm leading-relaxed">{highlight}</span>
+            <div className="mb-8">
+              <Accordion type="single" collapsible defaultValue="overview">
+                <AccordionItem value="overview" className="border rounded-lg shadow-soft bg-card">
+                  <AccordionTrigger className="px-6 py-4 hover:no-underline">
+                    <div className="flex items-center gap-3">
+                      <Sparkles className="w-6 h-6 text-accent" />
+                      <div className="text-left">
+                        <h2 className="text-xl font-bold">Panoramica del Viaggio</h2>
+                        <p className="text-sm text-muted-foreground font-normal">
+                          Scopri il tuo viaggio in sintesi
+                        </p>
                       </div>
-                    ))}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-6">
+                    <p className="text-lg mb-6 leading-relaxed">{itinerary.ai_content.overview}</p>
+                    <div className="mt-6">
+                      <h3 className="font-semibold text-lg mb-4">✨ Highlights del Viaggio</h3>
+                      <div className="flex flex-wrap gap-4">
+                        {itinerary.ai_content.highlights.map((highlight, index) => (
+                          <div 
+                            key={index} 
+                            className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20"
+                            style={{ flex: '1 1 calc(33.333% - 1rem)', minWidth: '280px' }}
+                          >
+                            <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center">
+                              <MapPin className="h-5 w-5 text-accent" />
+                            </div>
+                            <span className="flex-1 text-sm leading-relaxed">{highlight}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </div>
 
             {/* Day Progress Wizard */}
             <div className="mt-8 mb-8 p-6 bg-card rounded-xl border shadow-soft">
