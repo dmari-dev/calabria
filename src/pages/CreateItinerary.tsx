@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useAuth } from "@/hooks/useAuth";
 import { ArrowLeft, Sparkles, Calendar as CalendarIcon, Users } from "lucide-react";
 import { toast } from "sonner";
+import { DestinationSelector } from "@/components/DestinationSelector";
 
 const CreateItinerary = () => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const CreateItinerary = () => {
     specificInterests: "",
     travelPace: "moderate",
   });
+  const [nearbyDestinations, setNearbyDestinations] = useState<string[]>([]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,13 +38,18 @@ const CreateItinerary = () => {
     setLoading(true);
 
     try {
+      // Crea la stringa delle destinazioni
+      const allDestinations = nearbyDestinations.length > 0 
+        ? `${formData.destination} (+ ${nearbyDestinations.join(", ")})`
+        : formData.destination;
+
       // Create itinerary in database
       const { data, error } = await supabase
         .from("itineraries")
         .insert({
           user_id: user?.id,
           title: `Viaggio a ${formData.destination}`,
-          destination: formData.destination,
+          destination: allDestinations,
           start_date: formData.startDate,
           end_date: formData.endDate,
           participants_count: parseInt(formData.participantsCount),
@@ -105,16 +112,12 @@ const CreateItinerary = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="destination">Destinazione *</Label>
-                <Input
-                  id="destination"
-                  placeholder="es. Roma, Firenze, Venezia..."
-                  value={formData.destination}
-                  onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
-                  required
-                />
-              </div>
+              <DestinationSelector
+                value={formData.destination}
+                onChange={(value) => setFormData({ ...formData, destination: value })}
+                nearbyDestinations={nearbyDestinations}
+                onNearbyChange={setNearbyDestinations}
+              />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
