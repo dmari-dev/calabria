@@ -13,6 +13,7 @@ import { ShareItineraryDialog } from "@/components/ShareItineraryDialog";
 import { ActivityStatusBadge } from "@/components/ActivityStatusBadge";
 import { ActivityStatusActions } from "@/components/ActivityStatusActions";
 import { ExperienceSection } from "@/components/ExperienceSection";
+import { EditActivityDialog } from "@/components/EditActivityDialog";
 import { getActivityIcon } from "@/utils/activityIcons";
 import { cn } from "@/lib/utils";
 import {
@@ -514,14 +515,13 @@ const Itinerary = () => {
                                   {/* Edit Button per owner */}
                                   {user?.id === itinerary.user_id && (
                                     <div className="pt-2 border-t">
-                                      <Button 
-                                        variant="ghost" 
-                                        size="sm" 
-                                        className="w-full justify-start"
-                                      >
-                                        <Edit className="w-4 h-4 mr-2" />
-                                        Modifica tappa
-                                      </Button>
+                                      <EditActivityDialog
+                                        itineraryId={itinerary.id}
+                                        dayNumber={day.day}
+                                        activityIndex={index}
+                                        activity={activity}
+                                        onActivityUpdated={loadItinerary}
+                                      />
                                     </div>
                                   )}
                                 </div>
