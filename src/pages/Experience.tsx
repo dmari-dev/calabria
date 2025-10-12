@@ -62,6 +62,8 @@ const Experience = () => {
     destination: string;
   } | null>(null);
   const [activityDetail, setActivityDetail] = useState<string>("");
+  const [activityImage, setActivityImage] = useState<string>("");
+  const [youtubeSearchUrl, setYoutubeSearchUrl] = useState<string>("");
   const [loadingDetail, setLoadingDetail] = useState(false);
 
   useEffect(() => {
@@ -144,6 +146,8 @@ const Experience = () => {
     setSelectedActivity({ title: activityTitle, description: activityDescription, destination });
     setLoadingDetail(true);
     setActivityDetail("");
+    setActivityImage("");
+    setYoutubeSearchUrl("");
 
     try {
       const { data, error } = await supabase.functions.invoke("generate-activity-detail", {
@@ -157,6 +161,8 @@ const Experience = () => {
       if (error) throw error;
 
       setActivityDetail(data.detail);
+      setActivityImage(data.imageUrl || "");
+      setYoutubeSearchUrl(data.youtubeSearchUrl || "");
     } catch (error: any) {
       toast.error("Errore nel caricamento dei dettagli");
       setActivityDetail("Impossibile caricare i dettagli in questo momento.");
@@ -302,17 +308,34 @@ const Experience = () => {
                                 </DialogHeader>
                                 <ScrollArea className="max-h-[60vh] pr-4">
                                   {loadingDetail ? (
-                                    <div className="flex items-center justify-center py-12">
+                                    <div className="flex flex-col items-center justify-center py-12 space-y-4">
                                       <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                                      <p className="text-sm text-muted-foreground">
+                                        Generazione di contenuti multimediali...
+                                      </p>
                                     </div>
                                   ) : (
-                                    <div className="space-y-4">
+                                    <div className="space-y-6">
                                       <div>
                                         <h4 className="font-semibold mb-2">Descrizione</h4>
                                         <p className="text-muted-foreground leading-relaxed">
                                           {selectedActivity?.description}
                                         </p>
                                       </div>
+
+                                      {activityImage && (
+                                        <div>
+                                          <h4 className="font-semibold mb-3 flex items-center gap-2">
+                                            📸 Foto del Luogo
+                                          </h4>
+                                          <img
+                                            src={activityImage}
+                                            alt={selectedActivity?.title}
+                                            className="w-full rounded-lg shadow-md"
+                                          />
+                                        </div>
+                                      )}
+
                                       {activityDetail && (
                                         <div>
                                           <h4 className="font-semibold mb-2 flex items-center gap-2">
@@ -326,6 +349,24 @@ const Experience = () => {
                                               </p>
                                             ))}
                                           </div>
+                                        </div>
+                                      )}
+
+                                      {youtubeSearchUrl && (
+                                        <div>
+                                          <h4 className="font-semibold mb-3 flex items-center gap-2">
+                                            🎥 Video e Tour
+                                          </h4>
+                                          <Button
+                                            variant="outline"
+                                            className="w-full"
+                                            onClick={() => window.open(youtubeSearchUrl, "_blank")}
+                                          >
+                                            Cerca video su YouTube
+                                          </Button>
+                                          <p className="text-xs text-muted-foreground mt-2">
+                                            Scopri tour virtuali e guide video di {selectedActivity?.title}
+                                          </p>
                                         </div>
                                       )}
                                     </div>

@@ -80,8 +80,49 @@ Scrivi in italiano con un tono coinvolgente ma informativo.`;
     const data = await response.json();
     const detail = data.choices?.[0]?.message?.content || "Dettagli non disponibili.";
 
+    // Genera un'immagine per l'attività
+    const imagePrompt = `Create a high-quality, photorealistic image of ${activity} in ${destination}. The image should capture the essence and beauty of this location, showing architectural details, cultural atmosphere, and natural surroundings. Style: professional travel photography, vivid colors, good lighting.`;
+    
+    let imageUrl = "";
+    
+    try {
+      const imageResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash-image-preview",
+          messages: [
+            {
+              role: "user",
+              content: imagePrompt,
+            },
+          ],
+          modalities: ["image", "text"],
+        }),
+      });
+
+      if (imageResponse.ok) {
+        const imageData = await imageResponse.json();
+        imageUrl = imageData.choices?.[0]?.message?.images?.[0]?.image_url?.url || "";
+      }
+    } catch (imageError) {
+      console.error("Error generating image:", imageError);
+      // Continue without image if generation fails
+    }
+
+    // Cerca video su YouTube
+    const videoSearchQuery = encodeURIComponent(`${activity} ${destination} tour guide`);
+    const youtubeSearchUrl = `https://www.youtube.com/results?search_query=${videoSearchQuery}`;
+
     return new Response(
-      JSON.stringify({ detail }),
+      JSON.stringify({ 
+        detail, 
+        imageUrl,
+        youtubeSearchUrl 
+      }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
