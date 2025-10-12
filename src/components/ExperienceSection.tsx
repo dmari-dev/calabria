@@ -98,232 +98,271 @@ export const ExperienceSection = ({
   };
 
   return (
-    <Accordion type="single" collapsible className="mb-8">
-      <AccordionItem value="experience" className="border rounded-lg shadow-soft bg-card">
-        <AccordionTrigger className="px-6 py-4 hover:no-underline">
-          <div className="flex items-center gap-3">
-            <Sparkles className="w-6 h-6 text-accent" />
-            <div className="text-left">
-              <h2 className="text-xl font-bold">Experience</h2>
-              <p className="text-sm text-muted-foreground font-normal">
-                Esplora i dettagli approfonditi di ogni tappa
-              </p>
-            </div>
-          </div>
-        </AccordionTrigger>
-        <AccordionContent className="px-6 pb-6">
-          <div className="space-y-6">
-            {days.map((day) => {
-              // Ordina le attività: prima quelle "in_progress", poi le altre
-              const sortedActivities = [...day.activities].map((activity, index) => ({
-                activity,
-                index,
-                status: getActivityStatus(day.day, index)
-              })).sort((a, b) => {
-                if (a.status === "in_progress" && b.status !== "in_progress") return -1;
-                if (a.status !== "in_progress" && b.status === "in_progress") return 1;
-                return 0;
-              });
+    <Accordion type="multiple" className="mb-8 space-y-3">
+      {days.map((day) => {
+        // Ordina le attività: prima quelle "in_progress", poi le altre
+        const sortedActivities = [...day.activities].map((activity, index) => ({
+          activity,
+          index,
+          status: getActivityStatus(day.day, index)
+        })).sort((a, b) => {
+          if (a.status === "in_progress" && b.status !== "in_progress") return -1;
+          if (a.status !== "in_progress" && b.status === "in_progress") return 1;
+          return 0;
+        });
 
-              return (
-                <div key={day.day} className="space-y-4">
-                  <h3 className="font-bold text-base flex items-center gap-2">
-                    <Badge variant="secondary">Giorno {day.day}</Badge>
-                    <span className="text-sm">{day.title}</span>
-                  </h3>
-                  
-                  {/* Timeline verticale stile metro */}
-                  <div className="relative">
-                    {/* Linea verticale */}
-                    <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-muted" />
+        const completedCount = sortedActivities.filter(a => a.status === "completed").length;
+        const totalActivities = sortedActivities.length;
+        const isAllCompleted = completedCount === totalActivities;
+
+        const handleCompleteDay = async () => {
+          try {
+            // Segna tutte le attività del giorno come completate
+            for (const { index } of sortedActivities) {
+              const { error } = await supabase
+                .from("activity_statuses")
+                .upsert({
+                  itinerary_id: itineraryId,
+                  day_number: day.day,
+                  activity_index: index,
+                  status: "completed",
+                  user_id: (await supabase.auth.getUser()).data.user?.id
+                });
+
+              if (error) throw error;
+            }
+            
+            toast.success(`Giorno ${day.day} completato!`);
+            onStatusChange();
+          } catch (error: any) {
+            toast.error("Errore nel completare il giorno");
+          }
+        };
+
+        return (
+          <AccordionItem 
+            key={day.day} 
+            value={`day-${day.day}`} 
+            className="border rounded-lg shadow-soft bg-card"
+          >
+            <AccordionTrigger className="px-6 py-4 hover:no-underline">
+              <div className="flex items-center justify-between w-full pr-4">
+                <div className="flex items-center gap-3">
+                  <Badge variant={isAllCompleted ? "default" : "secondary"}>
+                    Giorno {day.day}
+                  </Badge>
+                  <span className="text-sm font-medium">{day.title}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-muted-foreground">
+                    {completedCount}/{totalActivities} completate
+                  </span>
+                  {!isAllCompleted && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCompleteDay();
+                      }}
+                    >
+                      Concludi giorno
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className="px-6 pb-6">
+              {/* Timeline verticale stile metro */}
+              <div className="relative">
+                {/* Linea verticale */}
+                <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-muted" />
+                
+                {/* Tappe */}
+                <div className="space-y-0">
+                  {sortedActivities.map(({ activity, index, status }) => {
+                    const isInProgress = status === "in_progress";
+                    const isCompleted = status === "completed";
                     
-                    {/* Tappe */}
-                    <div className="space-y-0">
-                      {sortedActivities.map(({ activity, index, status }, idx) => {
-                        const isInProgress = status === "in_progress";
-                        const isCompleted = status === "completed";
-                        
-                        return (
-                          <div key={index} className="relative flex items-start gap-4 pb-6">
-                            {/* Bullet point */}
-                            <div className="relative z-10 flex-shrink-0">
-                              <div className={cn(
-                                "w-8 h-8 rounded-full border-4 flex items-center justify-center transition-all",
-                                isCompleted ? "bg-green-500 border-green-600 shadow-lg shadow-green-500/30" :
-                                isInProgress ? "bg-primary border-primary shadow-lg shadow-primary/30 ring-4 ring-primary/20" :
-                                "bg-background border-muted"
-                              )}>
-                                {isCompleted && (
-                                  <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                  </svg>
-                                )}
-                                {isInProgress && (
-                                  <div className="w-3 h-3 bg-white rounded-full animate-pulse" />
-                                )}
+                    return (
+                      <div key={index} className="relative flex items-start gap-4 pb-6">
+                        {/* Bullet point */}
+                        <div className="relative z-10 flex-shrink-0">
+                          <div className={cn(
+                            "w-8 h-8 rounded-full border-4 flex items-center justify-center transition-all",
+                            isCompleted ? "bg-green-500 border-green-600 shadow-lg shadow-green-500/30" :
+                            isInProgress ? "bg-primary border-primary shadow-lg shadow-primary/30 ring-4 ring-primary/20" :
+                            "bg-background border-muted"
+                          )}>
+                            {isCompleted && (
+                              <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                            )}
+                            {isInProgress && (
+                              <div className="w-3 h-3 bg-white rounded-full animate-pulse" />
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Card della tappa */}
+                        <Card className="flex-1 hover:shadow-md transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-start gap-4">
+                              {/* Immagine miniatura */}
+                              <div className="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gradient-to-br from-muted to-muted/50">
+                                <img
+                                  src="https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=200&q=80"
+                                  alt={activity.title}
+                                  className="w-full h-full object-cover"
+                                />
                               </div>
-                            </div>
 
-                            {/* Card della tappa */}
-                            <Card className="flex-1 hover:shadow-md transition-shadow">
-                              <CardContent className="p-4">
-                                <div className="flex items-start gap-4">
-                                  {/* Immagine miniatura */}
-                                  <div className="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gradient-to-br from-muted to-muted/50">
-                                    <img
-                                      src="https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=200&q=80"
-                                      alt={activity.title}
-                                      className="w-full h-full object-cover"
-                                    />
-                                  </div>
-
-                                  {/* Contenuto */}
-                                  <div className="flex-1 min-w-0 space-y-2">
-                                    <div className="flex items-start justify-between gap-3">
-                                      <div className="flex-1">
-                                        <div className="flex items-center gap-2 mb-1">
-                                          <span className="text-xs text-muted-foreground font-medium">
-                                            {activity.time}
-                                          </span>
-                                          <ActivityStatusBadge status={status} />
-                                        </div>
-                                        <h4 className="font-semibold text-base mb-1">
-                                          {activity.title}
-                                        </h4>
-                                        <p className="text-sm text-muted-foreground line-clamp-2">
-                                          {activity.description}
-                                        </p>
-                                      </div>
+                              {/* Contenuto */}
+                              <div className="flex-1 min-w-0 space-y-2">
+                                <div className="flex items-start justify-between gap-3">
+                                  <div className="flex-1">
+                                    <div className="flex items-center gap-2 mb-1">
+                                      <span className="text-xs text-muted-foreground font-medium">
+                                        {activity.time}
+                                      </span>
+                                      <ActivityStatusBadge status={status} />
                                     </div>
-
-                                    {/* CTA basata sullo stato */}
-                                    <div className="flex gap-2">
-                                      {isInProgress ? (
-                                        <Dialog>
-                                          <DialogTrigger asChild>
-                                            <Button 
-                                              variant="outline" 
-                                              size="sm"
-                                              onClick={() =>
-                                                loadActivityDetail(
-                                                  activity.title,
-                                                  activity.description,
-                                                  destination
-                                                )
-                                              }
-                                            >
-                                              <Sparkles className="w-4 h-4 mr-2" />
-                                              Scopri dettagli
-                                            </Button>
-                                          </DialogTrigger>
-                                          <DialogContent className="max-w-2xl max-h-[80vh]">
-                                            <DialogHeader>
-                                              <DialogTitle className="text-2xl">
-                                                {selectedActivity?.title}
-                                              </DialogTitle>
-                                              <DialogDescription>
-                                                {selectedActivity?.destination}
-                                              </DialogDescription>
-                                            </DialogHeader>
-                                            <ScrollArea className="max-h-[60vh] pr-4">
-                                              {loadingDetail ? (
-                                                <div className="flex flex-col items-center justify-center py-12 space-y-4">
-                                                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                                                  <p className="text-sm text-muted-foreground">
-                                                    Generazione di contenuti multimediali...
-                                                  </p>
-                                                </div>
-                                              ) : (
-                                                <div className="space-y-6">
-                                                  <div>
-                                                    <h4 className="font-semibold mb-2">Descrizione</h4>
-                                                    <p className="text-muted-foreground leading-relaxed">
-                                                      {selectedActivity?.description}
-                                                    </p>
-                                                  </div>
-
-                                                  {activityImage && (
-                                                    <div>
-                                                      <h4 className="font-semibold mb-3 flex items-center gap-2">
-                                                        📸 Foto del Luogo
-                                                      </h4>
-                                                      <img
-                                                        src={activityImage}
-                                                        alt={selectedActivity?.title}
-                                                        className="w-full rounded-lg shadow-md"
-                                                      />
-                                                    </div>
-                                                  )}
-
-                                                  {activityDetail && (
-                                                    <div>
-                                                      <h4 className="font-semibold mb-2 flex items-center gap-2">
-                                                        <Sparkles className="w-4 h-4 text-accent" />
-                                                        Dettagli e Curiosità
-                                                      </h4>
-                                                      <div className="prose prose-sm max-w-none text-muted-foreground">
-                                                        {activityDetail.split("\n").map((paragraph, i) => (
-                                                          <p key={i} className="mb-3 leading-relaxed">
-                                                            {paragraph}
-                                                          </p>
-                                                        ))}
-                                                      </div>
-                                                    </div>
-                                                  )}
-
-                                                  {youtubeSearchUrl && (
-                                                    <div>
-                                                      <h4 className="font-semibold mb-3 flex items-center gap-2">
-                                                        🎥 Video e Tour
-                                                      </h4>
-                                                      <Button
-                                                        variant="outline"
-                                                        className="w-full"
-                                                        onClick={() => window.open(youtubeSearchUrl, "_blank")}
-                                                      >
-                                                        Cerca video su YouTube
-                                                      </Button>
-                                                      <p className="text-xs text-muted-foreground mt-2">
-                                                        Scopri tour virtuali e guide video di {selectedActivity?.title}
-                                                      </p>
-                                                    </div>
-                                                  )}
-                                                </div>
-                                              )}
-                                            </ScrollArea>
-                                          </DialogContent>
-                                        </Dialog>
-                                      ) : (
-                                        <>
-                                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                            <Lock className="w-3 h-3" />
-                                            <span>Inizia per sbloccare</span>
-                                          </div>
-                                          <ActivityStatusActions
-                                            itineraryId={itineraryId}
-                                            dayNumber={day.day}
-                                            activityIndex={index}
-                                            currentStatus={status}
-                                            onStatusChange={onStatusChange}
-                                          />
-                                        </>
-                                      )}
-                                    </div>
+                                    <h4 className="font-semibold text-base mb-1">
+                                      {activity.title}
+                                    </h4>
+                                    <p className="text-sm text-muted-foreground line-clamp-2">
+                                      {activity.description}
+                                    </p>
                                   </div>
                                 </div>
-                              </CardContent>
-                            </Card>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
+
+                                {/* CTA basata sullo stato */}
+                                <div className="flex gap-2">
+                                  {isInProgress ? (
+                                    <Dialog>
+                                      <DialogTrigger asChild>
+                                        <Button 
+                                          variant="outline" 
+                                          size="sm"
+                                          onClick={() =>
+                                            loadActivityDetail(
+                                              activity.title,
+                                              activity.description,
+                                              destination
+                                            )
+                                          }
+                                        >
+                                          <Sparkles className="w-4 h-4 mr-2" />
+                                          Scopri dettagli
+                                        </Button>
+                                      </DialogTrigger>
+                                      <DialogContent className="max-w-2xl max-h-[80vh]">
+                                        <DialogHeader>
+                                          <DialogTitle className="text-2xl">
+                                            {selectedActivity?.title}
+                                          </DialogTitle>
+                                          <DialogDescription>
+                                            {selectedActivity?.destination}
+                                          </DialogDescription>
+                                        </DialogHeader>
+                                        <ScrollArea className="max-h-[60vh] pr-4">
+                                          {loadingDetail ? (
+                                            <div className="flex flex-col items-center justify-center py-12 space-y-4">
+                                              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                                              <p className="text-sm text-muted-foreground">
+                                                Generazione di contenuti multimediali...
+                                              </p>
+                                            </div>
+                                          ) : (
+                                            <div className="space-y-6">
+                                              <div>
+                                                <h4 className="font-semibold mb-2">Descrizione</h4>
+                                                <p className="text-muted-foreground leading-relaxed">
+                                                  {selectedActivity?.description}
+                                                </p>
+                                              </div>
+
+                                              {activityImage && (
+                                                <div>
+                                                  <h4 className="font-semibold mb-3 flex items-center gap-2">
+                                                    📸 Foto del Luogo
+                                                  </h4>
+                                                  <img
+                                                    src={activityImage}
+                                                    alt={selectedActivity?.title}
+                                                    className="w-full rounded-lg shadow-md"
+                                                  />
+                                                </div>
+                                              )}
+
+                                              {activityDetail && (
+                                                <div>
+                                                  <h4 className="font-semibold mb-2 flex items-center gap-2">
+                                                    <Sparkles className="w-4 h-4 text-accent" />
+                                                    Dettagli e Curiosità
+                                                  </h4>
+                                                  <div className="prose prose-sm max-w-none text-muted-foreground">
+                                                    {activityDetail.split("\n").map((paragraph, i) => (
+                                                      <p key={i} className="mb-3 leading-relaxed">
+                                                        {paragraph}
+                                                      </p>
+                                                    ))}
+                                                  </div>
+                                                </div>
+                                              )}
+
+                                              {youtubeSearchUrl && (
+                                                <div>
+                                                  <h4 className="font-semibold mb-3 flex items-center gap-2">
+                                                    🎥 Video e Tour
+                                                  </h4>
+                                                  <Button
+                                                    variant="outline"
+                                                    className="w-full"
+                                                    onClick={() => window.open(youtubeSearchUrl, "_blank")}
+                                                  >
+                                                    Cerca video su YouTube
+                                                  </Button>
+                                                  <p className="text-xs text-muted-foreground mt-2">
+                                                    Scopri tour virtuali e guide video di {selectedActivity?.title}
+                                                  </p>
+                                                </div>
+                                              )}
+                                            </div>
+                                          )}
+                                        </ScrollArea>
+                                      </DialogContent>
+                                    </Dialog>
+                                  ) : (
+                                    <>
+                                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                        <Lock className="w-3 h-3" />
+                                        <span>Inizia per sbloccare</span>
+                                      </div>
+                                      <ActivityStatusActions
+                                        itineraryId={itineraryId}
+                                        dayNumber={day.day}
+                                        activityIndex={index}
+                                        currentStatus={status}
+                                        onStatusChange={onStatusChange}
+                                      />
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
-          </div>
-        </AccordionContent>
-      </AccordionItem>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        );
+      })}
     </Accordion>
   );
 };
