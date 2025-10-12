@@ -8,79 +8,90 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 42 45% 98%;
-    --foreground: 25 45% 15%;
+    /* Airbnb Design System - Light Mode */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 13%;
 
     --card: 0 0% 100%;
-    --card-foreground: 25 45% 15%;
+    --card-foreground: 0 0% 13%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 25 45% 15%;
+    --popover-foreground: 0 0% 13%;
 
-    --primary: 14 88% 55%;
+    /* Airbnb Rausch - Signature coral/pink */
+    --primary: 358 100% 67%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 14 88% 48%;
+    --primary-hover: 358 100% 60%;
 
-    --secondary: 200 75% 45%;
+    /* Airbnb Babu - Teal */
+    --secondary: 174 100% 33%;
     --secondary-foreground: 0 0% 100%;
-    --secondary-hover: 200 75% 38%;
+    --secondary-hover: 174 100% 28%;
 
-    --accent: 40 95% 55%;
-    --accent-foreground: 25 45% 15%;
+    /* Airbnb Kazan - Accent orange */
+    --accent: 16 97% 58%;
+    --accent-foreground: 0 0% 100%;
 
-    --muted: 42 25% 92%;
-    --muted-foreground: 25 15% 45%;
+    /* Airbnb Foggy - Muted grays */
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 46%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 42 25% 88%;
-    --input: 42 25% 88%;
-    --ring: 14 88% 55%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 358 100% 67%;
 
     --radius: 0.75rem;
 
-    --gradient-hero: linear-gradient(135deg, hsl(14 88% 55%), hsl(40 95% 55%));
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(42 45% 98%));
-    --shadow-soft: 0 4px 20px -2px hsl(14 88% 55% / 0.15);
-    --shadow-elevated: 0 20px 40px -10px hsl(14 88% 55% / 0.25);
+    /* Airbnb-inspired gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(358 100% 67%), hsl(16 97% 58%));
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(0 0% 98%));
+    --shadow-soft: 0 2px 8px -2px hsl(358 100% 67% / 0.12);
+    --shadow-elevated: 0 6px 16px -4px hsl(358 100% 67% / 0.15);
   }
 
   .dark {
-    --background: 25 45% 8%;
-    --foreground: 42 45% 95%;
+    /* Airbnb Design System - Dark Mode */
+    --background: 0 0% 7%;
+    --foreground: 0 0% 95%;
 
-    --card: 25 35% 12%;
-    --card-foreground: 42 45% 95%;
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 95%;
 
-    --popover: 25 35% 12%;
-    --popover-foreground: 42 45% 95%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 95%;
 
-    --primary: 14 88% 55%;
+    /* Airbnb Rausch - Adjusted for dark mode */
+    --primary: 358 100% 67%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 14 88% 62%;
+    --primary-hover: 358 100% 72%;
 
-    --secondary: 200 75% 45%;
+    /* Airbnb Babu - Teal for dark mode */
+    --secondary: 174 100% 40%;
     --secondary-foreground: 0 0% 100%;
-    --secondary-hover: 200 75% 52%;
+    --secondary-hover: 174 100% 45%;
 
-    --accent: 40 95% 55%;
-    --accent-foreground: 25 45% 8%;
+    /* Airbnb Kazan - Accent orange */
+    --accent: 16 97% 58%;
+    --accent-foreground: 0 0% 100%;
 
-    --muted: 25 25% 18%;
-    --muted-foreground: 42 15% 65%;
+    /* Airbnb Foggy - Muted for dark */
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 60%;
 
-    --destructive: 0 62.8% 50%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 25 25% 22%;
-    --input: 25 25% 22%;
-    --ring: 14 88% 55%;
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
+    --ring: 358 100% 67%;
 
-    --gradient-hero: linear-gradient(135deg, hsl(14 88% 55%), hsl(40 95% 55%));
-    --gradient-card: linear-gradient(180deg, hsl(25 35% 12%), hsl(25 45% 8%));
-    --shadow-soft: 0 4px 20px -2px hsl(14 88% 55% / 0.3);
-    --shadow-elevated: 0 20px 40px -10px hsl(14 88% 55% / 0.4);
+    --gradient-hero: linear-gradient(135deg, hsl(358 100% 67%), hsl(16 97% 58%));
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 10%), hsl(0 0% 7%));
+    --shadow-soft: 0 2px 8px -2px hsl(358 100% 67% / 0.25);
+    --shadow-elevated: 0 6px 16px -4px hsl(358 100% 67% / 0.3);
   }
 }
 
@@ -91,5 +102,8 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
