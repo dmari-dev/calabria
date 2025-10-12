@@ -14,6 +14,7 @@ import { ActivityStatusBadge } from "@/components/ActivityStatusBadge";
 import { ActivityStatusActions } from "@/components/ActivityStatusActions";
 import { ExperienceSection } from "@/components/ExperienceSection";
 import { EditActivityDialog } from "@/components/EditActivityDialog";
+import { MapPlaceholderDialog } from "@/components/MapPlaceholderDialog";
 import { getActivityIcon } from "@/utils/activityIcons";
 import { cn } from "@/lib/utils";
 import {
@@ -486,30 +487,14 @@ const Itinerary = () => {
 
                                   {/* Pulsanti Azioni */}
                                   <div className="flex gap-2 pt-2">
-                                    <Button 
-                                      variant="outline" 
-                                      size="sm" 
-                                      className="flex-1"
-                                      onClick={() => {
-                                        const query = encodeURIComponent(activity.title);
-                                        window.open(`https://www.google.com/maps/dir/?api=1&destination=${query}`, '_blank');
-                                      }}
-                                    >
-                                      <Navigation className="w-4 h-4 mr-2" />
-                                      Indicazioni
-                                    </Button>
-                                    <Button 
-                                      variant="outline" 
-                                      size="sm" 
-                                      className="flex-1"
-                                      onClick={() => {
-                                        const query = encodeURIComponent(activity.title);
-                                        window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
-                                      }}
-                                    >
-                                      <Map className="w-4 h-4 mr-2" />
-                                      Mappa
-                                    </Button>
+                                    <MapPlaceholderDialog 
+                                      activityTitle={activity.title}
+                                      type="directions"
+                                    />
+                                    <MapPlaceholderDialog 
+                                      activityTitle={activity.title}
+                                      type="map"
+                                    />
                                   </div>
 
                                   {/* Edit Button per owner */}
