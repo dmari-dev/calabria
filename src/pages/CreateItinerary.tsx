@@ -49,18 +49,27 @@ const CreateItinerary = () => {
           participants_type: formData.participantsType,
           specific_interests: formData.specificInterests,
           travel_pace: formData.travelPace,
-          status: "draft",
+          status: "generating",
         })
         .select()
         .single();
 
       if (error) throw error;
 
-      toast.success("Itinerario creato! L'AI sta generando il tuo viaggio...");
+      toast.success("Generazione itinerario in corso...");
       navigate(`/itinerary/${data.id}`);
+
+      // Genera l'itinerario con AI in background
+      supabase.functions.invoke("generate-itinerary", {
+        body: { itineraryId: data.id },
+      }).then(({ error: genError }) => {
+        if (genError) {
+          console.error("Error generating itinerary:", genError);
+        }
+      });
+
     } catch (error: any) {
       toast.error(error.message || "Errore nella creazione dell'itinerario");
-    } finally {
       setLoading(false);
     }
   };
