@@ -225,107 +225,32 @@ const Itinerary = () => {
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <h1 className="text-4xl font-bold mb-4">{itinerary.title}</h1>
-                <div className="flex flex-wrap gap-4 text-muted-foreground">
-                  <div className="flex items-center">
-                    <MapPin className="w-4 h-4 mr-2" />
-                    {itinerary.destination}
-                  </div>
-                  <div className="flex items-center">
-                    <Calendar className="w-4 h-4 mr-2" />
-                    {new Date(itinerary.start_date).toLocaleDateString('it-IT')} - {new Date(itinerary.end_date).toLocaleDateString('it-IT')}
-                    <span className="ml-2">({daysDifference} {daysDifference === 1 ? 'giorno' : 'giorni'})</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Users className="w-4 h-4 mr-2" />
-                    {itinerary.participants_count} {itinerary.participants_type && `(${itinerary.participants_type})`}
-                  </div>
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <h1 className="text-4xl font-bold mb-4">{itinerary.title}</h1>
+              <div className="flex flex-wrap gap-4 text-muted-foreground">
+                <div className="flex items-center">
+                  <MapPin className="w-4 h-4 mr-2" />
+                  {itinerary.destination}
+                </div>
+                <div className="flex items-center">
+                  <Calendar className="w-4 h-4 mr-2" />
+                  {new Date(itinerary.start_date).toLocaleDateString('it-IT')} - {new Date(itinerary.end_date).toLocaleDateString('it-IT')}
+                  <span className="ml-2">({daysDifference} {daysDifference === 1 ? 'giorno' : 'giorni'})</span>
+                </div>
+                <div className="flex items-center">
+                  <Users className="w-4 h-4 mr-2" />
+                  {itinerary.participants_count} {itinerary.participants_type && `(${itinerary.participants_type})`}
                 </div>
               </div>
-              <Badge variant={itinerary.status === "generated" || itinerary.status === "in_progress" ? "default" : "secondary"} className="text-sm">
-                {itinerary.status === "generating" && <Loader2 className="mr-2 h-3 w-3 animate-spin" />}
-                {itinerary.status === "draft" ? "Bozza" : 
-                 itinerary.status === "generating" ? "Generazione..." : 
-                 itinerary.status === "in_progress" ? "In Corso" : "Completato"}
-              </Badge>
             </div>
-
-            {/* Day Progress Wizard */}
-            {itinerary.ai_content && (
-              <div className="mt-8 mb-8 p-6 bg-card rounded-xl border shadow-soft">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-semibold">Progressione Itinerario</h3>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setSelectedDay(Math.max(1, selectedDay - 1))}
-                      disabled={selectedDay === 1}
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                    <span className="text-sm font-medium px-3">Giorno {selectedDay}</span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setSelectedDay(Math.min(itinerary.ai_content!.days.length, selectedDay + 1))}
-                      disabled={selectedDay === itinerary.ai_content.days.length}
-                    >
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between gap-2 overflow-x-auto pb-2">
-                  {itinerary.ai_content.days.map((day, index) => {
-                    const dayActivities = day.activities.map((_, actIndex) => 
-                      getActivityStatus(day.day, actIndex)
-                    );
-                    const completedCount = dayActivities.filter(s => s === "completed").length;
-                    const inProgressCount = dayActivities.filter(s => s === "in_progress").length;
-                    const totalActivities = day.activities.length;
-                    const isCompleted = completedCount === totalActivities;
-                    const isInProgress = inProgressCount > 0 || completedCount > 0;
-                    const isSelected = selectedDay === day.day;
-                    
-                    return (
-                      <div key={day.day} className="flex items-center flex-1 min-w-[120px]">
-                        <button
-                          onClick={() => setSelectedDay(day.day)}
-                          className="flex flex-col items-center flex-1 transition-all hover:scale-105"
-                        >
-                          <div className={cn(
-                            "w-12 h-12 rounded-full flex items-center justify-center font-bold mb-2 transition-all border-2",
-                            isSelected ? "ring-4 ring-primary/30" : "",
-                            isCompleted ? "bg-green-500 text-white border-green-600" :
-                            isInProgress ? "bg-primary text-white border-primary" :
-                            "bg-muted text-muted-foreground border-muted"
-                          )}>
-                            {isCompleted ? <CheckCircle2 className="w-6 h-6" /> : <Calendar className="w-5 h-5" />}
-                          </div>
-                          <span className={cn(
-                            "text-xs font-medium text-center",
-                            isSelected ? "text-primary font-bold" : ""
-                          )}>
-                            Giorno {day.day}
-                          </span>
-                          <span className="text-xs text-muted-foreground mt-1">
-                            {completedCount}/{totalActivities}
-                          </span>
-                        </button>
-                        {index < itinerary.ai_content!.days.length - 1 && (
-                          <div className={cn(
-                            "h-1 flex-1 mx-2 rounded transition-all",
-                            isCompleted ? "bg-green-500" : "bg-muted"
-                          )} />
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+            <Badge variant={itinerary.status === "generated" || itinerary.status === "in_progress" ? "default" : "secondary"} className="text-sm">
+              {itinerary.status === "generating" && <Loader2 className="mr-2 h-3 w-3 animate-spin" />}
+              {itinerary.status === "draft" ? "Bozza" : 
+                itinerary.status === "generating" ? "Generazione..." : 
+                itinerary.status === "in_progress" ? "In Corso" : "Completato"}
+            </Badge>
+          </div>
         </div>
 
         {itinerary.status === "generating" && (
@@ -372,6 +297,79 @@ const Itinerary = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Day Progress Wizard */}
+            <div className="mt-8 mb-8 p-6 bg-card rounded-xl border shadow-soft">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold">Lungo il viaggio</h3>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSelectedDay(Math.max(1, selectedDay - 1))}
+                    disabled={selectedDay === 1}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <span className="text-sm font-medium px-3">Giorno {selectedDay}</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSelectedDay(Math.min(itinerary.ai_content!.days.length, selectedDay + 1))}
+                    disabled={selectedDay === itinerary.ai_content.days.length}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              <div className="flex items-center justify-between gap-2 overflow-x-auto pb-2">
+                {itinerary.ai_content.days.map((day, index) => {
+                  const dayActivities = day.activities.map((_, actIndex) => 
+                    getActivityStatus(day.day, actIndex)
+                  );
+                  const completedCount = dayActivities.filter(s => s === "completed").length;
+                  const inProgressCount = dayActivities.filter(s => s === "in_progress").length;
+                  const totalActivities = day.activities.length;
+                  const isCompleted = completedCount === totalActivities;
+                  const isInProgress = inProgressCount > 0 || completedCount > 0;
+                  const isSelected = selectedDay === day.day;
+                  
+                  return (
+                    <div key={day.day} className="flex items-center flex-1 min-w-[120px]">
+                      <button
+                        onClick={() => setSelectedDay(day.day)}
+                        className="flex flex-col items-center flex-1 transition-all hover:scale-105"
+                      >
+                        <div className={cn(
+                          "w-12 h-12 rounded-full flex items-center justify-center font-bold mb-2 transition-all border-2",
+                          isSelected ? "ring-4 ring-primary/30" : "",
+                          isCompleted ? "bg-green-500 text-white border-green-600" :
+                          isInProgress ? "bg-primary text-white border-primary" :
+                          "bg-muted text-muted-foreground border-muted"
+                        )}>
+                          {isCompleted ? <CheckCircle2 className="w-6 h-6" /> : <Calendar className="w-5 h-5" />}
+                        </div>
+                        <span className={cn(
+                          "text-xs font-medium text-center",
+                          isSelected ? "text-primary font-bold" : ""
+                        )}>
+                          Giorno {day.day}
+                        </span>
+                        <span className="text-xs text-muted-foreground mt-1">
+                          {completedCount}/{totalActivities}
+                        </span>
+                      </button>
+                      {index < itinerary.ai_content!.days.length - 1 && (
+                        <div className={cn(
+                          "h-1 flex-1 mx-2 rounded transition-all",
+                          isCompleted ? "bg-green-500" : "bg-muted"
+                        )} />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
 
             {itinerary.status === "in_progress" && (
               <ExperienceSection
