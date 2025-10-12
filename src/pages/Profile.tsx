@@ -6,10 +6,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useAuth } from "@/hooks/useAuth";
-import { ArrowLeft, User, Settings, Share2, Check, X, Loader2 } from "lucide-react";
+import { ArrowLeft, User, Settings, Share2, Check, X, Loader2, CalendarIcon, Briefcase, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
+import { format } from "date-fns";
+import { it } from "date-fns/locale";
+import { cn } from "@/lib/utils";
 
 interface UserPreferences {
   travel_style: string;
@@ -48,7 +55,19 @@ const Profile = () => {
     travel_style: "moderate",
     cultural_interests: []
   });
-  const [displayName, setDisplayName] = useState("");
+  const [profileData, setProfileData] = useState({
+    display_name: "",
+    first_name: "",
+    last_name: "",
+    birth_date: null as Date | null,
+    phone: "",
+    address: "",
+    city: "",
+    country: "",
+    profession: "",
+    company: "",
+    bio: ""
+  });
   const [receivedShares, setReceivedShares] = useState<Share[]>([]);
   const [processingShares, setProcessingShares] = useState<Set<string>>(new Set());
 
@@ -73,7 +92,19 @@ const Profile = () => {
         .single();
 
       if (profile) {
-        setDisplayName(profile.display_name || "");
+        setProfileData({
+          display_name: profile.display_name || "",
+          first_name: profile.first_name || "",
+          last_name: profile.last_name || "",
+          birth_date: profile.birth_date ? new Date(profile.birth_date) : null,
+          phone: profile.phone || "",
+          address: profile.address || "",
+          city: profile.city || "",
+          country: profile.country || "",
+          profession: profile.profession || "",
+          company: profile.company || "",
+          bio: profile.bio || ""
+        });
       }
 
       const { data: prefs } = await supabase
@@ -125,7 +156,19 @@ const Profile = () => {
     try {
       const { error: profileError } = await supabase
         .from("profiles")
-        .update({ display_name: displayName })
+        .update({
+          display_name: profileData.display_name,
+          first_name: profileData.first_name,
+          last_name: profileData.last_name,
+          birth_date: profileData.birth_date?.toISOString().split('T')[0],
+          phone: profileData.phone,
+          address: profileData.address,
+          city: profileData.city,
+          country: profileData.country,
+          profession: profileData.profession,
+          company: profileData.company,
+          bio: profileData.bio
+        })
         .eq("user_id", user?.id);
 
       if (profileError) throw profileError;
@@ -268,92 +311,264 @@ const Profile = () => {
           </Card>
         )}
 
-        <Card className="shadow-soft">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Settings className="w-5 h-5" />
-              Informazioni Personali
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="displayName">Nome Visualizzato</Label>
-              <Input
-                id="displayName"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                placeholder="Il tuo nome"
-              />
-            </div>
+        <Tabs defaultValue="personal" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="personal" className="flex items-center gap-2">
+              <User className="w-4 h-4" />
+              Personali
+            </TabsTrigger>
+            <TabsTrigger value="professional" className="flex items-center gap-2">
+              <Briefcase className="w-4 h-4" />
+              Professionali
+            </TabsTrigger>
+            <TabsTrigger value="preferences" className="flex items-center gap-2">
+              <Settings className="w-4 h-4" />
+              Preferenze
+            </TabsTrigger>
+          </TabsList>
 
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                value={user?.email || ""}
-                disabled
-                className="bg-muted"
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="shadow-soft">
-          <CardHeader>
-            <CardTitle>Preferenze di Viaggio</CardTitle>
-            <CardDescription>
-              Personalizza le tue preferenze per itinerari più adatti a te
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="space-y-3">
-              <Label>Ritmo di Viaggio</Label>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                {[
-                  { value: "relaxed", label: "Rilassato", emoji: "🌅" },
-                  { value: "moderate", label: "Moderato", emoji: "🚶" },
-                  { value: "intensive", label: "Intenso", emoji: "🏃" }
-                ].map((option) => (
-                  <button
-                    key={option.value}
-                    onClick={() => setPreferences({ ...preferences, travel_style: option.value })}
-                    className={`p-4 rounded-lg border-2 transition-all ${
-                      preferences.travel_style === option.value
-                        ? "border-primary bg-primary/5"
-                        : "border-border hover:border-primary/50"
-                    }`}
-                  >
-                    <div className="text-2xl mb-2">{option.emoji}</div>
-                    <div className="font-semibold">{option.label}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <Separator />
-
-            <div className="space-y-3">
-              <Label>Interessi Culturali</Label>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {culturalOptions.map((interest) => (
-                  <div key={interest} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={interest}
-                      checked={preferences.cultural_interests.includes(interest)}
-                      onCheckedChange={() => toggleInterest(interest)}
+          <TabsContent value="personal">
+            <Card className="shadow-soft">
+              <CardHeader>
+                <CardTitle>Informazioni Anagrafiche</CardTitle>
+                <CardDescription>Gestisci i tuoi dati personali</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="firstName">Nome</Label>
+                    <Input
+                      id="firstName"
+                      value={profileData.first_name}
+                      onChange={(e) => setProfileData({ ...profileData, first_name: e.target.value })}
+                      placeholder="Mario"
                     />
-                    <label
-                      htmlFor={interest}
-                      className="text-sm cursor-pointer select-none"
-                    >
-                      {interest}
-                    </label>
                   </div>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="lastName">Cognome</Label>
+                    <Input
+                      id="lastName"
+                      value={profileData.last_name}
+                      onChange={(e) => setProfileData({ ...profileData, last_name: e.target.value })}
+                      placeholder="Rossi"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="displayName">Nome Visualizzato</Label>
+                  <Input
+                    id="displayName"
+                    value={profileData.display_name}
+                    onChange={(e) => setProfileData({ ...profileData, display_name: e.target.value })}
+                    placeholder="Il nome che vedranno gli altri"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Data di Nascita</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !profileData.birth_date && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {profileData.birth_date ? (
+                            format(profileData.birth_date, "PPP", { locale: it })
+                          ) : (
+                            <span>Seleziona data</span>
+                          )}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={profileData.birth_date || undefined}
+                          onSelect={(date) => setProfileData({ ...profileData, birth_date: date || null })}
+                          disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
+                          initialFocus
+                          className="pointer-events-auto"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Telefono</Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      value={profileData.phone}
+                      onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
+                      placeholder="+39 123 456 7890"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    value={user?.email || ""}
+                    disabled
+                    className="bg-muted"
+                  />
+                </div>
+
+                <Separator />
+
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-muted-foreground" />
+                    <Label className="text-base">Indirizzo</Label>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="address">Via e Numero Civico</Label>
+                    <Input
+                      id="address"
+                      value={profileData.address}
+                      onChange={(e) => setProfileData({ ...profileData, address: e.target.value })}
+                      placeholder="Via Roma, 123"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="city">Città</Label>
+                      <Input
+                        id="city"
+                        value={profileData.city}
+                        onChange={(e) => setProfileData({ ...profileData, city: e.target.value })}
+                        placeholder="Milano"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="country">Paese</Label>
+                      <Input
+                        id="country"
+                        value={profileData.country}
+                        onChange={(e) => setProfileData({ ...profileData, country: e.target.value })}
+                        placeholder="Italia"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="professional">
+            <Card className="shadow-soft">
+              <CardHeader>
+                <CardTitle>Informazioni Professionali</CardTitle>
+                <CardDescription>Condividi la tua esperienza lavorativa</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="profession">Professione</Label>
+                  <Input
+                    id="profession"
+                    value={profileData.profession}
+                    onChange={(e) => setProfileData({ ...profileData, profession: e.target.value })}
+                    placeholder="Es. Architetto, Insegnante, Manager..."
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="company">Azienda</Label>
+                  <Input
+                    id="company"
+                    value={profileData.company}
+                    onChange={(e) => setProfileData({ ...profileData, company: e.target.value })}
+                    placeholder="Nome dell'azienda"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="bio">Biografia</Label>
+                  <Textarea
+                    id="bio"
+                    rows={6}
+                    value={profileData.bio}
+                    onChange={(e) => setProfileData({ ...profileData, bio: e.target.value })}
+                    placeholder="Racconta qualcosa di te, delle tue passioni per i viaggi culturali..."
+                    className="resize-none"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Massimo 500 caratteri
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="preferences">
+            <Card className="shadow-soft">
+              <CardHeader>
+                <CardTitle>Preferenze di Viaggio</CardTitle>
+                <CardDescription>
+                  Personalizza le tue preferenze per itinerari più adatti a te
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-3">
+                  <Label>Ritmo di Viaggio</Label>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    {[
+                      { value: "relaxed", label: "Rilassato", emoji: "🌅" },
+                      { value: "moderate", label: "Moderato", emoji: "🚶" },
+                      { value: "intensive", label: "Intenso", emoji: "🏃" }
+                    ].map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => setPreferences({ ...preferences, travel_style: option.value })}
+                        className={`p-4 rounded-lg border-2 transition-all ${
+                          preferences.travel_style === option.value
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:border-primary/50"
+                        }`}
+                      >
+                        <div className="text-2xl mb-2">{option.emoji}</div>
+                        <div className="font-semibold">{option.label}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-3">
+                  <Label>Interessi Culturali</Label>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {culturalOptions.map((interest) => (
+                      <div key={interest} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={interest}
+                          checked={preferences.cultural_interests.includes(interest)}
+                          onCheckedChange={() => toggleInterest(interest)}
+                        />
+                        <label
+                          htmlFor={interest}
+                          className="text-sm cursor-pointer select-none"
+                        >
+                          {interest}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
 
         <Button
           onClick={handleSaveProfile}
