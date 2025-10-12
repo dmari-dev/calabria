@@ -94,10 +94,23 @@ const Dashboard = () => {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h2 className="text-3xl font-bold mb-2">I Tuoi Itinerari</h2>
-          <p className="text-muted-foreground">
-            Gestisci e crea nuovi itinerari culturali personalizzati
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-3xl font-bold mb-2">I Tuoi Itinerari</h2>
+              <p className="text-muted-foreground">
+                Gestisci e crea nuovi itinerari culturali personalizzati
+              </p>
+            </div>
+            {itineraries.some(it => it.status === 'in_progress') && (
+              <Button 
+                onClick={() => navigate("/experience")}
+                className="bg-gradient-hero hover:opacity-90"
+              >
+                <Sparkles className="w-4 h-4 mr-2" />
+                Experience
+              </Button>
+            )}
+          </div>
         </div>
 
         <Tabs defaultValue="all" className="space-y-6">

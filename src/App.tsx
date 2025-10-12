@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import CreateItinerary from "./pages/CreateItinerary";
 import Itinerary from "./pages/Itinerary";
 import Profile from "./pages/Profile";
+import Experience from "./pages/Experience";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/create-itinerary" element={<CreateItinerary />} />
           <Route path="/itinerary/:id" element={<Itinerary />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/experience" element={<Experience />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
