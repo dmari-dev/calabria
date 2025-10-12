@@ -10,6 +10,8 @@ import { ArrowLeft, MapPin, Calendar, Users, Sparkles, Clock, Loader2 } from "lu
 import { toast } from "sonner";
 import { ActivityMap } from "@/components/ActivityMap";
 import { ShareItineraryDialog } from "@/components/ShareItineraryDialog";
+import { ActivityStatusBadge } from "@/components/ActivityStatusBadge";
+import { ActivityStatusActions } from "@/components/ActivityStatusActions";
 
 interface Activity {
   time: string;
@@ -58,11 +60,40 @@ const Itinerary = () => {
   const { user } = useAuth();
   const [itinerary, setItinerary] = useState<ItineraryData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [activityStatuses, setActivityStatuses] = useState<
+    Record<string, "pending" | "in_progress" | "completed">
+  >({});
 
   useEffect(() => {
     if (id) {
       loadItinerary();
+      loadActivityStatuses();
     }
+  }, [id]);
+
+  useEffect(() => {
+    if (!id) return;
+
+    // Subscribe to realtime updates for activity statuses
+    const channel = supabase
+      .channel(`activity-statuses-${id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "activity_statuses",
+          filter: `itinerary_id=eq.${id}`,
+        },
+        () => {
+          loadActivityStatuses();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [id]);
 
   useEffect(() => {
@@ -92,6 +123,34 @@ const Itinerary = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const loadActivityStatuses = async () => {
+    if (!id) return;
+
+    try {
+      const { data, error } = await supabase
+        .from("activity_statuses")
+        .select("*")
+        .eq("itinerary_id", id);
+
+      if (error) throw error;
+
+      const statusMap: Record<string, "pending" | "in_progress" | "completed"> = {};
+      data?.forEach((status) => {
+        const key = `${status.day_number}-${status.activity_index}`;
+        statusMap[key] = status.status as "pending" | "in_progress" | "completed";
+      });
+
+      setActivityStatuses(statusMap);
+    } catch (error: any) {
+      console.error("Error loading activity statuses:", error);
+    }
+  };
+
+  const getActivityStatus = (dayNumber: number, activityIndex: number) => {
+    const key = `${dayNumber}-${activityIndex}`;
+    return activityStatuses[key] || "pending";
   };
 
   if (loading) {
@@ -211,36 +270,49 @@ const Itinerary = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="pt-6 space-y-6">
-                    {day.activities.map((activity, index) => (
-                      <div key={index}>
-                        {index > 0 && <Separator className="my-6" />}
-                        <div className="space-y-3">
-                          <div className="flex items-start gap-4">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-3 mb-2">
-                                <div className="flex items-center gap-2 text-muted-foreground">
-                                  <Clock className="h-4 w-4" />
-                                  <span className="font-semibold text-sm">{activity.time}</span>
+                    {day.activities.map((activity, index) => {
+                      const activityStatus = getActivityStatus(day.day, index);
+                      return (
+                        <div key={index}>
+                          {index > 0 && <Separator className="my-6" />}
+                          <div className="space-y-3">
+                            <div className="flex items-start gap-4">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                  <div className="flex items-center gap-2 text-muted-foreground">
+                                    <Clock className="h-4 w-4" />
+                                    <span className="font-semibold text-sm">{activity.time}</span>
+                                  </div>
+                                  <Badge variant="secondary" className="text-xs">
+                                    {activity.duration}
+                                  </Badge>
+                                  <ActivityStatusBadge status={activityStatus} />
                                 </div>
-                                <Badge variant="secondary" className="text-xs">
-                                  {activity.duration}
-                                </Badge>
+                                <h4 className="font-bold text-lg mb-2">{activity.title}</h4>
+                                <p className="text-muted-foreground leading-relaxed">{activity.description}</p>
+                                {activity.tips && (
+                                  <div className="mt-4 p-4 bg-amber/10 border border-amber/20 rounded-lg">
+                                    <p className="text-sm">
+                                      <span className="font-semibold">💡 Consiglio Pratico:</span> {activity.tips}
+                                    </p>
+                                  </div>
+                                )}
+                                <ActivityMap title={activity.title} location={activity.title} />
                               </div>
-                              <h4 className="font-bold text-lg mb-2">{activity.title}</h4>
-                              <p className="text-muted-foreground leading-relaxed">{activity.description}</p>
-                              {activity.tips && (
-                                <div className="mt-4 p-4 bg-amber/10 border border-amber/20 rounded-lg">
-                                  <p className="text-sm">
-                                    <span className="font-semibold">💡 Consiglio Pratico:</span> {activity.tips}
-                                  </p>
-                                </div>
+                              {user?.id === itinerary.user_id && (
+                                <ActivityStatusActions
+                                  itineraryId={itinerary.id}
+                                  dayNumber={day.day}
+                                  activityIndex={index}
+                                  currentStatus={activityStatus}
+                                  onStatusChange={loadActivityStatuses}
+                                />
                               )}
-                              <ActivityMap title={activity.title} location={activity.title} />
                             </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </CardContent>
                 </Card>
               ))}

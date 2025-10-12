@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_statuses: {
+        Row: {
+          activity_index: number
+          created_at: string
+          day_number: number
+          id: string
+          itinerary_id: string
+          status: Database["public"]["Enums"]["activity_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          activity_index: number
+          created_at?: string
+          day_number: number
+          id?: string
+          itinerary_id: string
+          status?: Database["public"]["Enums"]["activity_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          activity_index?: number
+          created_at?: string
+          day_number?: number
+          id?: string
+          itinerary_id?: string
+          status?: Database["public"]["Enums"]["activity_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_statuses_itinerary_id_fkey"
+            columns: ["itinerary_id"]
+            isOneToOne: false
+            referencedRelation: "itineraries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       itineraries: {
         Row: {
           ai_content: Json | null
@@ -198,7 +239,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      activity_status: "pending" | "in_progress" | "completed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -325,6 +366,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      activity_status: ["pending", "in_progress", "completed"],
+    },
   },
 } as const
