@@ -130,14 +130,14 @@ export const ExperienceSection = ({
                     <Badge variant="secondary">Giorno {day.day}</Badge>
                     <span className="text-sm">{day.title}</span>
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex flex-wrap gap-4">
                     {sortedActivities.map(({ activity, index, status }) => {
                       const isInProgress = status === "in_progress";
                       
                       return (
                         <Card 
                           key={index}
-                          className="hover:shadow-md transition-shadow"
+                          className="flex-[0_0_calc(50%-0.5rem)] hover:shadow-md transition-shadow"
                         >
                           <CardContent className="p-0">
                             {/* Immagine */}
