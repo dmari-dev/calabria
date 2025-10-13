@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
-import { Plus, Calendar, MapPin, LogOut, Sparkles, User, FileEdit, PlayCircle, Archive, CheckCircle } from "lucide-react";
+import { Plus, Calendar, MapPin, Sparkles, FileEdit, PlayCircle, Archive, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 import { ItineraryStatusBadge } from "@/components/ItineraryStatusBadge";
 import { ItineraryActions } from "@/components/ItineraryActions";
 import { ItinerarySelectionDialog } from "@/components/ItinerarySelectionDialog";
+import { Header } from "@/components/Header";
 
 interface Itinerary {
   id: string;
@@ -55,10 +56,6 @@ const Dashboard = () => {
     }
   };
 
-  const handleSignOut = async () => {
-    await signOut();
-    toast.success("Disconnesso con successo");
-  };
 
   const handleExperienceClick = () => {
     const inProgressItineraries = itineraries.filter(it => it.status === 'in_progress');
@@ -85,29 +82,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted">
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-hero flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold">Itinerari Intelligenti</h1>
-              <p className="text-sm text-muted-foreground">Benvenuto, {user?.email?.split('@')[0]}</p>
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <Button variant="ghost" onClick={() => navigate("/profile")}>
-              <User className="w-4 h-4 mr-2" />
-              Profilo
-            </Button>
-            <Button variant="ghost" onClick={handleSignOut}>
-              <LogOut className="w-4 h-4 mr-2" />
-              Esci
-            </Button>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">

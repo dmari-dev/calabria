@@ -8,9 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/hooks/useAuth";
-import { ArrowLeft, Sparkles, Calendar as CalendarIcon, Users } from "lucide-react";
+import { Sparkles, Calendar as CalendarIcon, Users } from "lucide-react";
 import { toast } from "sonner";
 import { DestinationSelector } from "@/components/DestinationSelector";
+import { Header } from "@/components/Header";
 
 const CreateItinerary = () => {
   const navigate = useNavigate();
@@ -83,14 +84,7 @@ const CreateItinerary = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted">
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <Button variant="ghost" onClick={() => navigate("/dashboard")}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Torna alla Dashboard
-          </Button>
-        </div>
-      </header>
+      <Header />
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8 text-center">
