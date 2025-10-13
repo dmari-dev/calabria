@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { Palette, History, Music, UtensilsCrossed, Camera, Mountain, Landmark } from "lucide-react";
@@ -146,29 +146,37 @@ const Onboarding = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <RadioGroup value={travelStyle} onValueChange={handleTravelStyleChange}>
-                <div className="flex items-center space-x-3 p-4 rounded-lg border-2 border-border hover:border-primary/50 transition-colors">
-                  <RadioGroupItem value="relaxed" id="relaxed" />
-                  <Label htmlFor="relaxed" className="flex-1 cursor-pointer">
-                    <div className="font-medium">Rilassato</div>
-                    <div className="text-sm text-muted-foreground">Poche attività, molto tempo libero</div>
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-3 p-4 rounded-lg border-2 border-border hover:border-primary/50 transition-colors mt-3">
-                  <RadioGroupItem value="moderate" id="moderate" />
-                  <Label htmlFor="moderate" className="flex-1 cursor-pointer">
-                    <div className="font-medium">Moderato</div>
-                    <div className="text-sm text-muted-foreground">Bilanciamento tra attività e relax</div>
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-3 p-4 rounded-lg border-2 border-border hover:border-primary/50 transition-colors mt-3">
-                  <RadioGroupItem value="intensive" id="intensive" />
-                  <Label htmlFor="intensive" className="flex-1 cursor-pointer">
-                    <div className="font-medium">Intenso</div>
-                    <div className="text-sm text-muted-foreground">Massimizza le esperienze, ritmo sostenuto</div>
-                  </Label>
-                </div>
-              </RadioGroup>
+              <div role="radiogroup" aria-label="Stile di viaggio" className="space-y-3">
+                {[
+                  { value: "relaxed", title: "Rilassato", desc: "Poche attività, molto tempo libero" },
+                  { value: "moderate", title: "Moderato", desc: "Bilanciamento tra attività e relax" },
+                  { value: "intensive", title: "Intenso", desc: "Massimizza le esperienze, ritmo sostenuto" },
+                ].map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    role="radio"
+                    aria-checked={travelStyle === opt.value}
+                    onClick={() => handleTravelStyleChange(opt.value)}
+                    className={`w-full text-left flex items-center space-x-3 p-4 rounded-lg border-2 transition-colors ${
+                      travelStyle === opt.value
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <span
+                      className={`inline-flex h-4 w-4 rounded-full border ${
+                        travelStyle === opt.value ? "bg-primary border-primary" : "border-primary"
+                      }`}
+                      aria-hidden="true"
+                    />
+                    <span className="flex-1">
+                      <div className="font-medium">{opt.title}</div>
+                      <div className="text-sm text-muted-foreground">{opt.desc}</div>
+                    </span>
+                  </button>
+                ))}
+              </div>
             </CardContent>
           </Card>
 
