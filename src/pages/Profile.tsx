@@ -179,6 +179,8 @@ const Profile = () => {
           user_id: user?.id,
           travel_style: preferences.travel_style,
           cultural_interests: preferences.cultural_interests
+        }, {
+          onConflict: 'user_id'
         });
 
       if (prefsError) throw prefsError;
