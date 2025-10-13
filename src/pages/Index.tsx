@@ -43,7 +43,7 @@ const Index = () => {
             alt="Italian cultural heritage" 
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/80 to-background/60" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-background/50 to-background/30" />
         </div>
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
