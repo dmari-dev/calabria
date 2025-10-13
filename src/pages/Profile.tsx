@@ -11,8 +11,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useAuth } from "@/hooks/useAuth";
-import { User, Settings, Share2, Check, X, Loader2, CalendarIcon, Briefcase, MapPin } from "lucide-react";
+import { User, Settings, Share2, Check, X, Loader2, CalendarIcon, Briefcase, MapPin, Camera, Upload } from "lucide-react";
 import { toast } from "sonner";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
@@ -51,6 +52,7 @@ const Profile = () => {
   const { user, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [preferences, setPreferences] = useState<UserPreferences>({
     travel_style: "moderate",
     cultural_interests: []
@@ -66,7 +68,8 @@ const Profile = () => {
     country: "",
     profession: "",
     company: "",
-    bio: ""
+    bio: "",
+    avatar_url: ""
   });
   const [receivedShares, setReceivedShares] = useState<Share[]>([]);
   const [processingShares, setProcessingShares] = useState<Set<string>>(new Set());
@@ -103,7 +106,8 @@ const Profile = () => {
           country: profile.country || "",
           profession: profile.profession || "",
           company: profile.company || "",
-          bio: profile.bio || ""
+          bio: profile.bio || "",
+          avatar_url: profile.avatar_url || ""
         });
       }
 
@@ -235,6 +239,66 @@ const Profile = () => {
     }));
   };
 
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !user) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error("Seleziona un'immagine valida");
+      return;
+    }
+
+    // Validate file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("L'immagine deve essere inferiore a 2MB");
+      return;
+    }
+
+    setUploadingAvatar(true);
+    try {
+      // Delete old avatar if exists
+      if (profileData.display_name) {
+        const oldPath = `${user.id}/avatar`;
+        await supabase.storage.from('avatars').remove([oldPath]);
+      }
+
+      // Upload new avatar
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${user.id}/avatar.${fileExt}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      // Update profile with new avatar URL
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('user_id', user.id);
+
+      if (updateError) throw updateError;
+
+      setProfileData(prev => ({ ...prev, avatar_url: publicUrl }));
+      toast.success("Foto profilo aggiornata con successo");
+      
+      // Reload profile to get updated data
+      loadProfile();
+    } catch (error: any) {
+      console.error('Error uploading avatar:', error);
+      toast.error("Errore durante il caricamento della foto");
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
   if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -249,8 +313,31 @@ const Profile = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted">
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-gradient-hero flex items-center justify-center">
-            <User className="w-8 h-8 text-white" />
+          <div className="relative group">
+            <Avatar className="w-24 h-24 border-4 border-primary/20">
+              <AvatarImage src={profileData.avatar_url} alt={profileData.display_name || "User"} />
+              <AvatarFallback className="bg-gradient-hero text-white text-2xl">
+                {profileData.display_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "U"}
+              </AvatarFallback>
+            </Avatar>
+            <label 
+              htmlFor="avatar-upload" 
+              className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+            >
+              {uploadingAvatar ? (
+                <Loader2 className="w-6 h-6 text-white animate-spin" />
+              ) : (
+                <Camera className="w-6 h-6 text-white" />
+              )}
+            </label>
+            <input
+              id="avatar-upload"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleAvatarUpload}
+              disabled={uploadingAvatar}
+            />
           </div>
           <div>
             <h1 className="text-3xl font-bold">Il Tuo Profilo</h1>
