@@ -489,6 +489,9 @@ const Itinerary = () => {
                                                 src={img}
                                                 alt={`${activity.title} ${imgIndex + 1}`}
                                                 className="w-full h-full object-cover"
+                                                loading="lazy"
+                                                referrerPolicy="no-referrer"
+                                                onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/placeholder.svg'; }}
                                               />
                                             </div>
                                           </CarouselItem>

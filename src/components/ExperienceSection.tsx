@@ -325,6 +325,9 @@ export const ExperienceSection = ({
                                                             src={activityImage}
                                                             alt={selectedActivity?.title}
                                                             className="w-full rounded-lg shadow-md"
+                                                            loading="lazy"
+                                                            referrerPolicy="no-referrer"
+                                                            onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/placeholder.svg'; }}
                                                           />
                                                         </div>
                                                       )}
