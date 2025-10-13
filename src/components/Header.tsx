@@ -7,14 +7,31 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Menu, User, ShieldCheck, Home, Info, Users, LayoutDashboard, UserCircle, Sparkles } from "lucide-react";
+import { Menu, User, ShieldCheck, Home, Info, Users, LayoutDashboard, Sparkles } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useRole } from "@/hooks/useRole";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import logo from "@/assets/logo.svg";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Header = () => {
   const { user, signOut } = useAuth();
   const { isAdmin } = useRole();
+  const [profile, setProfile] = useState<{ display_name?: string; avatar_url?: string } | null>(null);
+
+  useEffect(() => {
+    if (user) {
+      supabase
+        .from("profiles")
+        .select("display_name, avatar_url")
+        .eq("user_id", user.id)
+        .single()
+        .then(({ data }) => {
+          if (data) setProfile(data);
+        });
+    }
+  }, [user]);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -54,10 +71,6 @@ export const Header = () => {
                 <LayoutDashboard className="w-4 h-4" />
                 Dashboard
               </Link>
-              <Link to="/profile" className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-2">
-                <UserCircle className="w-4 h-4" />
-                Profilo
-              </Link>
               {isAdmin && (
                 <Link to="/admin" className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-2">
                   <ShieldCheck className="w-4 h-4" />
@@ -86,11 +99,19 @@ export const Header = () => {
 
         {/* User menu for logged in users */}
         {user && (
-          <div className="hidden md:flex items-center">
+          <div className="hidden md:flex items-center gap-3">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <User className="h-5 w-5" />
+                <Button variant="ghost" className="gap-2 h-auto py-2 px-3">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={profile?.avatar_url} alt={profile?.display_name || user.email || "User"} />
+                    <AvatarFallback>
+                      {profile?.display_name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm font-medium">
+                    {profile?.display_name || user.email?.split("@")[0] || "Utente"}
+                  </span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -166,12 +187,6 @@ export const Header = () => {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/profile" className="flex items-center gap-2">
-                    <UserCircle className="w-4 h-4" />
-                    Profilo
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
                   <Link to="/create-itinerary" className="flex items-center gap-2">
                     <Sparkles className="w-4 h-4" />
                     Experience
@@ -185,6 +200,10 @@ export const Header = () => {
                     </Link>
                   </DropdownMenuItem>
                 )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/profile">Profilo</Link>
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={signOut}>
                   Esci
