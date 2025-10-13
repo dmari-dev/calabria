@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem, CarouselApi } from "@/components/ui/carousel";
 import { Sparkles, Map, Calendar, Users, Brain, ArrowRight } from "lucide-react";
 import heroImage from "@/assets/hero-tourists.jpg";
 import heroMilano from "@/assets/hero-milano.jpg";
@@ -15,6 +15,18 @@ import { VirtualAgentChat } from "@/components/VirtualAgentChat";
 const Index = () => {
   const navigate = useNavigate();
   const chatRef = useRef<HTMLDivElement>(null);
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    if (!api) return;
+
+    setCurrent(api.selectedScrollSnap());
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap());
+    });
+  }, [api]);
 
   const heroSlides = [
     {
@@ -77,7 +89,7 @@ const Index = () => {
       {/* Header moved to App-level layout */}
       {/* Hero Section with Carousel */}
       <section className="relative overflow-hidden">
-        <Carousel className="w-full" opts={{ loop: true }}>
+        <Carousel className="w-full" opts={{ loop: true }} setApi={setApi}>
           <CarouselContent>
             {heroSlides.map((slide, index) => (
               <CarouselItem key={index}>
@@ -132,8 +144,22 @@ const Index = () => {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="left-4 md:left-8" />
-          <CarouselNext className="right-4 md:right-8" />
+          
+          {/* Dot Navigation */}
+          <div className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-3">
+            {heroSlides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => api?.scrollTo(index)}
+                className={`w-3 h-3 rounded-full transition-all ${
+                  current === index 
+                    ? 'bg-primary scale-125' 
+                    : 'bg-white/50 hover:bg-white/80'
+                }`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
         </Carousel>
       </section>
 
