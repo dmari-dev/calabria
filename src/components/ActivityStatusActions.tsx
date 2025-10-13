@@ -36,7 +36,7 @@ export const ActivityStatusActions = ({
         .eq("itinerary_id", itineraryId)
         .eq("day_number", dayNumber)
         .eq("activity_index", activityIndex)
-        .single();
+        .maybeSingle();
 
       if (existing) {
         // Update existing status
