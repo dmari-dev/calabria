@@ -37,13 +37,41 @@ export const VirtualAgentChat = () => {
       // Estrai informazioni dalla conversazione per creare l'itinerario
       const conversation = messages.map(m => m.content).join("\n");
       
+      // Estrai la destinazione dalla conversazione
+      const italianCities = [
+        'Roma', 'Milano', 'Napoli', 'Torino', 'Palermo', 'Genova', 'Bologna', 'Firenze',
+        'Bari', 'Catania', 'Venezia', 'Verona', 'Messina', 'Padova', 'Trieste', 'Brescia',
+        'Parma', 'Modena', 'Prato', 'Reggio Calabria', 'Perugia', 'Livorno', 'Cagliari',
+        'Foggia', 'Rimini', 'Salerno', 'Ferrara', 'Ravenna', 'Siena', 'Pisa', 'Bergamo',
+        'Toscana', 'Sicilia', 'Sardegna', 'Puglia', 'Calabria', 'Campania', 'Lazio',
+        'Lombardia', 'Veneto', 'Emilia-Romagna', 'Piemonte', 'Liguria', 'Umbria',
+        'Marche', 'Abruzzo', 'Trentino', 'Friuli'
+      ];
+      
+      let destination = 'Italia';
+      let detectedCity = '';
+      
+      // Cerca città o regioni nella conversazione
+      for (const city of italianCities) {
+        if (conversation.toLowerCase().includes(city.toLowerCase())) {
+          detectedCity = city;
+          destination = city;
+          break;
+        }
+      }
+      
+      // Crea un titolo descrittivo
+      const title = detectedCity 
+        ? `Itinerario a ${detectedCity}`
+        : 'Itinerario culturale in Italia';
+      
       // Crea l'itinerario nel database con stato "in_progress"
       const { data: itinerary, error: createError } = await supabase
         .from("itineraries")
         .insert({
           user_id: user.id,
-          title: "Nuovo itinerario da chat",
-          destination: "Da definire", // Verrà aggiornato dall'AI
+          title: title,
+          destination: destination,
           start_date: new Date().toISOString().split('T')[0],
           end_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
           status: "in_progress",
@@ -55,35 +83,16 @@ export const VirtualAgentChat = () => {
       if (createError) throw createError;
 
       // Genera l'itinerario con l'AI usando la conversazione come contesto
-      const { data: aiResponse, error: aiError } = await supabase.functions.invoke(
+      const { error: aiError } = await supabase.functions.invoke(
         "generate-itinerary",
         {
           body: {
             itineraryId: itinerary.id,
-            destination: "Italia", // Default, verrà raffinato dall'AI
-            startDate: new Date().toISOString().split('T')[0],
-            endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-            participantsType: "single",
-            participantsCount: 1,
-            travelPace: "moderate",
-            specificInterests: conversation, // Usa tutta la conversazione come contesto
           },
         }
       );
 
       if (aiError) throw aiError;
-
-      // Aggiorna l'itinerario con i dati generati dall'AI
-      const { error: updateError } = await supabase
-        .from("itineraries")
-        .update({
-          ai_content: aiResponse,
-          title: aiResponse?.title || "Nuovo itinerario",
-          destination: aiResponse?.destination || "Italia",
-        })
-        .eq("id", itinerary.id);
-
-      if (updateError) throw updateError;
 
       toast({
         title: "Itinerario creato!",
