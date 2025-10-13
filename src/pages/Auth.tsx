@@ -102,6 +102,14 @@ const Auth = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {/* Admin credentials info */}
+            <div className="mb-4 p-3 bg-muted/50 rounded-lg border border-border/50">
+              <p className="text-xs font-medium text-muted-foreground mb-2">Credenziali Amministratore:</p>
+              <div className="space-y-1 text-xs font-mono">
+                <p><span className="text-muted-foreground">Email:</span> <span className="text-foreground">amministratore@culture.it</span></p>
+                <p><span className="text-muted-foreground">Password:</span> <span className="text-foreground">dev@1234</span></p>
+              </div>
+            </div>
             <Tabs defaultValue="signin" className="w-full">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="signin">Accedi</TabsTrigger>

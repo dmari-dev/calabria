@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Sparkles, Map, Calendar, Users, Brain, ArrowRight } from "lucide-react";
 import heroImage from "@/assets/hero-italia.jpg";
 import { Header } from "@/components/Header";
+import { ForYouSection } from "@/components/ForYouSection";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -80,6 +81,13 @@ const Index = () => {
               </Button>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* For You Section */}
+      <section className="py-12 bg-gradient-to-br from-background to-muted/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <ForYouSection />
         </div>
       </section>
 

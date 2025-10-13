@@ -7,12 +7,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Menu, User } from "lucide-react";
+import { Menu, User, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useRole } from "@/hooks/useRole";
 import logo from "@/assets/logo.png";
 
 export const Header = () => {
   const { user, signOut } = useAuth();
+  const { isAdmin } = useRole();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -57,6 +59,12 @@ export const Header = () => {
               <Link to="/dashboard" className="text-sm font-medium transition-colors hover:text-primary">
                 Dashboard
               </Link>
+              {isAdmin && (
+                <Link to="/admin" className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-1">
+                  <ShieldCheck className="w-4 h-4" />
+                  Admin
+                </Link>
+              )}
               <Button asChild>
                 <Link to="/create-itinerary">Start Experience</Link>
               </Button>
@@ -127,6 +135,14 @@ export const Header = () => {
                 <DropdownMenuItem asChild>
                   <Link to="/create-itinerary">Start Experience</Link>
                 </DropdownMenuItem>
+                {isAdmin && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/admin" className="flex items-center gap-2">
+                      <ShieldCheck className="w-4 h-4" />
+                      Admin
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={signOut}>
                   Esci
