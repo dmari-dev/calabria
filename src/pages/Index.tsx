@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sparkles, Map, Calendar, Users, Brain, ArrowRight } from "lucide-react";
-import heroImage from "@/assets/hero-italia.jpg";
+import heroImage from "@/assets/hero-tourists.jpg";
 // import { Header } from "@/components/Header";
 import { ForYouSection } from "@/components/ForYouSection";
 
