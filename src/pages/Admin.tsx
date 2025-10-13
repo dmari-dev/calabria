@@ -33,6 +33,8 @@ interface Itinerary {
   user_email: string;
   user_id: string;
   created_at: string;
+  is_platform?: boolean;
+  is_published?: boolean;
 }
 
 interface Analytics {
@@ -103,12 +105,30 @@ const Admin = () => {
 
       if (itinerariesError) throw itinerariesError;
 
+      // Load platform itineraries
+      const { data: platformItinerariesData, error: platformError } = await supabase
+        .from("platform_itineraries")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (platformError) throw platformError;
+
       const itinerariesWithUsers = itinerariesData.map(itinerary => ({
         ...itinerary,
         user_email: usersWithProfiles.find(u => u.id === itinerary.user_id)?.email || "Sconosciuto",
+        is_platform: false,
       }));
 
-      setItineraries(itinerariesWithUsers);
+      const platformItinerariesWithUsers = (platformItinerariesData || []).map(itinerary => ({
+        ...itinerary,
+        user_email: usersWithProfiles.find(u => u.id === itinerary.created_by)?.email || "Admin",
+        user_id: itinerary.created_by,
+        status: itinerary.is_published ? "published" : "draft",
+        is_platform: true,
+      }));
+
+      const allItineraries = [...itinerariesWithUsers, ...platformItinerariesWithUsers];
+      setItineraries(allItineraries);
 
       // Calculate analytics
       calculateAnalytics(usersWithProfiles, itinerariesData);
@@ -380,7 +400,12 @@ const Admin = () => {
                   {itineraries.map((itinerary) => (
                     <div key={itinerary.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
                       <div className="flex-1">
-                        <p className="font-medium">{itinerary.title}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium">{itinerary.title}</p>
+                          {itinerary.is_platform && (
+                            <Badge variant="outline" className="text-xs">Piattaforma</Badge>
+                          )}
+                        </div>
                         <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
                           <MapPin className="w-3 h-3" />
                           {itinerary.destination}
@@ -393,10 +418,11 @@ const Admin = () => {
                           <span>• Utente: {itinerary.user_email}</span>
                         </div>
                       </div>
-                      <Badge variant={itinerary.status === "in_progress" ? "default" : "secondary"}>
+                      <Badge variant={itinerary.status === "in_progress" ? "default" : itinerary.status === "published" ? "default" : "secondary"}>
                         {itinerary.status === "draft" ? "Bozza" :
                          itinerary.status === "generating" ? "Generazione..." :
-                         itinerary.status === "in_progress" ? "In Corso" : "Completato"}
+                         itinerary.status === "in_progress" ? "In Corso" : 
+                         itinerary.status === "published" ? "Pubblicato" : "Completato"}
                       </Badge>
                     </div>
                   ))}
