@@ -25,50 +25,54 @@ export const VirtualAgentChat = () => {
   };
 
   return (
-    <div className="w-full bg-card border-y border-border">
+    <div className="relative w-full bg-card border-y border-border z-40">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Expanded Chat Window - Opens upward */}
+        {/* Expanded Chat Window - Absolute positioned to overlay hero section */}
         <div
           className={cn(
-            "transition-all duration-500 ease-in-out overflow-hidden origin-bottom",
-            isExpanded ? "max-h-[400px] opacity-100 py-4" : "max-h-0 opacity-0 py-0"
+            "absolute left-0 right-0 bottom-full transition-all duration-500 ease-in-out overflow-hidden",
+            isExpanded 
+              ? "h-[50vh] opacity-100" 
+              : "h-0 opacity-0"
           )}
         >
-          {/* Messages */}
-          <div className="h-[300px] overflow-y-auto mb-4 space-y-3 bg-background/50 rounded-2xl p-4 border border-border">
-            {messages.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground">
-                <MessageCircle className="w-10 h-10 mb-2 opacity-20" />
-                <p className="text-sm">Inizia una conversazione con il nostro assistente virtuale</p>
-              </div>
-            ) : (
-              messages.map((msg, idx) => (
-                <div
-                  key={idx}
-                  className={cn(
-                    "flex",
-                    msg.role === 'user' ? "justify-end" : "justify-start"
-                  )}
-                >
+          <div className="h-full bg-card/95 backdrop-blur-lg border-x border-t border-border mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+            {/* Messages */}
+            <div className="h-full overflow-y-auto py-4 space-y-3">
+              {messages.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground">
+                  <MessageCircle className="w-10 h-10 mb-2 opacity-20" />
+                  <p className="text-sm">Inizia una conversazione con il nostro assistente virtuale</p>
+                </div>
+              ) : (
+                messages.map((msg, idx) => (
                   <div
+                    key={idx}
                     className={cn(
-                      "max-w-[70%] rounded-2xl px-4 py-2",
-                      msg.role === 'user' 
-                        ? "bg-gradient-hero text-white" 
-                        : "bg-muted text-foreground"
+                      "flex",
+                      msg.role === 'user' ? "justify-end" : "justify-start"
                     )}
                   >
-                    <p className="text-sm">{msg.content}</p>
+                    <div
+                      className={cn(
+                        "max-w-[70%] rounded-2xl px-4 py-2",
+                        msg.role === 'user' 
+                          ? "bg-gradient-hero text-white" 
+                          : "bg-muted text-foreground"
+                      )}
+                    >
+                      <p className="text-sm">{msg.content}</p>
+                    </div>
                   </div>
-                </div>
-              ))
-            )}
+                ))
+              )}
+            </div>
           </div>
         </div>
 
         {/* Chat Input Bar */}
         <div className="py-4">
-          <div className="flex items-center gap-3 bg-background/50 rounded-full px-4 py-2 border border-border">
+          <div className="flex items-center gap-3 bg-background/50 rounded-full px-4 py-2 border border-border shadow-soft">
             <Button
               onClick={() => setIsExpanded(!isExpanded)}
               variant="ghost"
