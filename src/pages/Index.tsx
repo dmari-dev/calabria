@@ -5,6 +5,7 @@ import { Sparkles, Map, Calendar, Users, Brain, ArrowRight } from "lucide-react"
 import heroImage from "@/assets/hero-tourists.jpg";
 // import { Header } from "@/components/Header";
 import { ForYouSection } from "@/components/ForYouSection";
+import { VirtualAgentChat } from "@/components/VirtualAgentChat";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -54,7 +55,7 @@ const Index = () => {
             </div>
             
             <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in leading-tight">
-              Culturexperience
+              CulturExperience
             </h1>
             
             <p className="text-base md:text-lg text-white font-inter mb-8 animate-fade-in leading-relaxed">
@@ -162,6 +163,9 @@ const Index = () => {
           <p>© 2025 Itinerari Intelligenti. Viaggi culturali personalizzati con AI.</p>
         </div>
       </footer>
+
+      {/* Virtual Agent Chat */}
+      <VirtualAgentChat />
     </div>
   );
 };
