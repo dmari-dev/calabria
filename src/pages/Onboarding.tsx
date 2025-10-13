@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,10 @@ const Onboarding = () => {
       navigate("/auth");
     }
   }, [authLoading, user, navigate]);
+
+  const handleTravelStyleChange = useCallback((value: string) => {
+    setTravelStyle(value);
+  }, []);
 
   const handleInterestToggle = (interestId: string) => {
     setSelectedInterests(prev =>
@@ -138,7 +142,7 @@ const Onboarding = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <RadioGroup value={travelStyle} onValueChange={(value) => setTravelStyle(value)}>
+              <RadioGroup value={travelStyle} onValueChange={handleTravelStyleChange}>
                 <div className="flex items-center space-x-3 p-4 rounded-lg border-2 border-border hover:border-primary/50 transition-colors">
                   <RadioGroupItem value="relaxed" id="relaxed" />
                   <Label htmlFor="relaxed" className="flex-1 cursor-pointer">
