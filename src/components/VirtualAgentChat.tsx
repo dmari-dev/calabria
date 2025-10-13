@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MessageCircle, Send, UserPlus, Sparkles, Loader2, Map } from "lucide-react";
@@ -10,17 +10,45 @@ import { supabase } from "@/integrations/supabase/client";
 
 type Message = { role: 'user' | 'assistant', content: string };
 
-export const VirtualAgentChat = () => {
-  const [isExpanded, setIsExpanded] = useState(false);
+interface VirtualAgentChatProps {
+  initialCity?: string;
+  autoExpand?: boolean;
+}
+
+export const VirtualAgentChat = ({ initialCity, autoExpand }: VirtualAgentChatProps) => {
+  const [isExpanded, setIsExpanded] = useState(autoExpand || false);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showCTA, setShowCTA] = useState(false);
+  const [hasInitialized, setHasInitialized] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  // Auto-inizializza la conversazione quando viene passata una città
+  useEffect(() => {
+    if (initialCity && !hasInitialized) {
+      setHasInitialized(true);
+      setIsExpanded(true);
+      const initialMessage = `Voglio visitare ${initialCity}`;
+      setMessages([{ role: "user", content: initialMessage }]);
+      setIsLoading(true);
+      
+      streamChat(initialMessage)
+        .catch(error => {
+          console.error("Errore chat:", error);
+          toast({
+            title: "Errore",
+            description: "Si è verificato un errore nell'avvio della conversazione",
+            variant: "destructive",
+          });
+        })
+        .finally(() => setIsLoading(false));
+    }
+  }, [initialCity, hasInitialized]);
 
   // Mostra CTA dopo 3+ scambi di messaggi
   const shouldShowCTA = messages.length >= 6 && !isLoading;

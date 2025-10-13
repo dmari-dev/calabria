@@ -17,6 +17,7 @@ const Index = () => {
   const chatRef = useRef<HTMLDivElement>(null);
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
+  const [selectedCity, setSelectedCity] = useState<string | undefined>();
 
   useEffect(() => {
     if (!api) return;
@@ -56,6 +57,7 @@ const Index = () => {
   ];
 
   const handleCreateItinerary = (city?: string) => {
+    setSelectedCity(city);
     setTimeout(() => {
       chatRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, 100);
@@ -166,7 +168,7 @@ const Index = () => {
       {/* Virtual Agent Chat Bar */}
       <section ref={chatRef} className="py-6 bg-gradient-to-br from-background to-muted/30 -mt-[60px]">
         <div className="max-w-7xl mx-auto px-5">
-          <VirtualAgentChat />
+          <VirtualAgentChat initialCity={selectedCity} autoExpand={!!selectedCity} />
         </div>
       </section>
 
