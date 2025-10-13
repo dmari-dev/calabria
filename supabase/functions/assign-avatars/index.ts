@@ -66,11 +66,10 @@ serve(async (req) => {
 
     console.log("Starting avatar assignment...");
 
-    // Get all profiles without avatar
+    // Get all profiles (update all, not just null ones)
     const { data: profiles, error: profilesError } = await supabaseAdmin
       .from("profiles")
-      .select("user_id, display_name, first_name, last_name")
-      .is("avatar_url", null);
+      .select("user_id, display_name, first_name, last_name");
 
     if (profilesError) throw profilesError;
 

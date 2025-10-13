@@ -74,10 +74,18 @@ const Admin = () => {
   useEffect(() => {
     if (isAdmin) {
       loadData();
-      // Auto-assign avatars on first load
-      handleAssignAvatars();
     }
   }, [isAdmin]);
+
+  // Assign avatars once on mount
+  useEffect(() => {
+    if (isAdmin && users.length > 0) {
+      const shouldAssign = users.some(u => !u.avatar_url || u.avatar_url.includes('ui-avatars.com'));
+      if (shouldAssign) {
+        handleAssignAvatars();
+      }
+    }
+  }, [isAdmin, users.length]);
 
   const loadData = async () => {
     setLoading(true);
