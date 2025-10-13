@@ -4,11 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { useAuth } from "@/hooks/useAuth";
 import { Plus, Calendar, MapPin, Sparkles, FileEdit, PlayCircle, Archive, CheckCircle } from "lucide-react";
-import heroImage from "@/assets/hero-italia.jpg";
 import { toast } from "sonner";
+import { ItineraryCoverImage } from "@/components/ItineraryCoverImage";
 import { ItineraryStatusBadge } from "@/components/ItineraryStatusBadge";
 import { ItineraryActions } from "@/components/ItineraryActions";
 import { ItinerarySelectionDialog } from "@/components/ItinerarySelectionDialog";
@@ -145,15 +144,11 @@ const Dashboard = () => {
                   key={itinerary.id}
                   className="hover:shadow-soft transition-all group relative overflow-hidden"
                 >
-                  <div className="cursor-pointer" onClick={() => navigate(`/itinerary/${itinerary.id}`)}>
-                    <AspectRatio ratio={16 / 9}>
-                      <img
-                        src={heroImage}
-                        alt={itinerary.title}
-                        className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
-                      />
-                    </AspectRatio>
-                  </div>
+                  <ItineraryCoverImage
+                    destination={itinerary.destination}
+                    title={itinerary.title}
+                    onClick={() => navigate(`/itinerary/${itinerary.id}`)}
+                  />
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div className="flex-1 cursor-pointer" onClick={() => navigate(`/itinerary/${itinerary.id}`)}>
@@ -213,15 +208,11 @@ const Dashboard = () => {
                     key={itinerary.id}
                     className="hover:shadow-soft transition-all group relative overflow-hidden"
                   >
-                    <div className="cursor-pointer" onClick={() => navigate(`/itinerary/${itinerary.id}`)}>
-                      <AspectRatio ratio={16 / 9}>
-                        <img
-                          src={heroImage}
-                          alt={itinerary.title}
-                          className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </AspectRatio>
-                    </div>
+                    <ItineraryCoverImage
+                      destination={itinerary.destination}
+                      title={itinerary.title}
+                      onClick={() => navigate(`/itinerary/${itinerary.id}`)}
+                    />
                     <CardHeader>
                       <div className="flex items-start justify-between">
                         <div className="flex-1 cursor-pointer" onClick={() => navigate(`/itinerary/${itinerary.id}`)}>
