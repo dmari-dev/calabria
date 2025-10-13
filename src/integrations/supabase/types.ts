@@ -150,6 +150,57 @@ export type Database = {
           },
         ]
       }
+      platform_itineraries: {
+        Row: {
+          ai_content: Json | null
+          created_at: string
+          created_by: string
+          destination: string
+          end_date: string
+          id: string
+          is_published: boolean | null
+          participants_count: number | null
+          participants_type: string | null
+          specific_interests: string | null
+          start_date: string
+          title: string
+          travel_pace: string | null
+          updated_at: string
+        }
+        Insert: {
+          ai_content?: Json | null
+          created_at?: string
+          created_by: string
+          destination: string
+          end_date: string
+          id?: string
+          is_published?: boolean | null
+          participants_count?: number | null
+          participants_type?: string | null
+          specific_interests?: string | null
+          start_date: string
+          title: string
+          travel_pace?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ai_content?: Json | null
+          created_at?: string
+          created_by?: string
+          destination?: string
+          end_date?: string
+          id?: string
+          is_published?: boolean | null
+          participants_count?: number | null
+          participants_type?: string | null
+          specific_interests?: string | null
+          start_date?: string
+          title?: string
+          travel_pace?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           address: string | null
@@ -231,15 +282,43 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       activity_status: "pending" | "in_progress" | "completed"
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -368,6 +447,7 @@ export const Constants = {
   public: {
     Enums: {
       activity_status: ["pending", "in_progress", "completed"],
+      app_role: ["admin", "user"],
     },
   },
 } as const
