@@ -177,7 +177,7 @@ export const VirtualAgentChat = () => {
               {messages.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground">
                   <MessageCircle className="w-10 h-10 mb-2 opacity-20" />
-                  <p className="text-sm">Inizia una conversazione con il nostro assistente virtuale</p>
+                  <p className="text-sm">Inizia dicendomi dove vuoi andare o cosa vuoi fare! 🌍</p>
                 </div>
               ) : (
                 <>
@@ -225,7 +225,7 @@ export const VirtualAgentChat = () => {
               onChange={(e) => setMessage(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
               onFocus={() => setIsExpanded(true)}
-              placeholder="Chiedimi qualcosa sul tuo viaggio culturale..."
+              placeholder="Inserisci cosa vuoi fare o dove vuoi andare..."
               className="flex-1 bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
               disabled={isLoading}
             />
