@@ -14,108 +14,70 @@ serve(async (req) => {
   try {
     const { activity, description, destination } = await req.json();
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
-    }
+    console.log(`Recupero dettagli per: ${activity} a ${destination}`);
 
-    const systemPrompt = `Sei una guida turistica esperta. Fornisci informazioni dettagliate, interessanti e coinvolgenti sui luoghi turistici, includendo curiosità storiche, culturali e pratiche.`;
-
-    const userPrompt = `Fornisci un abstract dettagliato (circa 200-300 parole) su "${activity}" a ${destination}.
-
-Descrizione base: ${description}
-
-Includi:
-- Storia e contesto culturale
-- Curiosità interessanti e aneddoti
-- Cosa aspettarsi durante la visita
-- Dettagli architettonici o naturali rilevanti
-- Consigli per apprezzare al meglio l'esperienza
-
-Scrivi in italiano con un tono coinvolgente ma informativo.`;
-
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt },
-        ],
-      }),
-    });
-
-    if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(
-          JSON.stringify({
-            error: "Troppi tentativi. Riprova tra qualche minuto.",
-          }),
-          {
-            status: 429,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          }
-        );
-      }
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({
-            error: "Crediti esauriti. Contatta il supporto.",
-          }),
-          {
-            status: 402,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          }
-        );
-      }
-      const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
-      throw new Error("Errore dal gateway AI");
-    }
-
-    const data = await response.json();
-    const detail = data.choices?.[0]?.message?.content || "Dettagli non disponibili.";
-
-    // Genera un'immagine per l'attività
-    const imagePrompt = `Create a high-quality, photorealistic image of ${activity} in ${destination}. The image should capture the essence and beauty of this location, showing architectural details, cultural atmosphere, and natural surroundings. Style: professional travel photography, vivid colors, good lighting.`;
-    
-    let imageUrl = "";
-    
+    // 1. Recupera abstract da Wikipedia
+    let detail = "Dettagli non disponibili.";
     try {
-      const imageResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-2.5-flash-image-preview",
-          messages: [
-            {
-              role: "user",
-              content: imagePrompt,
-            },
-          ],
-          modalities: ["image", "text"],
-        }),
-      });
+      const searchQuery = encodeURIComponent(`${activity} ${destination}`);
+      const wikiSearchUrl = `https://it.wikipedia.org/w/api.php?action=query&list=search&srsearch=${searchQuery}&format=json&origin=*`;
+      
+      const searchResponse = await fetch(wikiSearchUrl);
+      const searchData = await searchResponse.json();
+      
+      if (searchData.query?.search?.[0]) {
+        const pageTitle = searchData.query.search[0].title;
+        const pageId = searchData.query.search[0].pageid;
+        
+        // Recupera il contenuto della pagina
+        const contentUrl = `https://it.wikipedia.org/w/api.php?action=query&prop=extracts&exintro&explaintext&pageids=${pageId}&format=json&origin=*`;
+        const contentResponse = await fetch(contentUrl);
+        const contentData = await contentResponse.json();
+        
+        const extract = contentData.query?.pages?.[pageId]?.extract;
+        if (extract) {
+          // Limita a circa 300 parole
+          const words = extract.split(' ').slice(0, 300);
+          detail = words.join(' ') + (words.length >= 300 ? '...' : '');
+        }
+      }
+    } catch (wikiError) {
+      console.error("Errore recupero Wikipedia:", wikiError);
+      detail = description || "Informazioni non disponibili al momento.";
+    }
 
-      if (imageResponse.ok) {
-        const imageData = await imageResponse.json();
-        imageUrl = imageData.choices?.[0]?.message?.images?.[0]?.image_url?.url || "";
+    // 2. Recupera immagine da Wikimedia Commons
+    let imageUrl = "";
+    try {
+      const imageSearchQuery = encodeURIComponent(`${activity} ${destination}`);
+      const commonsUrl = `https://commons.wikimedia.org/w/api.php?action=query&list=search&srsearch=${imageSearchQuery}&srnamespace=6&format=json&origin=*&srlimit=5`;
+      
+      const imageSearchResponse = await fetch(commonsUrl);
+      const imageSearchData = await imageSearchResponse.json();
+      
+      if (imageSearchData.query?.search?.[0]) {
+        const imageTitle = imageSearchData.query.search[0].title;
+        
+        // Recupera l'URL dell'immagine
+        const imageInfoUrl = `https://commons.wikimedia.org/w/api.php?action=query&titles=${encodeURIComponent(imageTitle)}&prop=imageinfo&iiprop=url&format=json&origin=*`;
+        const imageInfoResponse = await fetch(imageInfoUrl);
+        const imageInfoData = await imageInfoResponse.json();
+        
+        const pages = imageInfoData.query?.pages;
+        const pageId = Object.keys(pages || {})[0];
+        imageUrl = pages?.[pageId]?.imageinfo?.[0]?.url || "";
       }
     } catch (imageError) {
-      console.error("Error generating image:", imageError);
-      // Continue without image if generation fails
+      console.error("Errore recupero immagine Wikimedia:", imageError);
+      // Fallback: usa un'immagine placeholder
+      imageUrl = `https://source.unsplash.com/800x600/?${encodeURIComponent(activity)},${encodeURIComponent(destination)}`;
     }
 
-    // Cerca video su YouTube
-    const videoSearchQuery = encodeURIComponent(`${activity} ${destination} tour guide`);
+    // 3. Cerca video su YouTube (solo URL di ricerca, nessuna API key necessaria)
+    const videoSearchQuery = encodeURIComponent(`${activity} ${destination} tour guide italiano`);
     const youtubeSearchUrl = `https://www.youtube.com/results?search_query=${videoSearchQuery}`;
+
+    console.log(`Dettagli recuperati con successo per: ${activity}`);
 
     return new Response(
       JSON.stringify({ 
