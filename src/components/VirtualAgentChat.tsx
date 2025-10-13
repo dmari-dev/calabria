@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MessageCircle, Send, UserPlus, Sparkles, Loader2 } from "lucide-react";
+import { MessageCircle, Send, UserPlus, Sparkles, Loader2, Map } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
@@ -252,8 +252,14 @@ export const VirtualAgentChat = () => {
           )}
         >
           <div className="h-full bg-card/95 backdrop-blur-lg border border-border rounded-t-2xl px-4 sm:px-6 shadow-elevated">
+            {/* Header */}
+            <div className="flex items-center gap-2 pt-4 pb-2 border-b border-border/50">
+              <Map className="w-4 h-4 text-primary" />
+              <h3 className="text-sm font-medium text-foreground">Il tuo prossimo itinerario</h3>
+            </div>
+            
             {/* Messages */}
-            <div className="h-full overflow-y-auto py-4 space-y-3">
+            <div className="h-[calc(100%-3rem)] overflow-y-auto py-4 space-y-3">
               {messages.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground">
                   <MessageCircle className="w-10 h-10 mb-2 opacity-20" />
