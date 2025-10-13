@@ -1,3 +1,4 @@
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
@@ -6,12 +7,18 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  console.log("Chat agent function called");
+  
   if (req.method === "OPTIONS") {
+    console.log("Handling OPTIONS request");
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    console.log("Processing chat request...");
     const { messages } = await req.json();
+    console.log("Received messages:", messages?.length || 0);
+    
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
     if (!LOVABLE_API_KEY) {
