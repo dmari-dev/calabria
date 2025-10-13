@@ -171,6 +171,7 @@ Rispondi sempre in italiano, sii conciso e pratico.`
       // Richiama generate-itinerary ma solo per aggiornare questo giorno specifico
       const { data, error } = await supabase.functions.invoke("generate-itinerary", {
         body: {
+          itineraryId: itineraryId,
           destination: "Italia", // Placeholder, l'AI userà il contesto
           startDate: new Date().toISOString().split('T')[0],
           endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
