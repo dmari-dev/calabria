@@ -98,22 +98,46 @@ const Itinerary = () => {
   }, [itinerary?.ai_content]);
 
   const loadActivityImages = async () => {
-    // Simulazione caricamento immagini - in produzione queste verrebbero da un database o API
-    const mockImages: Record<string, string[]> = {};
-    if (itinerary?.ai_content?.days) {
-      itinerary.ai_content.days.forEach((day) => {
-        day.activities.forEach((_, index) => {
-          const key = `${day.day}-${index}`;
-          // Placeholder images - sostituire con vere immagini
-          mockImages[key] = [
-            "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=800&q=80",
-            "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=800&q=80",
-            "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80"
-          ];
-        });
-      });
+    const imagesMap: Record<string, string[]> = {};
+    if (!itinerary?.ai_content?.days) {
+      setActivityImages(imagesMap);
+      return;
     }
-    setActivityImages(mockImages);
+
+    // Per ogni attività cerca fino a 3 immagini su Wikimedia Commons
+    for (const day of itinerary.ai_content.days) {
+      for (let index = 0; index < day.activities.length; index++) {
+        const act = day.activities[index];
+        const key = `${day.day}-${index}`;
+        const query = `${act.title} ${itinerary.destination}`.split("(")[0].trim();
+        try {
+          const searchUrl = `https://commons.wikimedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&srnamespace=6&format=json&origin=*&srlimit=10`;
+          const res = await fetch(searchUrl);
+          const data = await res.json();
+          const urls: string[] = [];
+          if (data.query?.search?.length) {
+            for (const item of data.query.search as Array<{ title: string }>) {
+              if (urls.length >= 3) break;
+              const title = item.title;
+              const infoUrl = `https://commons.wikimedia.org/w/api.php?action=query&titles=${encodeURIComponent(title)}&prop=imageinfo&iiprop=url&format=json&origin=*`;
+              const infoRes = await fetch(infoUrl);
+              const infoData = await infoRes.json();
+              const pages = infoData.query?.pages || {};
+              const pid = Object.keys(pages)[0];
+              const url: string | undefined = pages?.[pid]?.imageinfo?.[0]?.url;
+              if (url && (url.endsWith('.jpg') || url.endsWith('.jpeg') || url.endsWith('.png'))) {
+                urls.push(url);
+              }
+            }
+          }
+          imagesMap[key] = urls; // può essere [] se non trovate
+        } catch (e) {
+          console.error('Errore caricamento immagini per', query, e);
+          imagesMap[key] = [];
+        }
+      }
+    }
+    setActivityImages(imagesMap);
   };
 
   useEffect(() => {

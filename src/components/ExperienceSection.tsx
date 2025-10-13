@@ -23,6 +23,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { ActivityThumbImage } from "@/components/ActivityThumbImage";
 
 interface Activity {
   time: string;
@@ -254,8 +255,8 @@ export const ExperienceSection = ({
                                   <CardContent className="p-4">
                                     <div className="flex items-start gap-4">
                                       <div className="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gradient-to-br from-muted to-muted/50">
-                                        <img
-                                          src="https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=200&q=80"
+                                        <ActivityThumbImage
+                                          query={`${activity.title} ${destination}`}
                                           alt={activity.title}
                                           className="w-full h-full object-cover"
                                         />
