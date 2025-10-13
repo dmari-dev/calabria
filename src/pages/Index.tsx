@@ -86,7 +86,11 @@ const Index = () => {
       </section>
 
       {/* Virtual Agent Chat Bar */}
-      <VirtualAgentChat />
+      <section className="py-6 bg-gradient-to-br from-background to-muted/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <VirtualAgentChat />
+        </div>
+      </section>
 
       {/* For You Section */}
       <section className="py-12 bg-gradient-to-br from-background to-muted/30">
