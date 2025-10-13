@@ -1,14 +1,53 @@
 import { useNavigate } from "react-router-dom";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Sparkles, Map, Calendar, Users, Brain, ArrowRight } from "lucide-react";
 import heroImage from "@/assets/hero-tourists.jpg";
+import heroMilano from "@/assets/hero-milano.jpg";
+import heroFirenze from "@/assets/hero-firenze.jpg";
+import heroVenezia from "@/assets/hero-venezia.jpg";
 // import { Header } from "@/components/Header";
 import { ForYouSection } from "@/components/ForYouSection";
 import { VirtualAgentChat } from "@/components/VirtualAgentChat";
 
 const Index = () => {
   const navigate = useNavigate();
+  const chatRef = useRef<HTMLDivElement>(null);
+
+  const heroSlides = [
+    {
+      image: heroImage,
+      city: null,
+      title: "CulturExperience",
+      subtitle: "Il tuo tour operator virtuale che crea viaggi culturali personalizzati utilizzando l'intelligenza artificiale.",
+    },
+    {
+      image: heroMilano,
+      city: "Milano",
+      title: "Scopri Milano",
+      subtitle: "Arte, moda e cultura nel cuore della Lombardia. Lasciati guidare dalla storia e dalla modernità milanese.",
+    },
+    {
+      image: heroFirenze,
+      city: "Firenze",
+      title: "Esplora Firenze",
+      subtitle: "La culla del Rinascimento ti aspetta con i suoi capolavori artistici e la sua bellezza senza tempo.",
+    },
+    {
+      image: heroVenezia,
+      city: "Venezia",
+      title: "Vivi Venezia",
+      subtitle: "Naviga tra i canali della Serenissima e scopri la magia di una città unica al mondo.",
+    },
+  ];
+
+  const handleCreateItinerary = (city?: string) => {
+    setTimeout(() => {
+      chatRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
 
   const features = [
     {
@@ -36,57 +75,70 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header moved to App-level layout */}
-      {/* Hero Section */}
+      {/* Hero Section with Carousel */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <img 
-            src={heroImage} 
-            alt="Italian cultural heritage" 
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-background/50 to-background/30" />
-        </div>
-        
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 text-primary mb-6 animate-fade-in">
-              <Sparkles className="w-4 h-4 mr-2" />
-              <span className="text-sm font-medium">Powered by AI</span>
-            </div>
-            
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in leading-tight">
-              CulturExperience
-            </h1>
-            
-            <p className="text-base md:text-lg text-white font-inter mb-8 animate-fade-in leading-relaxed">
-              Il tuo tour operator virtuale che crea viaggi culturali personalizzati 
-              utilizzando l'intelligenza artificiale.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 animate-fade-in">
-              <Button 
-                size="lg" 
-                className="bg-gradient-hero hover:opacity-90 transition-opacity text-lg px-8"
-                onClick={() => navigate("/auth")}
-              >
-                Inizia Gratis
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="text-lg px-8"
-                onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
-              >
-                Scopri di Più
-              </Button>
-            </div>
-          </div>
-        </div>
+        <Carousel className="w-full" opts={{ loop: true }}>
+          <CarouselContent>
+            {heroSlides.map((slide, index) => (
+              <CarouselItem key={index}>
+                <div className="relative h-[600px] md:h-[700px]">
+                  <div className="absolute inset-0 z-0">
+                    <img 
+                      src={slide.image} 
+                      alt={slide.city ? `${slide.city} cultural heritage` : "Italian cultural heritage"} 
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-background/50 to-background/30" />
+                  </div>
+                  
+                  <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
+                    <div className="max-w-3xl">
+                      <div className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 text-primary mb-6 animate-fade-in">
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        <span className="text-sm font-medium">Powered by AI</span>
+                      </div>
+                      
+                      <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in leading-tight">
+                        {slide.title}
+                      </h1>
+                      
+                      <p className="text-base md:text-lg text-white font-inter mb-8 animate-fade-in leading-relaxed">
+                        {slide.subtitle}
+                      </p>
+                      
+                      <div className="flex flex-col sm:flex-row gap-4 animate-fade-in">
+                        <Button 
+                          size="lg" 
+                          className="bg-gradient-hero hover:opacity-90 transition-opacity text-lg px-8"
+                          onClick={() => handleCreateItinerary(slide.city || undefined)}
+                        >
+                          Crea il Tuo Itinerario
+                          <ArrowRight className="ml-2 w-5 h-5" />
+                        </Button>
+                        {!slide.city && (
+                          <Button 
+                            size="lg" 
+                            variant="outline"
+                            className="text-lg px-8"
+                            onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
+                          >
+                            Scopri di Più
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="left-4 md:left-8" />
+          <CarouselNext className="right-4 md:right-8" />
+        </Carousel>
       </section>
 
       {/* Virtual Agent Chat Bar */}
-      <section className="py-6 bg-gradient-to-br from-background to-muted/30 -mt-[60px]">
+      <section ref={chatRef} className="py-6 bg-gradient-to-br from-background to-muted/30">
         <div className="max-w-7xl mx-auto px-5">
           <VirtualAgentChat />
         </div>
