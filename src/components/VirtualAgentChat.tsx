@@ -25,18 +25,18 @@ export const VirtualAgentChat = () => {
   };
 
   return (
-    <div className="relative w-full bg-card border-y border-border z-40">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="w-full bg-card border-y border-border py-4">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         {/* Expanded Chat Window - Absolute positioned to overlay hero section */}
         <div
           className={cn(
-            "absolute left-0 right-0 bottom-full transition-all duration-500 ease-in-out overflow-hidden",
+            "absolute left-4 right-4 sm:left-6 sm:right-6 lg:left-8 lg:right-8 bottom-full transition-all duration-500 ease-in-out overflow-hidden",
             isExpanded 
               ? "h-[50vh] opacity-100" 
               : "h-0 opacity-0"
           )}
         >
-          <div className="h-full bg-card/95 backdrop-blur-lg border-x border-t border-border mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+          <div className="h-full bg-card/95 backdrop-blur-lg border border-border rounded-t-2xl px-4 sm:px-6 shadow-elevated">
             {/* Messages */}
             <div className="h-full overflow-y-auto py-4 space-y-3">
               {messages.length === 0 ? (
@@ -70,35 +70,33 @@ export const VirtualAgentChat = () => {
           </div>
         </div>
 
-        {/* Chat Input Bar */}
-        <div className="py-4">
-          <div className="flex items-center gap-3 bg-background/50 rounded-full px-4 py-2 border border-border shadow-soft">
+        {/* Chat Input Bar - Boxed */}
+        <div className="flex items-center gap-3 bg-background/50 rounded-full px-4 py-2 border border-border shadow-soft">
+          <Button
+            onClick={() => setIsExpanded(!isExpanded)}
+            variant="ghost"
+            size="icon"
+            className="flex-shrink-0"
+          >
+            <MessageCircle className="w-5 h-5" />
+          </Button>
+          
+          <div className="flex-1 flex gap-2">
+            <Input
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+              onFocus={() => setIsExpanded(true)}
+              placeholder="Chiedimi qualcosa sul tuo viaggio culturale..."
+              className="flex-1 bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+            />
             <Button
-              onClick={() => setIsExpanded(!isExpanded)}
-              variant="ghost"
+              onClick={handleSendMessage}
+              className="bg-gradient-hero hover:opacity-90 rounded-full"
               size="icon"
-              className="flex-shrink-0"
             >
-              <MessageCircle className="w-5 h-5" />
+              <Send className="w-4 h-4" />
             </Button>
-            
-            <div className="flex-1 flex gap-2">
-              <Input
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                onFocus={() => setIsExpanded(true)}
-                placeholder="Chiedimi qualcosa sul tuo viaggio culturale..."
-                className="flex-1 bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-              />
-              <Button
-                onClick={handleSendMessage}
-                className="bg-gradient-hero hover:opacity-90 rounded-full"
-                size="icon"
-              >
-                <Send className="w-4 h-4" />
-              </Button>
-            </div>
           </div>
         </div>
       </div>
