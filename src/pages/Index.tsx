@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sparkles, Map, Calendar, Users, Brain, ArrowRight } from "lucide-react";
 import heroImage from "@/assets/hero-italia.jpg";
-import { Header } from "@/components/Header";
+// import { Header } from "@/components/Header";
 import { ForYouSection } from "@/components/ForYouSection";
 
 const Index = () => {
@@ -34,7 +34,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      {/* Header moved to App-level layout */}
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 z-0">

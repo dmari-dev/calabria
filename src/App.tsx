@@ -17,12 +17,15 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+import { Header } from "@/components/Header";
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <Header />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />

@@ -18,9 +18,9 @@ export const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-20 items-center justify-between">
+      <div className="container flex h-24 items-center justify-between">
         <Link to="/" className="flex items-center space-x-2">
-          <img src={logo} alt="Itinerari Intelligenti" className="h-14 w-auto" />
+          <img src={logo} alt="Itinerari Intelligenti" className="h-16 w-auto" />
         </Link>
 
         {/* Desktop Navigation */}
