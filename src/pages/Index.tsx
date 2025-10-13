@@ -85,6 +85,9 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Virtual Agent Chat Bar */}
+      <VirtualAgentChat />
+
       {/* For You Section */}
       <section className="py-12 bg-gradient-to-br from-background to-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -163,9 +166,6 @@ const Index = () => {
           <p>© 2025 Itinerari Intelligenti. Viaggi culturali personalizzati con AI.</p>
         </div>
       </footer>
-
-      {/* Virtual Agent Chat */}
-      <VirtualAgentChat />
     </div>
   );
 };
