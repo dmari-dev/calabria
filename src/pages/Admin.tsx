@@ -81,12 +81,12 @@ const Admin = () => {
 
       if (profilesError) throw profilesError;
 
-      // Get auth users
-      const { data: { users: authUsers }, error: authError } = await supabase.auth.admin.listUsers();
-      
-      if (authError) throw authError;
+      // Get auth users via Edge Function (secure)
+      const { data: adminUsersRes, error: fnError } = await supabase.functions.invoke("list-admin-users");
+      if (fnError) throw fnError;
+      const authUsers = adminUsersRes?.users ?? [];
 
-      const usersWithProfiles = authUsers.map(user => ({
+      const usersWithProfiles = authUsers.map((user: any) => ({
         id: user.id,
         email: user.email || "",
         created_at: user.created_at,

@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.generate-activity-detail]
 verify_jwt = false
+
+[functions.list-admin-users]
+# Uses default verify_jwt = true for authenticated access
