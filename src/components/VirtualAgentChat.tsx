@@ -1,11 +1,12 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MessageCircle, Send, UserPlus, Sparkles } from "lucide-react";
+import { MessageCircle, Send, UserPlus, Sparkles, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 type Message = { role: 'user' | 'assistant', content: string };
 
@@ -14,6 +15,7 @@ export const VirtualAgentChat = () => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [showCTA, setShowCTA] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -22,6 +24,84 @@ export const VirtualAgentChat = () => {
 
   // Mostra CTA dopo 3+ scambi di messaggi
   const shouldShowCTA = messages.length >= 6 && !isLoading;
+
+  const handleCreateItinerary = async () => {
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
+
+    setIsGenerating(true);
+    
+    try {
+      // Estrai informazioni dalla conversazione per creare l'itinerario
+      const conversation = messages.map(m => m.content).join("\n");
+      
+      // Crea l'itinerario nel database con stato "in_progress"
+      const { data: itinerary, error: createError } = await supabase
+        .from("itineraries")
+        .insert({
+          user_id: user.id,
+          title: "Nuovo itinerario da chat",
+          destination: "Da definire", // Verrà aggiornato dall'AI
+          start_date: new Date().toISOString().split('T')[0],
+          end_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          status: "in_progress",
+          participants_count: 1,
+        })
+        .select()
+        .single();
+
+      if (createError) throw createError;
+
+      // Genera l'itinerario con l'AI usando la conversazione come contesto
+      const { data: aiResponse, error: aiError } = await supabase.functions.invoke(
+        "generate-itinerary",
+        {
+          body: {
+            destination: "Italia", // Default, verrà raffinato dall'AI
+            startDate: new Date().toISOString().split('T')[0],
+            endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            participantsType: "single",
+            participantsCount: 1,
+            travelPace: "moderate",
+            specificInterests: conversation, // Usa tutta la conversazione come contesto
+          },
+        }
+      );
+
+      if (aiError) throw aiError;
+
+      // Aggiorna l'itinerario con i dati generati dall'AI
+      const { error: updateError } = await supabase
+        .from("itineraries")
+        .update({
+          ai_content: aiResponse,
+          title: aiResponse?.title || "Nuovo itinerario",
+          destination: aiResponse?.destination || "Italia",
+        })
+        .eq("id", itinerary.id);
+
+      if (updateError) throw updateError;
+
+      toast({
+        title: "Itinerario creato!",
+        description: "Il tuo itinerario personalizzato è pronto.",
+      });
+
+      // Naviga all'itinerario creato
+      navigate(`/itinerary/${itinerary.id}`);
+    } catch (error) {
+      console.error("Errore creazione itinerario:", error);
+      toast({
+        title: "Errore",
+        description: "Impossibile creare l'itinerario. Riprova.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   const streamChat = async (userMessage: string) => {
     const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat-agent`;
@@ -251,18 +331,26 @@ export const VirtualAgentChat = () => {
                   onClick={() => navigate("/auth")}
                   className="bg-gradient-hero hover:opacity-90 text-white gap-2 flex-shrink-0"
                   size="sm"
+                  disabled={isGenerating}
                 >
                   <UserPlus className="w-4 h-4" />
                   <span className="hidden sm:inline">Registrati</span>
                 </Button>
               ) : (
                 <Button
-                  onClick={() => navigate("/create-itinerary")}
+                  onClick={handleCreateItinerary}
                   className="bg-gradient-hero hover:opacity-90 text-white gap-2 flex-shrink-0"
                   size="sm"
+                  disabled={isGenerating}
                 >
-                  <Sparkles className="w-4 h-4" />
-                  <span className="hidden sm:inline">Crea itinerario</span>
+                  {isGenerating ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Sparkles className="w-4 h-4" />
+                  )}
+                  <span className="hidden sm:inline">
+                    {isGenerating ? "Generazione..." : "Crea itinerario"}
+                  </span>
                 </Button>
               )
             )}
