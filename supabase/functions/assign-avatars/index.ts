@@ -6,11 +6,19 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const colors = [
-  "FF6B6B", "4ECDC4", "45B7D1", "FFA07A", "98D8C8",
-  "F7DC6F", "BB8FCE", "85C1E2", "F8B195", "C06C84",
-  "6C5B7B", "355C7D", "F67280", "C06C84", "A8E6CF",
-];
+// Fetch real profile pictures from RandomUser API
+const fetchRandomUserPhoto = async (gender?: string): Promise<string> => {
+  try {
+    const genderParam = gender ? `?gender=${gender.toLowerCase()}` : '';
+    const response = await fetch(`https://randomuser.me/api/${genderParam}`);
+    const data = await response.json();
+    return data.results[0].picture.large;
+  } catch (error) {
+    console.error("Error fetching random user photo:", error);
+    // Fallback to placeholder
+    return `https://i.pravatar.cc/200?img=${Math.floor(Math.random() * 70)}`;
+  }
+};
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -70,13 +78,11 @@ serve(async (req) => {
 
     for (const profile of profiles || []) {
       try {
-        const displayName = profile.display_name || 
-                          (profile.first_name && profile.last_name 
-                            ? `${profile.first_name} ${profile.last_name}` 
-                            : "User");
+        // Fetch a real photo from RandomUser API
+        const avatarUrl = await fetchRandomUserPhoto();
         
-        const color = colors[updated % colors.length];
-        const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&size=200&background=${color}&color=fff&bold=true&format=png`;
+        // Small delay to avoid rate limiting
+        await new Promise(resolve => setTimeout(resolve, 200));
 
         const { error: updateError } = await supabaseAdmin
           .from("profiles")
@@ -87,6 +93,10 @@ serve(async (req) => {
           console.error(`Error updating profile ${profile.user_id}:`, updateError);
         } else {
           updated++;
+          const displayName = profile.display_name || 
+                            (profile.first_name && profile.last_name 
+                              ? `${profile.first_name} ${profile.last_name}` 
+                              : "User");
           console.log(`Updated avatar for: ${displayName}`);
         }
       } catch (e) {
