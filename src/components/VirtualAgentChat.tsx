@@ -214,31 +214,6 @@ export const VirtualAgentChat = () => {
                       </div>
                     </div>
                   )}
-
-                  {/* CTA Section */}
-                  {shouldShowCTA && (
-                    <div className="flex justify-center mt-6">
-                      {!user ? (
-                        <Button
-                          onClick={() => navigate("/auth")}
-                          className="bg-gradient-hero hover:opacity-90 text-white gap-2"
-                          size="lg"
-                        >
-                          <UserPlus className="w-5 h-5" />
-                          Registrati per creare il tuo itinerario
-                        </Button>
-                      ) : (
-                        <Button
-                          onClick={() => navigate("/create-itinerary")}
-                          className="bg-gradient-hero hover:opacity-90 text-white gap-2"
-                          size="lg"
-                        >
-                          <Sparkles className="w-5 h-5" />
-                          Crea il tuo itinerario
-                        </Button>
-                      )}
-                    </div>
-                  )}
                   
                   <div ref={messagesEndRef} />
                 </>
@@ -258,7 +233,7 @@ export const VirtualAgentChat = () => {
             <MessageCircle className="w-5 h-5" />
           </Button>
           
-          <div className="flex-1 flex gap-2">
+          <div className="flex-1 flex gap-2 items-center">
             <Input
               value={message}
               onChange={(e) => setMessage(e.target.value)}
@@ -268,9 +243,33 @@ export const VirtualAgentChat = () => {
               className="flex-1 bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
               disabled={isLoading}
             />
+            
+            {/* CTA Buttons */}
+            {shouldShowCTA && (
+              !user ? (
+                <Button
+                  onClick={() => navigate("/auth")}
+                  className="bg-gradient-hero hover:opacity-90 text-white gap-2 flex-shrink-0"
+                  size="sm"
+                >
+                  <UserPlus className="w-4 h-4" />
+                  <span className="hidden sm:inline">Registrati</span>
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => navigate("/create-itinerary")}
+                  className="bg-gradient-hero hover:opacity-90 text-white gap-2 flex-shrink-0"
+                  size="sm"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span className="hidden sm:inline">Crea itinerario</span>
+                </Button>
+              )
+            )}
+            
             <Button
               onClick={handleSendMessage}
-              className="bg-gradient-hero hover:opacity-90 rounded-full"
+              className="bg-gradient-hero hover:opacity-90 rounded-full flex-shrink-0"
               size="icon"
               disabled={isLoading || !message.trim()}
             >
