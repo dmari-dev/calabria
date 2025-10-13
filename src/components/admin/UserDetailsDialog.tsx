@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
 import { Loader2, User, Mail, Calendar, MapPin, Briefcase, Phone, Home } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface Profile {
   display_name: string | null;
@@ -26,6 +27,7 @@ interface Profile {
   company: string | null;
   bio: string | null;
   birth_date: string | null;
+  avatar_url: string | null;
 }
 
 interface UserDetailsDialogProps {
@@ -98,9 +100,12 @@ export function UserDetailsDialog({
           <div className="space-y-6">
             {/* Header Info */}
             <div className="flex items-start gap-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-hero flex items-center justify-center text-white text-2xl font-bold">
-                {profile.display_name?.[0]?.toUpperCase() || userEmail[0].toUpperCase()}
-              </div>
+              <Avatar className="w-16 h-16">
+                <AvatarImage src={profile.avatar_url || undefined} alt={profile.display_name || userEmail} />
+                <AvatarFallback className="bg-gradient-hero text-white text-2xl">
+                  {profile.display_name?.[0]?.toUpperCase() || userEmail[0].toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
               <div className="flex-1">
                 <h3 className="text-xl font-bold">
                   {profile.display_name || "Nome non disponibile"}
