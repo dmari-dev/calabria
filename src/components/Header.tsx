@@ -24,7 +24,7 @@ export const Header = () => {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center flex-1 justify-center space-x-6">
+        <nav className="hidden md:flex items-center flex-1 justify-center space-x-6 font-inter">
           {!user ? (
             <>
               <Link to="/" className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-2">
