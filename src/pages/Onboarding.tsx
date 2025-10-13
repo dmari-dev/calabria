@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,12 @@ const Onboarding = () => {
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [travelStyle, setTravelStyle] = useState("moderate");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate("/auth");
+    }
+  }, [authLoading, user, navigate]);
 
   const handleInterestToggle = (interestId: string) => {
     setSelectedInterests(prev =>
@@ -65,17 +71,12 @@ const Onboarding = () => {
     }
   };
 
-  if (authLoading) {
+  if (authLoading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-pulse text-muted-foreground">Caricamento...</div>
       </div>
     );
-  }
-
-  if (!user) {
-    navigate("/auth");
-    return null;
   }
 
   return (
