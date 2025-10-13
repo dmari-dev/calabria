@@ -99,58 +99,149 @@ const Itinerary = () => {
   }, [itinerary?.ai_content]);
 
   const loadActivityImages = async () => {
-    const imagesMap: Record<string, string[]> = {};
     if (!itinerary?.ai_content?.days) {
-      setActivityImages(imagesMap);
+      setActivityImages({});
       return;
     }
 
     const ALLOWED_MIME = new Set(["image/jpeg", "image/png", "image/webp"]);
+    const CACHE_PREFIX = 'img_cache_';
+    const CACHE_EXPIRY = 7 * 24 * 60 * 60 * 1000; // 7 giorni
 
-    for (const day of itinerary.ai_content.days) {
-      for (let index = 0; index < day.activities.length; index++) {
-        const act = day.activities[index];
-        const key = `${day.day}-${index}`;
-        const base = `${act.title} ${itinerary.destination}`;
-        const mainQuery = base.split("(")[0].trim();
-        const urls: string[] = [];
+    // Funzione per ottenere dalla cache
+    const getCachedImages = (key: string): string[] | null => {
+      try {
+        const cached = localStorage.getItem(CACHE_PREFIX + key);
+        if (!cached) return null;
+        const { urls, timestamp } = JSON.parse(cached);
+        if (Date.now() - timestamp > CACHE_EXPIRY) {
+          localStorage.removeItem(CACHE_PREFIX + key);
+          return null;
+        }
+        return urls;
+      } catch {
+        return null;
+      }
+    };
 
-        const tryFetch = async (q: string) => {
-          const searchUrl = `https://commons.wikimedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(q)}&srnamespace=6&format=json&origin=*&srlimit=20`;
+    // Funzione per salvare in cache
+    const setCachedImages = (key: string, urls: string[]) => {
+      try {
+        localStorage.setItem(
+          CACHE_PREFIX + key,
+          JSON.stringify({ urls, timestamp: Date.now() })
+        );
+      } catch (e) {
+        console.warn('Cache storage failed:', e);
+      }
+    };
+
+    // Funzione per caricare immagini di una singola attività
+    const fetchActivityImages = async (
+      day: number,
+      index: number,
+      title: string,
+      destination: string
+    ): Promise<{ key: string; urls: string[] }> => {
+      const key = `${day}-${index}`;
+      const cacheKey = `${itinerary.id}_${key}`;
+
+      // Controlla cache
+      const cached = getCachedImages(cacheKey);
+      if (cached) {
+        return { key, urls: cached };
+      }
+
+      const base = `${title} ${destination}`;
+      const mainQuery = base.split("(")[0].trim();
+      const urls: string[] = [];
+
+      const tryFetch = async (q: string) => {
+        try {
+          const searchUrl = `https://commons.wikimedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(q)}&srnamespace=6&format=json&origin=*&srlimit=10`;
           const res = await fetch(searchUrl);
           const data = await res.json();
+          
           if (!data.query?.search?.length) return;
-          for (const item of data.query.search as Array<{ title: string }>) {
-            if (urls.length >= 3) break;
-            const title = item.title;
-            const infoUrl = `https://commons.wikimedia.org/w/api.php?action=query&titles=${encodeURIComponent(title)}&prop=imageinfo&iiprop=url|mime&format=json&origin=*`;
-            const infoRes = await fetch(infoUrl);
-            const infoData = await infoRes.json();
-            const pages = infoData.query?.pages || {};
-            const pid = Object.keys(pages)[0];
-            const info = pages?.[pid]?.imageinfo?.[0];
-            const url: string | undefined = info?.url;
-            const mime: string | undefined = info?.mime;
-            if (url && mime && ALLOWED_MIME.has(mime)) {
-              urls.push(url);
+
+          // Fetch info per massimo 3 immagini in parallelo
+          const imagePromises = (data.query.search as Array<{ title: string }>)
+            .slice(0, 5)
+            .map(async (item) => {
+              if (urls.length >= 3) return null;
+              const infoUrl = `https://commons.wikimedia.org/w/api.php?action=query&titles=${encodeURIComponent(item.title)}&prop=imageinfo&iiprop=url|mime&format=json&origin=*`;
+              const infoRes = await fetch(infoUrl);
+              const infoData = await infoRes.json();
+              const pages = infoData.query?.pages || {};
+              const pid = Object.keys(pages)[0];
+              const info = pages?.[pid]?.imageinfo?.[0];
+              return {
+                url: info?.url as string | undefined,
+                mime: info?.mime as string | undefined,
+              };
+            });
+
+          const results = await Promise.all(imagePromises);
+          for (const result of results) {
+            if (result?.url && result?.mime && ALLOWED_MIME.has(result.mime) && urls.length < 3) {
+              urls.push(result.url);
             }
           }
-        };
+        } catch (e) {
+          console.error('Errore fetch immagini:', e);
+        }
+      };
 
-        try {
-          await tryFetch(mainQuery);
-          if (urls.length === 0) {
-            const parts = mainQuery.split(" ").filter(Boolean);
+      try {
+        await tryFetch(mainQuery);
+        if (urls.length === 0) {
+          const parts = mainQuery.split(" ").filter(Boolean);
+          if (parts.length >= 2) {
             await tryFetch(parts.slice(-2).join(" "));
           }
-          imagesMap[key] = urls;
-        } catch (e) {
-          console.error('Errore caricamento immagini per', mainQuery, e);
-          imagesMap[key] = [];
         }
+      } catch (e) {
+        console.error('Errore caricamento immagini per', mainQuery, e);
       }
-    }
-    setActivityImages(imagesMap);
+
+      // Salva in cache
+      setCachedImages(cacheKey, urls);
+
+      return { key, urls };
+    };
+
+    // Crea array di tutte le attività
+    const allActivities: Array<{
+      day: number;
+      index: number;
+      title: string;
+    }> = [];
+
+    itinerary.ai_content.days.forEach((day) => {
+      day.activities.forEach((activity, index) => {
+        allActivities.push({
+          day: day.day,
+          index,
+          title: activity.title,
+        });
+      });
+    });
+
+    // Carica tutte le immagini in parallelo con aggiornamento progressivo
+    const promises = allActivities.map(({ day, index, title }) =>
+      fetchActivityImages(day, index, title, itinerary.destination)
+        .then((result) => {
+          // Aggiorna lo stato progressivamente per ogni immagine caricata
+          setActivityImages((prev) => ({
+            ...prev,
+            [result.key]: result.urls,
+          }));
+          return result;
+        })
+    );
+
+    // Aspetta il completamento di tutte le richieste
+    await Promise.allSettled(promises);
   };
 
   useEffect(() => {
