@@ -33,9 +33,9 @@ const Onboarding = () => {
     }
   }, [authLoading, user, navigate]);
 
-  const handleTravelStyleChange = useCallback((value: string) => {
-    setTravelStyle((prev) => (prev === value ? prev : value));
-  }, []);
+  const handleTravelStyleChange = (value: string) => {
+    setTravelStyle(value);
+  };
 
   const handleInterestToggle = (interestId: string) => {
     setSelectedInterests(prev =>
@@ -143,7 +143,7 @@ const Onboarding = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <RadioGroup defaultValue={travelStyle} onValueChange={handleTravelStyleChange}>
+              <RadioGroup value={travelStyle} onValueChange={handleTravelStyleChange}>
                 <div className="flex items-center space-x-3 p-4 rounded-lg border-2 border-border hover:border-primary/50 transition-colors">
                   <RadioGroupItem value="relaxed" id="relaxed" />
                   <Label htmlFor="relaxed" className="flex-1 cursor-pointer">
