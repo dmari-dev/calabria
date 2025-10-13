@@ -81,7 +81,7 @@ const Index = () => {
           <CarouselContent>
             {heroSlides.map((slide, index) => (
               <CarouselItem key={index}>
-                <div className="relative h-[600px] md:h-[700px]">
+                <div className="relative h-[450px] md:h-[550px]">
                   <div className="absolute inset-0 z-0">
                     <img 
                       src={slide.image} 
@@ -138,7 +138,7 @@ const Index = () => {
       </section>
 
       {/* Virtual Agent Chat Bar */}
-      <section ref={chatRef} className="py-6 bg-gradient-to-br from-background to-muted/30">
+      <section ref={chatRef} className="py-6 bg-gradient-to-br from-background to-muted/30 -mt-[60px]">
         <div className="max-w-7xl mx-auto px-5">
           <VirtualAgentChat />
         </div>
