@@ -49,28 +49,55 @@ serve(async (req) => {
     // 2. Recupera immagine da Wikimedia Commons
     let imageUrl = "";
     try {
+      // Prima prova con una ricerca più specifica
       const imageSearchQuery = encodeURIComponent(`${activity} ${destination}`);
-      const commonsUrl = `https://commons.wikimedia.org/w/api.php?action=query&list=search&srsearch=${imageSearchQuery}&srnamespace=6&format=json&origin=*&srlimit=5`;
+      const commonsUrl = `https://commons.wikimedia.org/w/api.php?action=query&list=search&srsearch=${imageSearchQuery}&srnamespace=6&format=json&origin=*&srlimit=10`;
       
       const imageSearchResponse = await fetch(commonsUrl);
       const imageSearchData = await imageSearchResponse.json();
       
-      if (imageSearchData.query?.search?.[0]) {
-        const imageTitle = imageSearchData.query.search[0].title;
+      if (imageSearchData.query?.search?.length > 0) {
+        // Prova a trovare un'immagine valida tra i primi risultati
+        for (const result of imageSearchData.query.search) {
+          const imageTitle = result.title;
+          
+          // Recupera l'URL dell'immagine
+          const imageInfoUrl = `https://commons.wikimedia.org/w/api.php?action=query&titles=${encodeURIComponent(imageTitle)}&prop=imageinfo&iiprop=url&format=json&origin=*`;
+          const imageInfoResponse = await fetch(imageInfoUrl);
+          const imageInfoData = await imageInfoResponse.json();
+          
+          const pages = imageInfoData.query?.pages;
+          const pageId = Object.keys(pages || {})[0];
+          const imgUrl = pages?.[pageId]?.imageinfo?.[0]?.url;
+          
+          if (imgUrl && (imgUrl.endsWith('.jpg') || imgUrl.endsWith('.jpeg') || imgUrl.endsWith('.png'))) {
+            imageUrl = imgUrl;
+            break;
+          }
+        }
+      }
+      
+      // Se non trova nulla, prova solo con la destinazione
+      if (!imageUrl) {
+        const destQuery = encodeURIComponent(destination);
+        const destUrl = `https://commons.wikimedia.org/w/api.php?action=query&list=search&srsearch=${destQuery}&srnamespace=6&format=json&origin=*&srlimit=5`;
+        const destResponse = await fetch(destUrl);
+        const destData = await destResponse.json();
         
-        // Recupera l'URL dell'immagine
-        const imageInfoUrl = `https://commons.wikimedia.org/w/api.php?action=query&titles=${encodeURIComponent(imageTitle)}&prop=imageinfo&iiprop=url&format=json&origin=*`;
-        const imageInfoResponse = await fetch(imageInfoUrl);
-        const imageInfoData = await imageInfoResponse.json();
-        
-        const pages = imageInfoData.query?.pages;
-        const pageId = Object.keys(pages || {})[0];
-        imageUrl = pages?.[pageId]?.imageinfo?.[0]?.url || "";
+        if (destData.query?.search?.[0]) {
+          const imageTitle = destData.query.search[0].title;
+          const imageInfoUrl = `https://commons.wikimedia.org/w/api.php?action=query&titles=${encodeURIComponent(imageTitle)}&prop=imageinfo&iiprop=url&format=json&origin=*`;
+          const imageInfoResponse = await fetch(imageInfoUrl);
+          const imageInfoData = await imageInfoResponse.json();
+          
+          const pages = imageInfoData.query?.pages;
+          const pageId = Object.keys(pages || {})[0];
+          imageUrl = pages?.[pageId]?.imageinfo?.[0]?.url || "";
+        }
       }
     } catch (imageError) {
       console.error("Errore recupero immagine Wikimedia:", imageError);
-      // Fallback: usa un'immagine placeholder
-      imageUrl = `https://source.unsplash.com/800x600/?${encodeURIComponent(activity)},${encodeURIComponent(destination)}`;
+      // Nessun fallback, lascia vuoto se non trova immagini
     }
 
     // 3. Cerca video su YouTube (solo URL di ricerca, nessuna API key necessaria)
