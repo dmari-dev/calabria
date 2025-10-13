@@ -337,7 +337,7 @@ const Itinerary = () => {
                     <div className="mt-6">
                       <h3 className="font-semibold text-lg mb-4">✨ Highlights del Viaggio</h3>
                       <div className="flex flex-wrap gap-4">
-                        {itinerary.ai_content.highlights.map((highlight, index) => (
+                        {(itinerary.ai_content.highlights || []).map((highlight, index) => (
                           <div 
                             key={index} 
                             className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20"
@@ -373,15 +373,15 @@ const Itinerary = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setSelectedDay(Math.min(itinerary.ai_content!.days.length, selectedDay + 1))}
-                    disabled={selectedDay === itinerary.ai_content.days.length}
+                    onClick={() => setSelectedDay(Math.min((itinerary.ai_content?.days || []).length, selectedDay + 1))}
+                    disabled={selectedDay === (itinerary.ai_content?.days || []).length}
                   >
                     <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
               <div className="flex items-center justify-between gap-2 overflow-x-auto pb-2">
-                {itinerary.ai_content.days.map((day, index) => {
+                {(itinerary.ai_content.days || []).map((day, index) => {
                   const dayActivities = day.activities.map((_, actIndex) => 
                     getActivityStatus(day.day, actIndex)
                   );
@@ -417,7 +417,7 @@ const Itinerary = () => {
                           {completedCount}/{totalActivities}
                         </span>
                       </button>
-                      {index < itinerary.ai_content!.days.length - 1 && (
+                      {index < (itinerary.ai_content?.days || []).length - 1 && (
                         <div className={cn(
                           "h-1 flex-1 mx-2 rounded transition-all",
                           isCompleted ? "bg-green-500" : "bg-muted"
@@ -431,7 +431,7 @@ const Itinerary = () => {
 
             <div className="mb-8">
               <Accordion type="single" collapsible>
-                {itinerary.ai_content.days
+                {(itinerary.ai_content.days || [])
                   .filter(day => day.day === selectedDay)
                   .map((day) => (
                   <AccordionItem key={day.day} value={`day-${day.day}`} className="border rounded-lg shadow-soft bg-card">
@@ -572,7 +572,7 @@ const Itinerary = () => {
               </Accordion>
             </div>
 
-            {itinerary.status === "in_progress" && (
+            {itinerary.status === "in_progress" && itinerary.ai_content?.days && (
               <ExperienceSection
                 itineraryId={itinerary.id}
                 destination={itinerary.destination}
@@ -598,37 +598,51 @@ const Itinerary = () => {
                 </AccordionTrigger>
                 <AccordionContent className="px-6 pb-6">
                   <div className="space-y-6">
-                    <div>
-                      <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
-                        <span>🗓️</span>
-                        <span>Periodo Migliore</span>
-                      </h3>
-                      <p className="text-muted-foreground leading-relaxed">{itinerary.ai_content.practical_info.best_time}</p>
-                    </div>
-                    <Separator />
-                    <div>
-                      <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
-                        <span>🚌</span>
-                        <span>Come Spostarsi</span>
-                      </h3>
-                      <p className="text-muted-foreground leading-relaxed">{itinerary.ai_content.practical_info.getting_around}</p>
-                    </div>
-                    <Separator />
-                    <div>
-                      <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
-                        <span>💰</span>
-                        <span>Consigli sul Budget</span>
-                      </h3>
-                      <p className="text-muted-foreground leading-relaxed">{itinerary.ai_content.practical_info.budget_tips}</p>
-                    </div>
-                    <Separator />
-                    <div>
-                      <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
-                        <span>🍝</span>
-                        <span>Cucina Locale</span>
-                      </h3>
-                      <p className="text-muted-foreground leading-relaxed">{itinerary.ai_content.practical_info.local_cuisine}</p>
-                    </div>
+                    {itinerary.ai_content.practical_info?.best_time && (
+                      <>
+                        <div>
+                          <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
+                            <span>🗓️</span>
+                            <span>Periodo Migliore</span>
+                          </h3>
+                          <p className="text-muted-foreground leading-relaxed">{itinerary.ai_content.practical_info.best_time}</p>
+                        </div>
+                        <Separator />
+                      </>
+                    )}
+                    {itinerary.ai_content.practical_info?.getting_around && (
+                      <>
+                        <div>
+                          <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
+                            <span>🚌</span>
+                            <span>Come Spostarsi</span>
+                          </h3>
+                          <p className="text-muted-foreground leading-relaxed">{itinerary.ai_content.practical_info.getting_around}</p>
+                        </div>
+                        <Separator />
+                      </>
+                    )}
+                    {itinerary.ai_content.practical_info?.budget_tips && (
+                      <>
+                        <div>
+                          <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
+                            <span>💰</span>
+                            <span>Consigli sul Budget</span>
+                          </h3>
+                          <p className="text-muted-foreground leading-relaxed">{itinerary.ai_content.practical_info.budget_tips}</p>
+                        </div>
+                        <Separator />
+                      </>
+                    )}
+                    {itinerary.ai_content.practical_info?.local_cuisine && (
+                      <div>
+                        <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
+                          <span>🍝</span>
+                          <span>Cucina Locale</span>
+                        </h3>
+                        <p className="text-muted-foreground leading-relaxed">{itinerary.ai_content.practical_info.local_cuisine}</p>
+                      </div>
+                    )}
                   </div>
                 </AccordionContent>
               </AccordionItem>
