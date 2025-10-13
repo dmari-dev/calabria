@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { 
   Loader2, Users, Route, BarChart3, UserCircle, Calendar,
@@ -22,6 +23,7 @@ interface User {
   email: string;
   created_at: string;
   display_name: string | null;
+  avatar_url: string | null;
 }
 
 interface Itinerary {
@@ -81,7 +83,7 @@ const Admin = () => {
       // Load users with profiles
       const { data: profilesData, error: profilesError } = await supabase
         .from("profiles")
-        .select("user_id, display_name")
+        .select("user_id, display_name, avatar_url")
         .order("created_at", { ascending: false });
 
       if (profilesError) throw profilesError;
@@ -96,6 +98,7 @@ const Admin = () => {
         email: user.email || "",
         created_at: user.created_at,
         display_name: profilesData?.find(p => p.user_id === user.id)?.display_name || null,
+        avatar_url: profilesData?.find(p => p.user_id === user.id)?.avatar_url || null,
       }));
 
       setUsers(usersWithProfiles);
@@ -370,9 +373,12 @@ const Admin = () => {
                   {users.map((user) => (
                     <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-gradient-hero flex items-center justify-center text-white font-bold">
-                          {user.display_name?.[0]?.toUpperCase() || user.email[0].toUpperCase()}
-                        </div>
+                        <Avatar className="w-10 h-10">
+                          <AvatarImage src={user.avatar_url || undefined} alt={user.display_name || user.email} />
+                          <AvatarFallback className="bg-gradient-hero text-white">
+                            {user.display_name?.[0]?.toUpperCase() || user.email[0].toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
                         <div>
                           <p className="font-medium">{user.display_name || "Nessun nome"}</p>
                           <p className="text-sm text-muted-foreground">{user.email}</p>
@@ -505,9 +511,12 @@ const Admin = () => {
                   <div className="space-y-3">
                     {users.slice(0, 5).map((user) => (
                       <div key={user.id} className="flex items-center gap-3 text-sm">
-                        <div className="w-8 h-8 rounded-full bg-gradient-hero flex items-center justify-center text-white text-xs font-bold">
-                          {user.display_name?.[0]?.toUpperCase() || user.email[0].toUpperCase()}
-                        </div>
+                        <Avatar className="w-8 h-8">
+                          <AvatarImage src={user.avatar_url || undefined} alt={user.display_name || user.email} />
+                          <AvatarFallback className="bg-gradient-hero text-white text-xs">
+                            {user.display_name?.[0]?.toUpperCase() || user.email[0].toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
                         <div className="flex-1 min-w-0">
                           <p className="font-medium truncate">{user.display_name || user.email}</p>
                           <p className="text-xs text-muted-foreground">
