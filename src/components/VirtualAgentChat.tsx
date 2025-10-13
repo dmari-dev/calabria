@@ -30,7 +30,8 @@ export const VirtualAgentChat = () => {
       {!isOpen && (
         <Button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full bg-gradient-hero shadow-elevated hover:opacity-90 transition-all animate-fade-in"
+          className="fixed bottom-6 right-6 h-14 w-14 rounded-full bg-gradient-hero shadow-elevated hover:opacity-90 transition-all animate-fade-in"
+          style={{ zIndex: 9999 }}
           size="icon"
         >
           <MessageCircle className="w-6 h-6" />
@@ -40,11 +41,12 @@ export const VirtualAgentChat = () => {
       {/* Chat Window - Morphs to hero section position */}
       <div
         className={cn(
-          "fixed z-50 bg-card border border-border shadow-elevated transition-all duration-500 ease-in-out",
+          "fixed bg-card border border-border shadow-elevated transition-all duration-500 ease-in-out",
           isOpen 
             ? "top-32 left-1/2 -translate-x-1/2 w-[90%] max-w-2xl h-[500px] rounded-2xl opacity-100 scale-100" 
             : "bottom-6 right-6 w-0 h-0 rounded-full opacity-0 scale-0 pointer-events-none"
         )}
+        style={{ zIndex: 9999 }}
       >
         {isOpen && (
           <div className="flex flex-col h-full">
