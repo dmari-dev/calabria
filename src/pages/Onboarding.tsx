@@ -121,12 +121,13 @@ const Onboarding = () => {
                       <Checkbox
                         id={interest.id}
                         checked={selectedInterests.includes(interest.id)}
-                        onCheckedChange={() => handleInterestToggle(interest.id)}
+                        onClick={(e) => e.stopPropagation()}
                       />
                       <Icon className="w-5 h-5 text-primary" />
                       <Label
                         htmlFor={interest.id}
                         className="flex-1 cursor-pointer font-medium"
+                        onClick={(e) => e.preventDefault()}
                       >
                         {interest.label}
                       </Label>
