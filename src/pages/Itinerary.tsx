@@ -104,35 +104,47 @@ const Itinerary = () => {
       return;
     }
 
-    // Per ogni attività cerca fino a 3 immagini su Wikimedia Commons
+    const ALLOWED_MIME = new Set(["image/jpeg", "image/png", "image/webp"]);
+
     for (const day of itinerary.ai_content.days) {
       for (let index = 0; index < day.activities.length; index++) {
         const act = day.activities[index];
         const key = `${day.day}-${index}`;
-        const query = `${act.title} ${itinerary.destination}`.split("(")[0].trim();
-        try {
-          const searchUrl = `https://commons.wikimedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&srnamespace=6&format=json&origin=*&srlimit=10`;
+        const base = `${act.title} ${itinerary.destination}`;
+        const mainQuery = base.split("(")[0].trim();
+        const urls: string[] = [];
+
+        const tryFetch = async (q: string) => {
+          const searchUrl = `https://commons.wikimedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(q)}&srnamespace=6&format=json&origin=*&srlimit=20`;
           const res = await fetch(searchUrl);
           const data = await res.json();
-          const urls: string[] = [];
-          if (data.query?.search?.length) {
-            for (const item of data.query.search as Array<{ title: string }>) {
-              if (urls.length >= 3) break;
-              const title = item.title;
-              const infoUrl = `https://commons.wikimedia.org/w/api.php?action=query&titles=${encodeURIComponent(title)}&prop=imageinfo&iiprop=url&format=json&origin=*`;
-              const infoRes = await fetch(infoUrl);
-              const infoData = await infoRes.json();
-              const pages = infoData.query?.pages || {};
-              const pid = Object.keys(pages)[0];
-              const url: string | undefined = pages?.[pid]?.imageinfo?.[0]?.url;
-              if (url && (url.endsWith('.jpg') || url.endsWith('.jpeg') || url.endsWith('.png'))) {
-                urls.push(url);
-              }
+          if (!data.query?.search?.length) return;
+          for (const item of data.query.search as Array<{ title: string }>) {
+            if (urls.length >= 3) break;
+            const title = item.title;
+            const infoUrl = `https://commons.wikimedia.org/w/api.php?action=query&titles=${encodeURIComponent(title)}&prop=imageinfo&iiprop=url|mime&format=json&origin=*`;
+            const infoRes = await fetch(infoUrl);
+            const infoData = await infoRes.json();
+            const pages = infoData.query?.pages || {};
+            const pid = Object.keys(pages)[0];
+            const info = pages?.[pid]?.imageinfo?.[0];
+            const url: string | undefined = info?.url;
+            const mime: string | undefined = info?.mime;
+            if (url && mime && ALLOWED_MIME.has(mime)) {
+              urls.push(url);
             }
           }
-          imagesMap[key] = urls; // può essere [] se non trovate
+        };
+
+        try {
+          await tryFetch(mainQuery);
+          if (urls.length === 0) {
+            const parts = mainQuery.split(" ").filter(Boolean);
+            await tryFetch(parts.slice(-2).join(" "));
+          }
+          imagesMap[key] = urls;
         } catch (e) {
-          console.error('Errore caricamento immagini per', query, e);
+          console.error('Errore caricamento immagini per', mainQuery, e);
           imagesMap[key] = [];
         }
       }

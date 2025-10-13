@@ -202,27 +202,18 @@ export const ExperienceSection = ({
                           </div>
                         </div>
                         
-                        {!isAllCompleted && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleCompleteDay();
-                            }}
-                          >
-                            Concludi giorno
-                          </Button>
-                        )}
-                        
-                        {isAllCompleted && (
-                          <Badge variant="default" className="bg-green-500">
-                            Completato
-                          </Badge>
-                        )}
                       </div>
                     </AccordionTrigger>
                     <AccordionContent className="px-4 pb-4">
+                      <div className="flex justify-end mb-3">
+                        {!isAllCompleted ? (
+                          <Button variant="outline" size="sm" onClick={handleCompleteDay}>
+                            Concludi giorno
+                          </Button>
+                        ) : (
+                          <Badge variant="default" className="bg-green-500">Completato</Badge>
+                        )}
+                      </div>
                       <div className="relative">
                         <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-muted" />
                         
@@ -256,7 +247,7 @@ export const ExperienceSection = ({
                                     <div className="flex items-start gap-4">
                                       <div className="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gradient-to-br from-muted to-muted/50">
                                         <ActivityThumbImage
-                                          query={`${activity.title} ${destination}`}
+                                          query={`${activity.title} ${destination.split('(')[0].trim()}`}
                                           alt={activity.title}
                                           className="w-full h-full object-cover"
                                         />
