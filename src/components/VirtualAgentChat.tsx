@@ -25,8 +25,8 @@ export const VirtualAgentChat = () => {
   };
 
   return (
-    <div className="w-full bg-card border border-border rounded-2xl shadow-soft relative" style={{ zIndex: 9999 }}>
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative py-4">
+    <div className="w-full bg-card rounded-2xl relative" style={{ zIndex: 9999, boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)' }}>
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative py-4">
         {/* Expanded Chat Window - Absolute positioned to overlay hero section */}
         <div
           className={cn(
