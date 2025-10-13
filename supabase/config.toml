@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.seed-users]
 # Uses default verify_jwt = true for authenticated access
+
+[functions.assign-avatars]
+# Uses default verify_jwt = true for authenticated access

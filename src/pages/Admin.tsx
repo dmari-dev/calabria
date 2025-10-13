@@ -74,6 +74,8 @@ const Admin = () => {
   useEffect(() => {
     if (isAdmin) {
       loadData();
+      // Auto-assign avatars on first load
+      handleAssignAvatars();
     }
   }, [isAdmin]);
 
@@ -211,17 +213,17 @@ const Admin = () => {
     setShowItineraryDetails(true);
   };
 
-  const handleSeedUsers = async () => {
+  const handleAssignAvatars = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase.functions.invoke("seed-users");
+      const { data, error } = await supabase.functions.invoke("assign-avatars");
       
       if (error) throw error;
       
-      toast.success(data.message || "Utenti generati con successo!");
+      toast.success(data.message || "Avatar assegnati con successo!");
       await loadData();
     } catch (error: any) {
-      toast.error("Errore nella generazione utenti: " + error.message);
+      toast.error("Errore nell'assegnazione avatar: " + error.message);
     } finally {
       setLoading(false);
     }
@@ -381,16 +383,8 @@ const Admin = () => {
           <TabsContent value="users" className="mt-6">
             <Card>
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>Utenti Registrati</CardTitle>
-                    <CardDescription>Gestione completa degli utenti della piattaforma</CardDescription>
-                  </div>
-                  <Button onClick={handleSeedUsers} variant="outline">
-                    <Users className="w-4 h-4 mr-2" />
-                    Genera 20 Utenti
-                  </Button>
-                </div>
+                <CardTitle>Utenti Registrati</CardTitle>
+                <CardDescription>Gestione completa degli utenti della piattaforma</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
