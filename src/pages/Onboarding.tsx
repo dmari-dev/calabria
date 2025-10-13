@@ -34,7 +34,9 @@ const Onboarding = () => {
   }, [authLoading, user, navigate]);
 
   const handleTravelStyleChange = (value: string) => {
-    setTravelStyle(value);
+    if (value !== travelStyle) {
+      setTravelStyle(value);
+    }
   };
 
   const handleInterestToggle = (interestId: string) => {
