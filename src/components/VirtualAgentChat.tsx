@@ -1,9 +1,11 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MessageCircle, Send } from "lucide-react";
+import { MessageCircle, Send, UserPlus, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 type Message = { role: 'user' | 'assistant', content: string };
 
@@ -12,16 +14,14 @@ export const VirtualAgentChat = () => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [showCTA, setShowCTA] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+  // Mostra CTA dopo 3+ scambi di messaggi
+  const shouldShowCTA = messages.length >= 6 && !isLoading;
 
   const streamChat = async (userMessage: string) => {
     const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat-agent`;
@@ -212,6 +212,31 @@ export const VirtualAgentChat = () => {
                           <span className="w-2 h-2 bg-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
                         </div>
                       </div>
+                    </div>
+                  )}
+
+                  {/* CTA Section */}
+                  {shouldShowCTA && (
+                    <div className="flex justify-center mt-6">
+                      {!user ? (
+                        <Button
+                          onClick={() => navigate("/auth")}
+                          className="bg-gradient-hero hover:opacity-90 text-white gap-2"
+                          size="lg"
+                        >
+                          <UserPlus className="w-5 h-5" />
+                          Registrati per creare il tuo itinerario
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={() => navigate("/create-itinerary")}
+                          className="bg-gradient-hero hover:opacity-90 text-white gap-2"
+                          size="lg"
+                        >
+                          <Sparkles className="w-5 h-5" />
+                          Crea il tuo itinerario
+                        </Button>
+                      )}
                     </div>
                   )}
                   
