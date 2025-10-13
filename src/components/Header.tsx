@@ -10,7 +10,7 @@ import {
 import { Menu, User, ShieldCheck, Home, Info, Users, LayoutDashboard, UserCircle, Sparkles } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useRole } from "@/hooks/useRole";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/logo.svg";
 
 export const Header = () => {
   const { user, signOut } = useAuth();
