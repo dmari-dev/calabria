@@ -71,12 +71,6 @@ export const Header = () => {
                 <LayoutDashboard className="w-4 h-4" />
                 Dashboard
               </Link>
-              {isAdmin && (
-                <Link to="/admin" className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4" />
-                  Admin
-                </Link>
-              )}
               <Link to="/create-itinerary" className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-2">
                 <Sparkles className="w-4 h-4" />
                 Experience
@@ -192,14 +186,6 @@ export const Header = () => {
                     Experience
                   </Link>
                 </DropdownMenuItem>
-                {isAdmin && (
-                  <DropdownMenuItem asChild>
-                    <Link to="/admin" className="flex items-center gap-2">
-                      <ShieldCheck className="w-4 h-4" />
-                      Admin
-                    </Link>
-                  </DropdownMenuItem>
-                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <Link to="/profile">Profilo</Link>
