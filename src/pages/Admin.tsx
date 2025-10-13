@@ -15,6 +15,7 @@ import { format, subDays, startOfMonth } from "date-fns";
 import { it } from "date-fns/locale";
 import { StatsCard } from "@/components/admin/StatsCard";
 import { UserDetailsDialog } from "@/components/admin/UserDetailsDialog";
+import { ItineraryDetailsDialog } from "@/components/admin/ItineraryDetailsDialog";
 
 interface User {
   id: string;
@@ -58,6 +59,8 @@ const Admin = () => {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [selectedUserEmail, setSelectedUserEmail] = useState("");
   const [showUserDetails, setShowUserDetails] = useState(false);
+  const [selectedItinerary, setSelectedItinerary] = useState<Itinerary | null>(null);
+  const [showItineraryDetails, setShowItineraryDetails] = useState(false);
 
   useEffect(() => {
     if (!roleLoading && !isAdmin) {
@@ -198,6 +201,11 @@ const Admin = () => {
     setSelectedUserId(userId);
     setSelectedUserEmail(email);
     setShowUserDetails(true);
+  };
+
+  const handleViewItinerary = (itinerary: Itinerary) => {
+    setSelectedItinerary(itinerary);
+    setShowItineraryDetails(true);
   };
 
   if (roleLoading || loading) {
@@ -418,12 +426,22 @@ const Admin = () => {
                           <span>• Utente: {itinerary.user_email}</span>
                         </div>
                       </div>
-                      <Badge variant={itinerary.status === "in_progress" ? "default" : itinerary.status === "published" ? "default" : "secondary"}>
-                        {itinerary.status === "draft" ? "Bozza" :
-                         itinerary.status === "generating" ? "Generazione..." :
-                         itinerary.status === "in_progress" ? "In Corso" : 
-                         itinerary.status === "published" ? "Pubblicato" : "Completato"}
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={itinerary.status === "in_progress" ? "default" : itinerary.status === "published" ? "default" : "secondary"}>
+                          {itinerary.status === "draft" ? "Bozza" :
+                           itinerary.status === "generating" ? "Generazione..." :
+                           itinerary.status === "in_progress" ? "In Corso" : 
+                           itinerary.status === "published" ? "Pubblicato" : "Completato"}
+                        </Badge>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleViewItinerary(itinerary)}
+                        >
+                          <Eye className="w-4 h-4 mr-2" />
+                          Dettagli
+                        </Button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -510,6 +528,12 @@ const Admin = () => {
           userEmail={selectedUserEmail}
           open={showUserDetails}
           onOpenChange={setShowUserDetails}
+        />
+
+        <ItineraryDetailsDialog
+          itinerary={selectedItinerary}
+          open={showItineraryDetails}
+          onOpenChange={setShowItineraryDetails}
         />
       </div>
     </div>
