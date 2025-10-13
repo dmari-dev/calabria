@@ -211,6 +211,22 @@ const Admin = () => {
     setShowItineraryDetails(true);
   };
 
+  const handleSeedUsers = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase.functions.invoke("seed-users");
+      
+      if (error) throw error;
+      
+      toast.success(data.message || "Utenti generati con successo!");
+      await loadData();
+    } catch (error: any) {
+      toast.error("Errore nella generazione utenti: " + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (roleLoading || loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted flex items-center justify-center">
@@ -365,8 +381,16 @@ const Admin = () => {
           <TabsContent value="users" className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>Utenti Registrati</CardTitle>
-                <CardDescription>Gestione completa degli utenti della piattaforma</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Utenti Registrati</CardTitle>
+                    <CardDescription>Gestione completa degli utenti della piattaforma</CardDescription>
+                  </div>
+                  <Button onClick={handleSeedUsers} variant="outline">
+                    <Users className="w-4 h-4 mr-2" />
+                    Genera 20 Utenti
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
