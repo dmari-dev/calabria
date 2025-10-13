@@ -116,18 +116,17 @@ const Onboarding = () => {
                           ? "border-primary bg-primary/5"
                           : "border-border hover:border-primary/50"
                       }`}
-                      onClick={() => handleInterestToggle(interest.id)}
+                      
                     >
                       <Checkbox
                         id={interest.id}
                         checked={selectedInterests.includes(interest.id)}
-                        onClick={(e) => e.stopPropagation()}
+                        onCheckedChange={() => handleInterestToggle(interest.id)}
                       />
                       <Icon className="w-5 h-5 text-primary" />
                       <Label
                         htmlFor={interest.id}
                         className="flex-1 cursor-pointer font-medium"
-                        onClick={(e) => e.preventDefault()}
                       >
                         {interest.label}
                       </Label>
