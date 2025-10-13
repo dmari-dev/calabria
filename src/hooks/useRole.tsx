@@ -23,8 +23,12 @@ export const useRole = () => {
           .eq("role", "admin")
           .maybeSingle();
 
-        if (error) throw error;
-        setIsAdmin(!!data);
+        if (error) {
+          console.error("Error checking role:", error);
+          setIsAdmin(false);
+        } else {
+          setIsAdmin(data !== null);
+        }
       } catch (error) {
         console.error("Error checking role:", error);
         setIsAdmin(false);
