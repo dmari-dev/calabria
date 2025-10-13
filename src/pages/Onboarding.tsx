@@ -9,7 +9,6 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { Palette, History, Music, UtensilsCrossed, Camera, Mountain, Landmark } from "lucide-react";
-import { Header } from "@/components/Header";
 
 const culturalInterests = [
   { id: "renaissance-art", label: "Arte Rinascimentale", icon: Palette },
@@ -86,7 +85,6 @@ const Onboarding = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted">
-      <Header />
       <div className="py-12 px-4">
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-8">

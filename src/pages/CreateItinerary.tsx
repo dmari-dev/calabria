@@ -11,7 +11,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { Sparkles, Calendar as CalendarIcon, Users } from "lucide-react";
 import { toast } from "sonner";
 import { DestinationSelector } from "@/components/DestinationSelector";
-import { Header } from "@/components/Header";
 
 const CreateItinerary = () => {
   const navigate = useNavigate();
@@ -84,8 +83,6 @@ const CreateItinerary = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted">
-      <Header />
-
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8 text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-hero mb-4 shadow-elevated">

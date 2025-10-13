@@ -10,7 +10,6 @@ import { toast } from "sonner";
 import { ItineraryStatusBadge } from "@/components/ItineraryStatusBadge";
 import { ItineraryActions } from "@/components/ItineraryActions";
 import { ItinerarySelectionDialog } from "@/components/ItinerarySelectionDialog";
-import { Header } from "@/components/Header";
 
 interface Itinerary {
   id: string;
@@ -82,8 +81,6 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted">
-      <Header />
-
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <div className="flex items-center justify-between">

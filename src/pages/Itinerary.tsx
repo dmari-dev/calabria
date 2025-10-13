@@ -17,7 +17,6 @@ import { EditActivityDialog } from "@/components/EditActivityDialog";
 import { MapPlaceholderDialog } from "@/components/MapPlaceholderDialog";
 import { getActivityIcon } from "@/utils/activityIcons";
 import { cn } from "@/lib/utils";
-import { Header } from "@/components/Header";
 import {
   Carousel,
   CarouselContent,
@@ -217,7 +216,6 @@ const Itinerary = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted">
-      <Header />
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <Button variant="ghost" onClick={() => navigate("/dashboard")}>
