@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
+import { useRole } from "@/hooks/useRole";
 import { Plus, Calendar, MapPin, Sparkles, FileEdit, PlayCircle, Archive, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 import { ItineraryCoverImage } from "@/components/ItineraryCoverImage";
@@ -25,6 +26,7 @@ interface Itinerary {
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading, signOut } = useAuth();
+  const { isAdmin, loading: roleLoading } = useRole();
   const [itineraries, setItineraries] = useState<Itinerary[]>([]);
   const [loading, setLoading] = useState(true);
   const [showItinerarySelection, setShowItinerarySelection] = useState(false);
@@ -35,10 +37,16 @@ const Dashboard = () => {
       return;
     }
 
-    if (user) {
+    // Redirect admins to admin panel
+    if (!roleLoading && isAdmin) {
+      navigate("/admin");
+      return;
+    }
+
+    if (user && !isAdmin) {
       loadItineraries();
     }
-  }, [user, authLoading, navigate]);
+  }, [user, authLoading, isAdmin, roleLoading, navigate]);
 
   const loadItineraries = async () => {
     try {
