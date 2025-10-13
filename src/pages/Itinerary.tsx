@@ -15,6 +15,7 @@ import { ActivityStatusActions } from "@/components/ActivityStatusActions";
 import { ExperienceSection } from "@/components/ExperienceSection";
 import { EditActivityDialog } from "@/components/EditActivityDialog";
 import { MapPlaceholderDialog } from "@/components/MapPlaceholderDialog";
+import { DayAssistantChat } from "@/components/DayAssistantChat";
 import { getActivityIcon } from "@/utils/activityIcons";
 import { cn } from "@/lib/utils";
 import {
@@ -484,16 +485,17 @@ const Itinerary = () => {
                                       <CarouselContent>
                                         {images.map((img, imgIndex) => (
                                           <CarouselItem key={imgIndex}>
-                                            <div className="aspect-[16/9] relative">
-                                              <img
-                                                src={img}
-                                                alt={`${activity.title} ${imgIndex + 1}`}
-                                                className="w-full h-full object-cover"
-                                                loading="lazy"
-                                                referrerPolicy="no-referrer"
-                                                onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/placeholder.svg'; }}
-                                              />
-                                            </div>
+                                             <div className="aspect-[16/9] relative">
+                                               <img
+                                                 src={img}
+                                                 alt={`${activity.title} ${imgIndex + 1}`}
+                                                 className="w-full h-full object-cover"
+                                                 loading="lazy"
+                                                 decoding="async"
+                                                 referrerPolicy="no-referrer"
+                                                 onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/placeholder.svg'; }}
+                                               />
+                                             </div>
                                           </CarouselItem>
                                         ))}
                                       </CarouselContent>
@@ -554,6 +556,16 @@ const Itinerary = () => {
                           );
                         })}
                       </div>
+                      
+                      {/* AI Assistant per ottimizzare il giorno */}
+                      {user?.id === itinerary.user_id && (
+                        <DayAssistantChat
+                          dayNumber={day.day}
+                          dayActivities={day.activities}
+                          itineraryId={itinerary.id}
+                          onUpdate={loadItinerary}
+                        />
+                      )}
                     </AccordionContent>
                   </AccordionItem>
                 ))}
