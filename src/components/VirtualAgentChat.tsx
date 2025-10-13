@@ -59,6 +59,7 @@ export const VirtualAgentChat = () => {
         "generate-itinerary",
         {
           body: {
+            itineraryId: itinerary.id,
             destination: "Italia", // Default, verrà raffinato dall'AI
             startDate: new Date().toISOString().split('T')[0],
             endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
