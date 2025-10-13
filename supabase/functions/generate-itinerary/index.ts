@@ -132,7 +132,7 @@ Includi attività culturali autentiche, musei, monumenti, esperienze gastronomic
       .from("itineraries")
       .update({
         ai_content: generatedContent,
-        status: "approved",
+        status: "in_progress",
       })
       .eq("id", itineraryId);
 
