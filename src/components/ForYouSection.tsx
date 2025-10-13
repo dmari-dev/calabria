@@ -8,6 +8,7 @@ import { Sparkles, Calendar, MapPin, ArrowRight } from "lucide-react";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
 import { toast } from "sonner";
+import { ItineraryCoverImage } from "@/components/ItineraryCoverImage";
 
 interface PlatformItinerary {
   id: string;
@@ -80,9 +81,13 @@ export const ForYouSection = () => {
         {itineraries.map((itinerary) => (
           <Card 
             key={itinerary.id}
-            className="group hover:shadow-soft transition-all cursor-pointer border-border/50"
+            className="group hover:shadow-soft transition-all cursor-pointer border-border/50 overflow-hidden"
             onClick={handleItineraryClick}
           >
+            <ItineraryCoverImage 
+              destination={itinerary.destination}
+              title={itinerary.title}
+            />
             <CardHeader>
               <div className="flex items-start justify-between mb-2">
                 <Badge variant="secondary" className="bg-primary/10 text-primary">
