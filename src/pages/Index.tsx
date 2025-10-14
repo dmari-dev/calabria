@@ -290,7 +290,7 @@ const Index = () => {
             style={{ backgroundColor: '#C50972', color: 'white', borderRadius: '6px' }}
             onClick={() => navigate("/auth")}
           >
-            Contatti
+            Accedi all&apos;area personale
           </Button>
         </div>
       </section>
