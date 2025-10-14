@@ -108,11 +108,12 @@ const Index = () => {
               
               <Button 
                 size="lg" 
-                className="bg-gradient-hero hover:opacity-90 transition-opacity text-lg px-8"
+                className="bg-gradient-hero hover:opacity-90 transition-opacity px-10 py-6 text-sm"
+                style={{ borderRadius: '6px' }}
                 onClick={() => handleCreateItinerary()}
               >
                 Crea il Tuo Itinerario
-                <ArrowRight className="ml-2 w-5 h-5" />
+                <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
             </div>
           </div>

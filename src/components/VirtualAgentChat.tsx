@@ -373,7 +373,8 @@ export const VirtualAgentChat = ({ initialCity, autoExpand }: VirtualAgentChatPr
               !user ? (
                 <Button
                   onClick={() => navigate("/auth")}
-                  className="bg-gradient-hero hover:opacity-90 text-white gap-2 flex-shrink-0"
+                  className="bg-gradient-hero hover:opacity-90 text-white gap-2 flex-shrink-0 px-6 py-5 text-sm"
+                  style={{ borderRadius: '6px' }}
                   size="sm"
                   disabled={isGenerating}
                 >
@@ -383,7 +384,8 @@ export const VirtualAgentChat = ({ initialCity, autoExpand }: VirtualAgentChatPr
               ) : (
                 <Button
                   onClick={handleCreateItinerary}
-                  className="bg-gradient-hero hover:opacity-90 text-white gap-2 flex-shrink-0"
+                  className="bg-gradient-hero hover:opacity-90 text-white gap-2 flex-shrink-0 px-6 py-5 text-sm"
+                  style={{ borderRadius: '6px' }}
                   size="sm"
                   disabled={isGenerating}
                 >
@@ -401,7 +403,8 @@ export const VirtualAgentChat = ({ initialCity, autoExpand }: VirtualAgentChatPr
             
             <Button
               onClick={handleSendMessage}
-              className="bg-gradient-hero hover:opacity-90 rounded-full flex-shrink-0"
+              className="bg-gradient-hero hover:opacity-90 flex-shrink-0"
+              style={{ borderRadius: '6px' }}
               size="icon"
               disabled={isLoading || !message.trim()}
             >
