@@ -286,16 +286,16 @@ export const VirtualAgentChat = ({ initialCity, autoExpand }: VirtualAgentChatPr
 
   return (
     <div className="w-full relative">
-      {/* Expanded Chat Window */}
+      {/* Expanded Chat Window - Opens upward */}
       <div
         className={cn(
-          "bg-white rounded-lg shadow-elevated transition-all duration-500 ease-in-out overflow-hidden mb-4",
+          "absolute left-0 right-0 bottom-full mb-4 transition-all duration-500 ease-in-out overflow-hidden origin-bottom",
           isExpanded 
             ? "max-h-[500px] opacity-100" 
             : "max-h-0 opacity-0"
         )}
       >
-        <div className="h-[500px] flex flex-col">
+        <div className="h-[500px] bg-white rounded-lg shadow-elevated flex flex-col">
           {/* Header */}
           <div className="flex items-center gap-2 px-6 py-4 border-b border-border/50 bg-muted/30">
             <Map className="w-4 h-4 text-primary" />
