@@ -14,9 +14,11 @@ import heroVideo from "@/assets/hero-video.mp4";
 // import { Header } from "@/components/Header";
 import { ForYouSection } from "@/components/ForYouSection";
 import { VirtualAgentChat } from "@/components/VirtualAgentChat";
+import { useAuth } from "@/hooks/useAuth";
 
 const Index = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const chatRef = useRef<HTMLDivElement>(null);
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
@@ -121,9 +123,9 @@ const Index = () => {
                 size="lg" 
                 className="bg-gradient-hero hover:opacity-90 transition-opacity px-10 py-6 text-sm"
                 style={{ borderRadius: '6px' }}
-                onClick={() => handleCreateItinerary()}
+                onClick={() => user ? navigate("/dashboard") : navigate("/auth")}
               >
-                Crea il Tuo Itinerario
+                {user ? "I tuoi itinerari" : "Registrati adesso"}
                 <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
             </div>
