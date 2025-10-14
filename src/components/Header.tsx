@@ -34,8 +34,8 @@ export const Header = () => {
   }, [user]);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-24 items-center justify-between">
+    <header className="sticky top-0 z-50 w-full border-b backdrop-blur supports-[backdrop-filter]:bg-background/60" style={{ backgroundColor: '#0F151F' }}>
+      <div className="container flex items-center justify-between" style={{ height: '180px' }}>
         <Link to="/" className="flex items-center space-x-2">
           <img src={logo} alt="Itinerari Intelligenti" className="h-16 w-auto" />
         </Link>
