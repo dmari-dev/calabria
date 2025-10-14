@@ -114,7 +114,7 @@ const Index = () => {
               </h1>
               
               <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-8">
-                The Margherita Hack botanic garden, the famous and wonderful historical park of the country which extends behind Palazzo Carducci, represents one of the world&apos;s greatest examples of an Italian garden.
+                Scopri il patrimonio culturale calabrese attraverso itinerari personalizzati creati con l'intelligenza artificiale.
               </p>
               
               <Button 
