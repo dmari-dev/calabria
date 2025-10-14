@@ -155,28 +155,16 @@ const Index = () => {
       {/* Chiedi a Pitagora Section */}
       <section className="py-0 overflow-hidden">
         <div className="grid md:grid-cols-2">
-          {/* Left - Dark content */}
-          <div className="bg-secondary p-12 md:p-20 flex flex-col justify-center min-h-[600px]">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+          {/* Left - Virtual Agent Chat */}
+          <div className="bg-secondary p-8 md:p-12 flex flex-col min-h-[600px]">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Chiedi a Pitagora
             </h2>
-            <p className="text-lg text-white/90 mb-8">
+            <p className="text-base text-white/90 mb-6">
               Fatti raccontare i segreti dei luoghi, trova tappe e idee per il tuo viaggio.
             </p>
-            <div>
-              <Button 
-                size="lg"
-                className="gap-2 text-white border-2 border-white hover:bg-white hover:text-secondary transition-all"
-                style={{ 
-                  backgroundColor: '#C50972',
-                  borderRadius: '6px',
-                  padding: '1.5rem 2rem'
-                }}
-                onClick={handleOpenChat}
-              >
-                <MessageSquare className="w-5 h-5" />
-                Avvia chat
-              </Button>
+            <div className="flex-1">
+              <VirtualAgentChat autoExpand={true} />
             </div>
           </div>
 
