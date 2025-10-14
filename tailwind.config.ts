@@ -18,9 +18,9 @@ export default {
       },
       fontFamily: {
         sans: ['Titillium Web', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-        serif: ['Lora', 'Georgia', 'serif'],
+        serif: ['Inter', 'sans-serif'],
         heading: ['Titillium Web', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-        body: ['Lora', 'Georgia', 'serif'],
+        body: ['Inter', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
