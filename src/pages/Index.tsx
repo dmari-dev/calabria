@@ -164,7 +164,7 @@ const Index = () => {
               Fatti raccontare i segreti dei luoghi, trova tappe e idee per il tuo viaggio.
             </p>
             <div className="flex-1">
-              <VirtualAgentChat autoExpand={true} />
+              <VirtualAgentChat autoExpand={false} />
             </div>
           </div>
 
