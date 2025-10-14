@@ -98,6 +98,7 @@ export const ForYouSection = () => {
             <CarouselItem key={itinerary.id} className="md:basis-1/2 lg:basis-1/3">
               <Card 
                 className="group hover:shadow-soft transition-all cursor-pointer border-border/50 overflow-hidden h-full"
+                style={{ borderRadius: '0' }}
                 onClick={handleItineraryClick}
               >
                 <ItineraryCoverImage 
