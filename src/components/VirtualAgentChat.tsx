@@ -285,139 +285,140 @@ export const VirtualAgentChat = ({ initialCity, autoExpand }: VirtualAgentChatPr
   };
 
   return (
-    <div className="w-full bg-card relative" style={{ zIndex: 9999, boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)', borderRadius: '6px' }}>
-      <div className="px-4 sm:px-6 lg:px-8 relative py-4">
-        {/* Expanded Chat Window - Opens upward */}
-        <div
-          className={cn(
-            "absolute left-4 right-4 sm:left-6 sm:right-6 lg:left-8 lg:right-8 bottom-full transition-all duration-500 ease-in-out overflow-hidden origin-bottom",
-            isExpanded 
-              ? "h-[50vh] opacity-100" 
-              : "h-0 opacity-0"
-          )}
-        >
-          <div className="h-full bg-card/95 backdrop-blur-lg border border-border rounded-t-md px-4 sm:px-6 shadow-elevated">
-            {/* Header */}
-            <div className="flex items-center gap-2 pt-4 pb-2 border-b border-border/50">
-              <Map className="w-4 h-4 text-primary" />
-              <h3 className="text-sm font-medium text-foreground">Il tuo prossimo itinerario</h3>
-            </div>
-            
-            {/* Messages */}
-            <div className="h-[calc(100%-3rem)] overflow-y-auto py-4 space-y-3">
-              {messages.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground">
-                  <MessageCircle className="w-10 h-10 mb-2 opacity-20" />
-                  <p className="text-sm">Inizia dicendomi dove vuoi andare o cosa vuoi fare! 🌍</p>
-                </div>
-              ) : (
-                <>
-                  {messages.map((msg, idx) => (
+    <div className="w-full relative">
+      {/* Expanded Chat Window */}
+      <div
+        className={cn(
+          "bg-white rounded-lg shadow-elevated transition-all duration-500 ease-in-out overflow-hidden mb-4",
+          isExpanded 
+            ? "max-h-[500px] opacity-100" 
+            : "max-h-0 opacity-0"
+        )}
+      >
+        <div className="h-[500px] flex flex-col">
+          {/* Header */}
+          <div className="flex items-center gap-2 px-6 py-4 border-b border-border/50 bg-muted/30">
+            <Map className="w-4 h-4 text-primary" />
+            <h3 className="text-sm font-medium text-foreground">Il tuo prossimo itinerario</h3>
+          </div>
+          
+          {/* Messages */}
+          <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3">
+            {messages.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground">
+                <MessageCircle className="w-10 h-10 mb-2 opacity-20" />
+                <p className="text-sm">Inizia dicendomi dove vuoi andare o cosa vuoi fare! 🌍</p>
+              </div>
+            ) : (
+              <>
+                {messages.map((msg, idx) => (
+                  <div
+                    key={idx}
+                    className={cn(
+                      "flex",
+                      msg.role === 'user' ? "justify-end" : "justify-start"
+                    )}
+                  >
                     <div
-                      key={idx}
                       className={cn(
-                        "flex",
-                        msg.role === 'user' ? "justify-end" : "justify-start"
+                        "max-w-[70%] rounded-2xl px-4 py-2",
+                        msg.role === 'user' 
+                          ? "text-white" 
+                          : "bg-muted text-foreground"
                       )}
+                      style={msg.role === 'user' ? { backgroundColor: '#C50972' } : {}}
                     >
-                      <div
-                        className={cn(
-                          "max-w-[70%] rounded-2xl px-4 py-2",
-                          msg.role === 'user' 
-                            ? "bg-gradient-hero text-white" 
-                            : "bg-muted text-foreground"
-                        )}
-                      >
-                        <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                      <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                    </div>
+                  </div>
+                ))}
+                
+                {/* Loading indicator */}
+                {isLoading && (
+                  <div className="flex justify-start">
+                    <div className="bg-muted rounded-2xl px-4 py-3">
+                      <div className="flex gap-1">
+                        <span className="w-2 h-2 bg-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                        <span className="w-2 h-2 bg-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                        <span className="w-2 h-2 bg-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
                       </div>
                     </div>
-                  ))}
-                  
-                  {/* Loading indicator */}
-                  {isLoading && (
-                    <div className="flex justify-start">
-                      <div className="bg-muted rounded-2xl px-4 py-3">
-                        <div className="flex gap-1">
-                          <span className="w-2 h-2 bg-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
-                          <span className="w-2 h-2 bg-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                          <span className="w-2 h-2 bg-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  
-                  <div ref={messagesEndRef} />
-                </>
-              )}
-            </div>
+                  </div>
+                )}
+                
+                <div ref={messagesEndRef} />
+              </>
+            )}
           </div>
         </div>
+      </div>
 
-        {/* Chat Input Bar - Boxed */}
-        <div className="flex items-center gap-3 bg-background/50 px-4 py-2 border border-border shadow-soft" style={{ borderRadius: '6px' }}>
-          <Button
-            onClick={() => setIsExpanded(!isExpanded)}
-            variant="ghost"
-            size="icon"
-            className="flex-shrink-0"
-          >
-            <MessageCircle className="w-5 h-5" />
-          </Button>
+      {/* Chat Input Bar */}
+      <div className="flex items-center gap-3 bg-white px-4 py-3 rounded-lg shadow-soft border border-white/20"
+        style={{ borderRadius: '6px' }}
+      >
+        <Button
+          onClick={() => setIsExpanded(!isExpanded)}
+          variant="ghost"
+          size="icon"
+          className="flex-shrink-0 text-foreground"
+        >
+          <MessageCircle className="w-5 h-5" />
+        </Button>
+        
+        <div className="flex-1 flex gap-2 items-center">
+          <Input
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
+            onFocus={() => setIsExpanded(true)}
+            placeholder="Inserisci cosa vuoi fare o dove vuoi andare..."
+            className="flex-1 bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-foreground"
+            disabled={isLoading}
+          />
           
-          <div className="flex-1 flex gap-2 items-center">
-            <Input
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
-              onFocus={() => setIsExpanded(true)}
-              placeholder="Inserisci cosa vuoi fare o dove vuoi andare..."
-              className="flex-1 bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-              disabled={isLoading}
-            />
-            
-            {/* CTA Buttons */}
-            {shouldShowCTA && (
-              !user ? (
-                <Button
-                  onClick={() => navigate("/auth")}
-                  className="bg-gradient-hero hover:opacity-90 text-white gap-2 flex-shrink-0 px-6 py-5 text-sm"
-                  style={{ borderRadius: '6px' }}
-                  size="sm"
-                  disabled={isGenerating}
-                >
-                  <UserPlus className="w-4 h-4" />
-                  <span className="hidden sm:inline">Registrati</span>
-                </Button>
-              ) : (
-                <Button
-                  onClick={handleCreateItinerary}
-                  className="bg-gradient-hero hover:opacity-90 text-white gap-2 flex-shrink-0 px-6 py-5 text-sm"
-                  style={{ borderRadius: '6px' }}
-                  size="sm"
-                  disabled={isGenerating}
-                >
-                  {isGenerating ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Sparkles className="w-4 h-4" />
-                  )}
-                  <span className="hidden sm:inline">
-                    {isGenerating ? "Generazione..." : "Crea itinerario"}
-                  </span>
-                </Button>
-              )
-            )}
-            
-            <Button
-              onClick={handleSendMessage}
-              className="bg-gradient-hero hover:opacity-90 flex-shrink-0"
-              style={{ borderRadius: '6px' }}
-              size="icon"
-              disabled={isLoading || !message.trim()}
-            >
-              <Send className="w-4 h-4" />
-            </Button>
-          </div>
+          {/* CTA Buttons */}
+          {shouldShowCTA && (
+            !user ? (
+              <Button
+                onClick={() => navigate("/auth")}
+                className="hover:opacity-90 text-white gap-2 flex-shrink-0 px-6 py-5 text-sm"
+                style={{ borderRadius: '6px', backgroundColor: '#C50972' }}
+                size="sm"
+                disabled={isGenerating}
+              >
+                <UserPlus className="w-4 h-4" />
+                <span className="hidden sm:inline">Registrati</span>
+              </Button>
+            ) : (
+              <Button
+                onClick={handleCreateItinerary}
+                className="hover:opacity-90 text-white gap-2 flex-shrink-0 px-6 py-5 text-sm"
+                style={{ borderRadius: '6px', backgroundColor: '#C50972' }}
+                size="sm"
+                disabled={isGenerating}
+              >
+                {isGenerating ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Sparkles className="w-4 h-4" />
+                )}
+                <span className="hidden sm:inline">
+                  {isGenerating ? "Generazione..." : "Crea itinerario"}
+                </span>
+              </Button>
+            )
+          )}
+          
+          <Button
+            onClick={handleSendMessage}
+            className="hover:opacity-90 flex-shrink-0 text-white"
+            style={{ borderRadius: '6px', backgroundColor: '#C50972' }}
+            size="icon"
+            disabled={isLoading || !message.trim()}
+          >
+            <Send className="w-4 h-4" />
+          </Button>
         </div>
       </div>
     </div>
