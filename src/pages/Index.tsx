@@ -160,12 +160,12 @@ const Index = () => {
       <section className="py-0 overflow-hidden">
         <div className="grid md:grid-cols-2">
           {/* Left - Virtual Agent Chat */}
-          <div className="bg-secondary p-8 md:p-12 flex flex-col min-h-[600px]">
+          <div className="bg-secondary p-8 md:p-12 flex flex-col justify-center min-h-[600px]">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Chiedi a Pitagora
             </h2>
             <p className="text-base text-white/90 mb-6">
-              Fatti raccontare i segreti dei luoghi, trova tappe e idee per il tuo viaggio.
+              Fatti raccontare i segreti dei luoghi, trova tappe e idee per il tuo viaggio. Pitagora è il tuo assistente personale che ti guida alla scoperta del patrimonio culturale calabrese, suggeriendoti percorsi unici e raccontandoti le storie che rendono ogni luogo speciale. Lasciati ispirare e pianifica l'esperienza perfetta per te.
             </p>
             <div className="flex-1">
               <VirtualAgentChat autoExpand={false} expandDirection="down" />
