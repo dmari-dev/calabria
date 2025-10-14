@@ -154,7 +154,7 @@ const Index = () => {
                   <Landmark className="w-8 h-8 text-white" />
                 </div>
                 <div>
-                  <p className="text-4xl font-bold text-foreground mb-1">5.000+</p>
+                  <p className="text-4xl font-bold text-foreground mb-1">66.728</p>
                   <p className="text-muted-foreground">Beni culturali</p>
                 </div>
               </div>
@@ -164,8 +164,8 @@ const Index = () => {
                   <Landmark className="w-8 h-8 text-white" />
                 </div>
                 <div>
-                  <p className="text-4xl font-bold text-foreground mb-1">4.800+</p>
-                  <p className="text-muted-foreground">Musei e luoghi della cultura</p>
+                  <p className="text-4xl font-bold text-foreground mb-1">1.268</p>
+                  <p className="text-muted-foreground">Luoghi della cultura</p>
                 </div>
               </div>
 
@@ -174,8 +174,8 @@ const Index = () => {
                   <Landmark className="w-8 h-8 text-white" />
                 </div>
                 <div>
-                  <p className="text-4xl font-bold text-foreground mb-1">58</p>
-                  <p className="text-muted-foreground">Siti UNESCO</p>
+                  <p className="text-4xl font-bold text-foreground mb-1">128</p>
+                  <p className="text-muted-foreground">Parchi e giardini</p>
                 </div>
               </div>
             </div>
@@ -186,7 +186,7 @@ const Index = () => {
                 I numeri di una ricca eredità culturale
               </h2>
               <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-8">
-                Dati, indicatori e analisi per leggere il sistema di fruizione e valorizzazione del patrimonio dei beni culturali nazionali
+                Dati, indicatori e analisi per leggere il sistema di fruizione e valorizzazione del patrimonio dei beni culturali regionale
               </p>
               <Button 
                 variant="outline" 
