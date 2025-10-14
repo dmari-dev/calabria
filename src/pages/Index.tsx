@@ -89,80 +89,43 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header moved to App-level layout */}
-      {/* Hero Section with Carousel */}
-      <section className="relative overflow-hidden">
-        <Carousel className="w-full" opts={{ loop: true }} setApi={setApi}>
-          <CarouselContent>
-            {heroSlides.map((slide, index) => (
-              <CarouselItem key={index}>
-                <div className="relative h-[450px] md:h-[550px]">
-                  <div className="absolute inset-0 z-0">
-                    <img 
-                      src={slide.image} 
-                      alt={slide.city ? `${slide.city} cultural heritage` : "Italian cultural heritage"} 
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-background/50 to-background/30" />
-                  </div>
-                  
-                  <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
-                    <div className="max-w-3xl">
-                      <div className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 text-primary mb-6 animate-fade-in">
-                        <Sparkles className="w-4 h-4 mr-2" />
-                        <span className="text-sm font-medium">Powered by AI</span>
-                      </div>
-                      
-                      <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in leading-tight">
-                        {slide.title}
-                      </h1>
-                      
-                      <p className="text-base md:text-lg text-white font-inter mb-8 animate-fade-in leading-relaxed">
-                        {slide.subtitle}
-                      </p>
-                      
-                      <div className="flex flex-col sm:flex-row gap-4 animate-fade-in">
-                        <Button 
-                          size="lg" 
-                          className="bg-gradient-hero hover:opacity-90 transition-opacity text-lg px-8"
-                          onClick={() => handleCreateItinerary(slide.city || undefined)}
-                        >
-                          Crea il Tuo Itinerario
-                          <ArrowRight className="ml-2 w-5 h-5" />
-                        </Button>
-                        {!slide.city && (
-                          <Button 
-                            size="lg" 
-                            variant="outline"
-                            className="text-lg px-8"
-                            onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
-                          >
-                            Scopri di Più
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          
-          {/* Dot Navigation */}
-          <div className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-3">
-            {heroSlides.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => api?.scrollTo(index)}
-                className={`w-3 h-3 rounded-full transition-all ${
-                  current === index 
-                    ? 'bg-primary scale-125' 
-                    : 'bg-white/50 hover:bg-white/80'
-                }`}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
+      {/* Hero Section */}
+      <section className="relative h-[600px] md:h-[700px]">
+        {/* Barra azzurra sopra */}
+        <div className="absolute top-0 left-0 right-0 h-2 bg-primary z-10"></div>
+        
+        <div className="grid md:grid-cols-2 h-full">
+          {/* Colonna sinistra - Testo */}
+          <div className="bg-white flex items-center justify-center px-8 md:px-16 py-12">
+            <div className="max-w-xl">
+              <h1 className="text-4xl md:text-5xl font-bold mb-6 text-foreground leading-tight">
+                Inizia il tuo viaggio alla scoperta del patrimonio culturale calabrese
+              </h1>
+              
+              <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-8">
+                The Margherita Hack botanic garden, the famous and wonderful historical park of the country which extends behind Palazzo Carducci, represents one of the world's greatest examples of an Italian garden.
+              </p>
+              
+              <Button 
+                size="lg" 
+                className="bg-gradient-hero hover:opacity-90 transition-opacity text-lg px-8"
+                onClick={() => handleCreateItinerary()}
+              >
+                Crea il Tuo Itinerario
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Button>
+            </div>
           </div>
-        </Carousel>
+          
+          {/* Colonna destra - Immagine */}
+          <div className="relative h-full">
+            <img 
+              src={heroImage} 
+              alt="Patrimonio culturale calabrese" 
+              className="w-full h-full object-cover"
+            />
+          </div>
+        </div>
       </section>
 
       {/* Virtual Agent Chat Bar */}
