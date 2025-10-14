@@ -9,6 +9,7 @@ import heroMilano from "@/assets/hero-milano.jpg";
 import heroFirenze from "@/assets/hero-firenze.jpg";
 import heroVenezia from "@/assets/hero-venezia.jpg";
 import pitagoraImage from "@/assets/pitagora.png";
+import heroVideo from "@/assets/hero-video.mp4";
 // import { Header } from "@/components/Header";
 import { ForYouSection } from "@/components/ForYouSection";
 import { VirtualAgentChat } from "@/components/VirtualAgentChat";
@@ -108,11 +109,11 @@ const Index = () => {
           <div className="bg-white flex items-center justify-center px-8 md:px-16 py-12">
             <div className="max-w-xl">
               <h1 className="text-4xl md:text-5xl font-bold mb-6 text-foreground leading-tight">
-                Inizia il tuo viaggio alla scoperta del patrimonio culturale della tua città
+                Inizia il tuo viaggio alla scoperta del patrimonio culturale calabrese
               </h1>
               
               <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-8">
-                Esplora i tesori nascosti e i luoghi simbolo della tua destinazione. Dalla storia millenaria ai capolavori artistici, ogni città italiana custodisce patrimoni culturali unici che aspettano solo di essere scoperti.
+                The Margherita Hack botanic garden, the famous and wonderful historical park of the country which extends behind Palazzo Carducci, represents one of the world&apos;s greatest examples of an Italian garden.
               </p>
               
               <Button 
@@ -127,11 +128,14 @@ const Index = () => {
             </div>
           </div>
           
-          {/* Colonna destra - Immagine */}
+          {/* Colonna destra - Video */}
           <div className="relative h-full">
-            <img 
-              src={heroImage} 
-              alt="Patrimonio culturale calabrese" 
+            <video 
+              src={heroVideo} 
+              autoPlay
+              loop
+              muted
+              playsInline
               className="w-full h-full object-cover"
             />
           </div>
