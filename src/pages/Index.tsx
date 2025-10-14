@@ -3,11 +3,12 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselApi } from "@/components/ui/carousel";
-import { Sparkles, Map, Calendar, Users, Brain, ArrowRight, Landmark } from "lucide-react";
+import { Sparkles, Map, Calendar, Users, Brain, ArrowRight, Landmark, MessageSquare } from "lucide-react";
 import heroImage from "@/assets/hero-tourists.jpg";
 import heroMilano from "@/assets/hero-milano.jpg";
 import heroFirenze from "@/assets/hero-firenze.jpg";
 import heroVenezia from "@/assets/hero-venezia.jpg";
+import pitagoraImage from "@/assets/pitagora-portrait.jpg";
 // import { Header } from "@/components/Header";
 import { ForYouSection } from "@/components/ForYouSection";
 import { VirtualAgentChat } from "@/components/VirtualAgentChat";
@@ -18,6 +19,14 @@ const Index = () => {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [selectedCity, setSelectedCity] = useState<string | undefined>();
+  const [isChatExpanded, setIsChatExpanded] = useState(false);
+
+  const handleOpenChat = () => {
+    setIsChatExpanded(true);
+    if (chatRef.current) {
+      chatRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   useEffect(() => {
     if (!api) return;
@@ -140,6 +149,45 @@ const Index = () => {
       <section className="py-12 bg-gradient-to-br from-background to-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ForYouSection />
+        </div>
+      </section>
+
+      {/* Chiedi a Pitagora Section */}
+      <section className="py-0 overflow-hidden">
+        <div className="grid md:grid-cols-2">
+          {/* Left - Dark content */}
+          <div className="bg-secondary p-12 md:p-16 flex flex-col justify-center">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+              Chiedi a Pitagora
+            </h2>
+            <p className="text-lg text-white/90 mb-8">
+              Fatti raccontare i segreti dei luoghi, trova tappe e idee per il tuo viaggio.
+            </p>
+            <div>
+              <Button 
+                size="lg"
+                className="gap-2 text-white border-2 border-white hover:bg-white hover:text-secondary transition-all"
+                style={{ 
+                  backgroundColor: '#C50972',
+                  borderRadius: '6px',
+                  padding: '1.5rem 2rem'
+                }}
+                onClick={handleOpenChat}
+              >
+                <MessageSquare className="w-5 h-5" />
+                Avvia chat
+              </Button>
+            </div>
+          </div>
+
+          {/* Right - Image */}
+          <div className="relative h-[400px] md:h-auto">
+            <img 
+              src={pitagoraImage} 
+              alt="Pitagora" 
+              className="w-full h-full object-cover"
+            />
+          </div>
         </div>
       </section>
 
