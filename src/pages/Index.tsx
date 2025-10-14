@@ -9,7 +9,7 @@ import heroImage from "@/assets/hero-tourists.jpg";
 import heroMilano from "@/assets/hero-milano.jpg";
 import heroFirenze from "@/assets/hero-firenze.jpg";
 import heroVenezia from "@/assets/hero-venezia.jpg";
-import pitagoraImage from "@/assets/pitagora-portrait.jpg";
+import pitagoraImage from "@/assets/pitagora.png";
 // import { Header } from "@/components/Header";
 import { ForYouSection } from "@/components/ForYouSection";
 import { VirtualAgentChat } from "@/components/VirtualAgentChat";
