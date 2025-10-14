@@ -278,7 +278,7 @@ export const VirtualAgentChat = ({ initialCity, autoExpand }: VirtualAgentChatPr
   };
 
   return (
-    <div className="w-full bg-card relative" style={{ zIndex: 9999, boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)' }}>
+    <div className="w-full bg-card relative" style={{ zIndex: 9999, boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)', borderRadius: '6px' }}>
       <div className="px-4 sm:px-6 lg:px-8 relative py-4">
         {/* Expanded Chat Window - Opens upward */}
         <div
@@ -289,7 +289,7 @@ export const VirtualAgentChat = ({ initialCity, autoExpand }: VirtualAgentChatPr
               : "h-0 opacity-0"
           )}
         >
-          <div className="h-full bg-card/95 backdrop-blur-lg border border-border rounded-t-2xl px-4 sm:px-6 shadow-elevated">
+          <div className="h-full bg-card/95 backdrop-blur-lg border border-border rounded-t-md px-4 sm:px-6 shadow-elevated">
             {/* Header */}
             <div className="flex items-center gap-2 pt-4 pb-2 border-b border-border/50">
               <Map className="w-4 h-4 text-primary" />
@@ -347,7 +347,7 @@ export const VirtualAgentChat = ({ initialCity, autoExpand }: VirtualAgentChatPr
         </div>
 
         {/* Chat Input Bar - Boxed */}
-        <div className="flex items-center gap-3 bg-background/50 rounded-full px-4 py-2 border border-border shadow-soft">
+        <div className="flex items-center gap-3 bg-background/50 px-4 py-2 border border-border shadow-soft" style={{ borderRadius: '6px' }}>
           <Button
             onClick={() => setIsExpanded(!isExpanded)}
             variant="ghost"
