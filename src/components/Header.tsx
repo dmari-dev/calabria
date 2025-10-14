@@ -11,7 +11,7 @@ import { Menu, User, ShieldCheck, Home, Info, Users, LayoutDashboard, Sparkles, 
 import { useAuth } from "@/hooks/useAuth";
 import { useRole } from "@/hooks/useRole";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import logo from "@/assets/logo.svg";
+import logo from "@/assets/logo-calabria-istoria.png";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
