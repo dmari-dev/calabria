@@ -88,7 +88,7 @@ export const Header = () => {
                       </span>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
+                  <DropdownMenuContent align="end" className="z-[10001]">
                     <DropdownMenuItem asChild>
                       <Link to="/profile">Profilo</Link>
                     </DropdownMenuItem>
@@ -299,7 +299,7 @@ export const Header = () => {
                     </span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align="end" className="z-[10001]">
                   <DropdownMenuItem asChild>
                     <Link to="/profile">Profilo</Link>
                   </DropdownMenuItem>
