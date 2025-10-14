@@ -9,89 +9,89 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* Designer Italia - Light Mode */
-    --background: 33 100% 94%; /* #FFF1E0 */
-    --foreground: 318 93% 11%; /* #380220 */
+    --background: 0 0% 100%;
+    --foreground: 217 35% 9%; /* #0F151F */
 
     --card: 0 0% 100%;
-    --card-foreground: 318 93% 11%;
+    --card-foreground: 217 35% 9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 318 93% 11%;
+    --popover-foreground: 217 35% 9%;
 
-    /* Primary - Viola scuro Designer Italia */
-    --primary: 318 93% 11%; /* #380220 */
-    --primary-foreground: 33 100% 94%; /* #FFF1E0 */
-    --primary-hover: 318 93% 16%;
+    /* Primary - Rosa magenta Designer Italia */
+    --primary: 327 91% 40%; /* #C50972 */
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 327 91% 35%;
 
-    /* Secondary - Beige chiaro Designer Italia */
-    --secondary: 33 100% 94%; /* #FFF1E0 */
-    --secondary-foreground: 318 93% 11%; /* #380220 */
-    --secondary-hover: 33 100% 90%;
+    /* Secondary - Blu scuro Designer Italia */
+    --secondary: 217 35% 9%; /* #0F151F */
+    --secondary-foreground: 0 0% 100%;
+    --secondary-hover: 217 35% 14%;
 
-    /* Accent - Variazione del viola */
-    --accent: 318 70% 25%;
-    --accent-foreground: 33 100% 94%;
+    /* Accent - Variazione del rosa */
+    --accent: 327 80% 50%;
+    --accent-foreground: 0 0% 100%;
 
     /* Muted - Toni neutri */
-    --muted: 33 50% 88%;
-    --muted-foreground: 318 40% 35%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 217 20% 45%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 318 30% 85%;
-    --input: 318 30% 85%;
-    --ring: 318 93% 11%;
+    --border: 217 15% 85%;
+    --input: 217 15% 85%;
+    --ring: 327 91% 40%;
 
     --radius: 0.5rem;
 
     /* Designer Italia gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(318 93% 11%), hsl(318 70% 25%));
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(33 100% 98%));
-    --shadow-soft: 0 2px 8px -2px hsl(318 93% 11% / 0.08);
-    --shadow-elevated: 0 6px 16px -4px hsl(318 93% 11% / 0.12);
+    --gradient-hero: linear-gradient(135deg, hsl(327 91% 40%), hsl(327 80% 50%));
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(0 0% 98%));
+    --shadow-soft: 0 2px 8px -2px hsl(327 91% 40% / 0.08);
+    --shadow-elevated: 0 6px 16px -4px hsl(327 91% 40% / 0.12);
   }
 
   .dark {
     /* Designer Italia - Dark Mode */
-    --background: 318 93% 8%;
-    --foreground: 33 100% 94%;
+    --background: 217 35% 9%;
+    --foreground: 0 0% 98%;
 
-    --card: 318 70% 12%;
-    --card-foreground: 33 100% 94%;
+    --card: 217 30% 12%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 318 70% 12%;
-    --popover-foreground: 33 100% 94%;
+    --popover: 217 30% 12%;
+    --popover-foreground: 0 0% 98%;
 
-    /* Primary - Viola più chiaro per dark mode */
-    --primary: 318 70% 25%;
-    --primary-foreground: 33 100% 94%;
-    --primary-hover: 318 70% 30%;
+    /* Primary - Rosa più luminoso per dark mode */
+    --primary: 327 91% 50%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 327 91% 55%;
 
-    /* Secondary - Beige adattato per dark mode */
-    --secondary: 33 60% 30%;
-    --secondary-foreground: 33 100% 94%;
-    --secondary-hover: 33 60% 35%;
+    /* Secondary - Blu più chiaro per dark mode */
+    --secondary: 217 35% 20%;
+    --secondary-foreground: 0 0% 100%;
+    --secondary-hover: 217 35% 25%;
 
     /* Accent */
-    --accent: 318 50% 35%;
-    --accent-foreground: 33 100% 94%;
+    --accent: 327 80% 55%;
+    --accent-foreground: 0 0% 100%;
 
     /* Muted for dark */
-    --muted: 318 30% 18%;
-    --muted-foreground: 33 40% 70%;
+    --muted: 217 25% 15%;
+    --muted-foreground: 217 15% 65%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 318 30% 20%;
-    --input: 318 30% 20%;
-    --ring: 318 70% 25%;
+    --border: 217 20% 20%;
+    --input: 217 20% 20%;
+    --ring: 327 91% 50%;
 
-    --gradient-hero: linear-gradient(135deg, hsl(318 70% 25%), hsl(318 50% 35%));
-    --gradient-card: linear-gradient(180deg, hsl(318 70% 12%), hsl(318 93% 8%));
-    --shadow-soft: 0 2px 8px -2px hsl(318 93% 11% / 0.35);
-    --shadow-elevated: 0 6px 16px -4px hsl(318 93% 11% / 0.45);
+    --gradient-hero: linear-gradient(135deg, hsl(327 91% 50%), hsl(327 80% 55%));
+    --gradient-card: linear-gradient(180deg, hsl(217 30% 12%), hsl(217 35% 9%));
+    --shadow-soft: 0 2px 8px -2px hsl(327 91% 40% / 0.35);
+    --shadow-elevated: 0 6px 16px -4px hsl(327 91% 40% / 0.45);
   }
 }
 
@@ -102,14 +102,18 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Lora', Georgia, serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Titillium Web', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
   p {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 14px;
-    line-height: 1.6;
+    font-family: 'Lora', Georgia, serif;
+    font-size: 16px;
+    line-height: 1.7;
   }
 }
