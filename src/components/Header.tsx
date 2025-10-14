@@ -250,76 +250,121 @@ export const Header = () => {
             <img src={logo} alt="Itinerari Intelligenti" className="h-12 w-auto" />
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-6 font-heading">
-            {!user ? (
-              <>
-                <Link to="/" className="text-sm font-medium text-white transition-colors hover:text-primary">
-                  Home
-                </Link>
-                <Link to="/create-itinerary" className="text-sm font-medium text-white transition-colors hover:text-primary">
-                  Progetto
-                </Link>
-                <Link to="/info" className="text-sm font-medium text-white transition-colors hover:text-primary">
-                  Info
-                </Link>
-                <Link to="/affiliates" className="text-sm font-medium text-white transition-colors hover:text-primary">
-                  Affiliates
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link to="/" className="text-sm font-medium text-white transition-colors hover:text-primary">
-                  Home
-                </Link>
-                <Link to="/dashboard" className="text-sm font-medium text-white transition-colors hover:text-primary">
-                  Dashboard
-                </Link>
-                <Link to="/create-itinerary" className="text-sm font-medium text-white transition-colors hover:text-primary">
-                  Experience
-                </Link>
-              </>
-            )}
-          </nav>
-
-          {/* Mobile Menu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon" className="text-white">
-                <Menu className="h-5 w-5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
+          {/* Desktop Navigation + User Menu */}
+          <div className="flex items-center gap-6">
+            <nav className="hidden md:flex items-center space-x-6 font-heading">
               {!user ? (
                 <>
-                  <DropdownMenuItem asChild>
-                    <Link to="/">Home</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/create-itinerary">Progetto</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/info">Info</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/affiliates">Affiliates</Link>
-                  </DropdownMenuItem>
+                  <Link to="/" className="text-sm font-medium text-white transition-colors hover:text-primary">
+                    Home
+                  </Link>
+                  <Link to="/create-itinerary" className="text-sm font-medium text-white transition-colors hover:text-primary">
+                    Progetto
+                  </Link>
+                  <Link to="/info" className="text-sm font-medium text-white transition-colors hover:text-primary">
+                    Info
+                  </Link>
+                  <Link to="/affiliates" className="text-sm font-medium text-white transition-colors hover:text-primary">
+                    Affiliates
+                  </Link>
                 </>
               ) : (
                 <>
+                  <Link to="/" className="text-sm font-medium text-white transition-colors hover:text-primary">
+                    Home
+                  </Link>
+                  <Link to="/dashboard" className="text-sm font-medium text-white transition-colors hover:text-primary">
+                    Dashboard
+                  </Link>
+                  <Link to="/create-itinerary" className="text-sm font-medium text-white transition-colors hover:text-primary">
+                    Experience
+                  </Link>
+                </>
+              )}
+            </nav>
+
+            {/* User Menu - Desktop */}
+            {user && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild className="hidden md:block">
+                  <Button variant="ghost" size="sm" className="gap-2 text-white hover:text-primary">
+                    <Avatar className="h-6 w-6">
+                      <AvatarImage src={profile?.avatar_url} alt={profile?.display_name || user.email || "User"} />
+                      <AvatarFallback>
+                        {profile?.display_name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="text-sm font-medium">
+                      {profile?.display_name || user.email?.split("@")[0] || "Utente"}
+                    </span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
                   <DropdownMenuItem asChild>
-                    <Link to="/">Home</Link>
+                    <Link to="/profile">Profilo</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link to="/dashboard">Dashboard</Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/create-itinerary">Experience</Link>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={signOut}>
+                    Esci
                   </DropdownMenuItem>
-                </>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+
+            {/* Mobile Menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild className="md:hidden">
+                <Button variant="ghost" size="icon" className="text-white">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                {!user ? (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link to="/">Home</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/create-itinerary">Progetto</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/info">Info</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/affiliates">Affiliates</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link to="/auth">Accedi</Link>
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link to="/">Home</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/dashboard">Dashboard</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/create-itinerary">Experience</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link to="/profile">Profilo</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={signOut}>
+                      Esci
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </header>
     </>
