@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, CarouselApi } from "@/components/ui/carousel";
-import { Calendar, MapPin, ArrowRight } from "lucide-react";
+import { Calendar, MapPin, ArrowRight, Landmark, Plus } from "lucide-react";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
 import { toast } from "sonner";
@@ -97,7 +97,7 @@ export const ForYouSection = () => {
           {itineraries.map((itinerary) => (
             <CarouselItem key={itinerary.id} className="md:basis-1/2 lg:basis-1/3">
               <Card 
-                className="group hover:shadow-soft transition-all cursor-pointer border-border/50 overflow-hidden h-full"
+                className="group hover:shadow-lg transition-all cursor-pointer overflow-hidden h-full flex flex-col"
                 style={{ borderRadius: '0' }}
                 onClick={handleItineraryClick}
               >
@@ -105,41 +105,47 @@ export const ForYouSection = () => {
                   destination={itinerary.destination}
                   title={itinerary.title}
                 />
-                <CardHeader>
-                  <div className="flex items-start justify-between mb-2">
-                    <Badge variant="secondary" className="bg-primary/10 text-primary">
-                      Proposto
-                    </Badge>
+                <CardContent className="flex-1 flex flex-col p-6">
+                  {/* Title with icon */}
+                  <div className="flex items-start justify-between mb-3">
+                    <h3 className="text-xl font-bold text-foreground border-b-2 border-foreground pb-1 flex-1">
+                      {itinerary.title}
+                    </h3>
+                    <Landmark className="w-6 h-6 ml-2 flex-shrink-0" style={{ color: '#C50972' }} />
                   </div>
-                  <CardTitle className="line-clamp-2 group-hover:text-primary transition-colors">
-                    {itinerary.title}
-                  </CardTitle>
-                  <CardDescription className="flex items-center gap-1">
-                    <MapPin className="w-3 h-3" />
-                    {itinerary.destination}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Calendar className="w-4 h-4" />
-                    <span>
-                      {format(new Date(itinerary.start_date), "dd MMM", { locale: it })} - {format(new Date(itinerary.end_date), "dd MMM yyyy", { locale: it })}
-                    </span>
-                  </div>
-                  
+
+                  {/* Description */}
                   {itinerary.ai_content?.description && (
-                    <p className="text-sm text-muted-foreground line-clamp-3">
+                    <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
                       {itinerary.ai_content.description}
                     </p>
                   )}
 
-                  <Button 
-                    variant="ghost" 
-                    className="w-full group-hover:bg-primary/10 group-hover:text-primary transition-colors"
+                  {/* Category badge */}
+                  <div className="mb-4">
+                    <span className="text-xs font-bold text-foreground tracking-wider">MUSEI</span>
+                  </div>
+
+                  {/* Scopri di più link */}
+                  <button 
+                    className="flex items-center gap-2 mb-4 group/link"
+                    style={{ color: '#C50972' }}
                   >
-                    Scopri di più
-                    <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </Button>
+                    <span className="text-sm font-bold">SCOPRI DI PIÙ</span>
+                    <ArrowRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
+                  </button>
+
+                  {/* Footer */}
+                  <div className="mt-auto pt-4 border-t border-border flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <MapPin className="w-4 h-4" />
+                      <span>Distanza: 3 km</span>
+                    </div>
+                    <button className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                      <span>Aggiungi ai preferiti</span>
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </div>
                 </CardContent>
               </Card>
             </CarouselItem>
