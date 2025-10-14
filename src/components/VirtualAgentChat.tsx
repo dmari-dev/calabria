@@ -278,7 +278,7 @@ export const VirtualAgentChat = ({ initialCity, autoExpand }: VirtualAgentChatPr
   };
 
   return (
-    <div className="w-full bg-card relative" style={{ zIndex: 9999, boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)', borderRadius: '2rem' }}>
+    <div className="w-full bg-card relative" style={{ zIndex: 9999, boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)' }}>
       <div className="px-4 sm:px-6 lg:px-8 relative py-4">
         {/* Expanded Chat Window - Opens upward */}
         <div
