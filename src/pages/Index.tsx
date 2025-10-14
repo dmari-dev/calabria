@@ -160,7 +160,7 @@ const Index = () => {
       <section className="py-0 overflow-hidden">
         <div className="grid md:grid-cols-2">
           {/* Left - Virtual Agent Chat */}
-          <div className="bg-secondary p-8 md:p-12 flex flex-col justify-center min-h-[600px]">
+          <div className="bg-secondary p-[100px] flex flex-col justify-center min-h-[600px]">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Chiedi a Pitagora
             </h2>
