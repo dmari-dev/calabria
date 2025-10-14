@@ -78,12 +78,90 @@ export const Header = () => {
 
       {/* Main navigation bar */}
       <div className="border-b" style={{ backgroundColor: '#0F151F' }}>
-        <div className="container flex items-center justify-between h-20">
-          <Link to="/" className="flex items-center space-x-2">
-            <img src={logo} alt="Itinerari Intelligenti" className="h-12 w-auto" />
-          </Link>
+        <div className="container flex flex-col py-6">
+          {/* Logo */}
+          <div className="flex items-center justify-between mb-6">
+            <Link to="/" className="flex items-center space-x-2">
+              <img src={logo} alt="Itinerari Intelligenti" className="h-20 w-auto" />
+            </Link>
 
-          {/* Desktop Navigation */}
+            {/* Mobile menu button */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild className="md:hidden">
+                <Button variant="ghost" size="icon" className="text-white">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                {!user ? (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link to="/" className="flex items-center gap-2">
+                        <Home className="w-4 h-4" />
+                        Home
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/create-itinerary" className="flex items-center gap-2">
+                        <Sparkles className="w-4 h-4" />
+                        Progetto
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/info" className="flex items-center gap-2">
+                        <Info className="w-4 h-4" />
+                        Info
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/affiliates" className="flex items-center gap-2">
+                        <Users className="w-4 h-4" />
+                        Affiliates
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link to="/auth">Accedi</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/auth">Registrati</Link>
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link to="/" className="flex items-center gap-2">
+                        <Home className="w-4 h-4" />
+                        Home
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/dashboard" className="flex items-center gap-2">
+                        <LayoutDashboard className="w-4 h-4" />
+                        Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/create-itinerary" className="flex items-center gap-2">
+                        <Sparkles className="w-4 h-4" />
+                        Experience
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link to="/profile">Profilo</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={signOut}>
+                      Esci
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          {/* Desktop Navigation - Below logo */}
           <nav className="hidden md:flex items-center space-x-8 font-heading">
             {!user ? (
               <>
@@ -114,81 +192,6 @@ export const Header = () => {
               </>
             )}
           </nav>
-
-          {/* Mobile menu button */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon" className="text-white">
-                <Menu className="h-5 w-5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              {!user ? (
-                <>
-                  <DropdownMenuItem asChild>
-                    <Link to="/" className="flex items-center gap-2">
-                      <Home className="w-4 h-4" />
-                      Home
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/create-itinerary" className="flex items-center gap-2">
-                      <Sparkles className="w-4 h-4" />
-                      Progetto
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/info" className="flex items-center gap-2">
-                      <Info className="w-4 h-4" />
-                      Info
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/affiliates" className="flex items-center gap-2">
-                      <Users className="w-4 h-4" />
-                      Affiliates
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link to="/auth">Accedi</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/auth">Registrati</Link>
-                  </DropdownMenuItem>
-                </>
-              ) : (
-                <>
-                  <DropdownMenuItem asChild>
-                    <Link to="/" className="flex items-center gap-2">
-                      <Home className="w-4 h-4" />
-                      Home
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/dashboard" className="flex items-center gap-2">
-                      <LayoutDashboard className="w-4 h-4" />
-                      Dashboard
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/create-itinerary" className="flex items-center gap-2">
-                      <Sparkles className="w-4 h-4" />
-                      Experience
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link to="/profile">Profilo</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={signOut}>
-                    Esci
-                  </DropdownMenuItem>
-                </>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
       </div>
     </header>
