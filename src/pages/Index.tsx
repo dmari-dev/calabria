@@ -226,7 +226,7 @@ const Index = () => {
                 <Sparkles className="w-8 h-8 text-white" />
               </div>
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Pronto a Partire?
+                Inizia Adesso
               </h2>
               <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
                 Crea il tuo primo itinerario culturale personalizzato in pochi minuti
