@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, CarouselApi } from "@/components/ui/carousel";
 import { Calendar, MapPin, ArrowRight } from "lucide-react";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
@@ -24,10 +24,22 @@ export const ForYouSection = () => {
   const navigate = useNavigate();
   const [itineraries, setItineraries] = useState<PlatformItinerary[]>([]);
   const [loading, setLoading] = useState(true);
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
 
   useEffect(() => {
     loadPlatformItineraries();
   }, []);
+
+  useEffect(() => {
+    if (!api) return;
+
+    setCurrent(api.selectedScrollSnap());
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap());
+    });
+  }, [api]);
 
   const loadPlatformItineraries = async () => {
     try {
@@ -74,6 +86,7 @@ export const ForYouSection = () => {
       </div>
 
       <Carousel
+        setApi={setApi}
         opts={{
           align: "start",
           loop: true,
@@ -134,6 +147,22 @@ export const ForYouSection = () => {
         <CarouselPrevious />
         <CarouselNext />
       </Carousel>
+      
+      {/* Dot Navigation */}
+      <div className="flex justify-center gap-2 mt-6">
+        {Array.from({ length: Math.ceil(itineraries.length / 3) }).map((_, index) => (
+          <button
+            key={index}
+            onClick={() => api?.scrollTo(index)}
+            className={`w-2 h-2 rounded-full transition-all ${
+              current === index 
+                ? 'bg-primary w-8' 
+                : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
+            }`}
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
+      </div>
     </section>
   );
 };
