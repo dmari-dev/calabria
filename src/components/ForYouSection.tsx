@@ -4,7 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, Calendar, MapPin, ArrowRight } from "lucide-react";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Calendar, MapPin, ArrowRight } from "lucide-react";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
 import { toast } from "sonner";
@@ -72,56 +73,67 @@ export const ForYouSection = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {itineraries.map((itinerary) => (
-          <Card 
-            key={itinerary.id}
-            className="group hover:shadow-soft transition-all cursor-pointer border-border/50 overflow-hidden"
-            onClick={handleItineraryClick}
-          >
-            <ItineraryCoverImage 
-              destination={itinerary.destination}
-              title={itinerary.title}
-            />
-            <CardHeader>
-              <div className="flex items-start justify-between mb-2">
-                <Badge variant="secondary" className="bg-primary/10 text-primary">
-                  Proposto
-                </Badge>
-              </div>
-              <CardTitle className="line-clamp-2 group-hover:text-primary transition-colors">
-                {itinerary.title}
-              </CardTitle>
-              <CardDescription className="flex items-center gap-1">
-                <MapPin className="w-3 h-3" />
-                {itinerary.destination}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Calendar className="w-4 h-4" />
-                <span>
-                  {format(new Date(itinerary.start_date), "dd MMM", { locale: it })} - {format(new Date(itinerary.end_date), "dd MMM yyyy", { locale: it })}
-                </span>
-              </div>
-              
-              {itinerary.ai_content?.description && (
-                <p className="text-sm text-muted-foreground line-clamp-3">
-                  {itinerary.ai_content.description}
-                </p>
-              )}
-
-              <Button 
-                variant="ghost" 
-                className="w-full group-hover:bg-primary/10 group-hover:text-primary transition-colors"
+      <Carousel
+        opts={{
+          align: "start",
+          loop: true,
+        }}
+        className="w-full"
+      >
+        <CarouselContent>
+          {itineraries.map((itinerary) => (
+            <CarouselItem key={itinerary.id} className="md:basis-1/2 lg:basis-1/3">
+              <Card 
+                className="group hover:shadow-soft transition-all cursor-pointer border-border/50 overflow-hidden h-full"
+                onClick={handleItineraryClick}
               >
-                Scopri di più
-                <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                <ItineraryCoverImage 
+                  destination={itinerary.destination}
+                  title={itinerary.title}
+                />
+                <CardHeader>
+                  <div className="flex items-start justify-between mb-2">
+                    <Badge variant="secondary" className="bg-primary/10 text-primary">
+                      Proposto
+                    </Badge>
+                  </div>
+                  <CardTitle className="line-clamp-2 group-hover:text-primary transition-colors">
+                    {itinerary.title}
+                  </CardTitle>
+                  <CardDescription className="flex items-center gap-1">
+                    <MapPin className="w-3 h-3" />
+                    {itinerary.destination}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Calendar className="w-4 h-4" />
+                    <span>
+                      {format(new Date(itinerary.start_date), "dd MMM", { locale: it })} - {format(new Date(itinerary.end_date), "dd MMM yyyy", { locale: it })}
+                    </span>
+                  </div>
+                  
+                  {itinerary.ai_content?.description && (
+                    <p className="text-sm text-muted-foreground line-clamp-3">
+                      {itinerary.ai_content.description}
+                    </p>
+                  )}
+
+                  <Button 
+                    variant="ghost" 
+                    className="w-full group-hover:bg-primary/10 group-hover:text-primary transition-colors"
+                  >
+                    Scopri di più
+                    <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </CardContent>
+              </Card>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselPrevious />
+        <CarouselNext />
+      </Carousel>
     </section>
   );
 };
