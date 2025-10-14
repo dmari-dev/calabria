@@ -99,11 +99,11 @@ const Index = () => {
           <div className="bg-white flex items-center justify-center px-8 md:px-16 py-12">
             <div className="max-w-xl">
               <h1 className="text-4xl md:text-5xl font-bold mb-6 text-foreground leading-tight">
-                Inizia il tuo viaggio alla scoperta del patrimonio culturale calabrese
+                Inizia il tuo viaggio alla scoperta del patrimonio culturale della tua città
               </h1>
               
               <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-8">
-                The Margherita Hack botanic garden, the famous and wonderful historical park of the country which extends behind Palazzo Carducci, represents one of the world's greatest examples of an Italian garden.
+                Esplora i tesori nascosti e i luoghi simbolo della tua destinazione. Dalla storia millenaria ai capolavori artistici, ogni città italiana custodisce patrimoni culturali unici che aspettano solo di essere scoperti.
               </p>
               
               <Button 
