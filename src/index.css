@@ -8,90 +8,90 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Airbnb Design System - Light Mode */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 13%;
+    /* Designer Italia - Light Mode */
+    --background: 33 100% 94%; /* #FFF1E0 */
+    --foreground: 318 93% 11%; /* #380220 */
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 13%;
+    --card-foreground: 318 93% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 13%;
+    --popover-foreground: 318 93% 11%;
 
-    /* Airbnb Rausch - Signature coral/pink */
-    --primary: 358 100% 67%;
-    --primary-foreground: 0 0% 100%;
-    --primary-hover: 358 100% 60%;
+    /* Primary - Viola scuro Designer Italia */
+    --primary: 318 93% 11%; /* #380220 */
+    --primary-foreground: 33 100% 94%; /* #FFF1E0 */
+    --primary-hover: 318 93% 16%;
 
-    /* Airbnb Babu - Teal */
-    --secondary: 174 100% 33%;
-    --secondary-foreground: 0 0% 100%;
-    --secondary-hover: 174 100% 28%;
+    /* Secondary - Beige chiaro Designer Italia */
+    --secondary: 33 100% 94%; /* #FFF1E0 */
+    --secondary-foreground: 318 93% 11%; /* #380220 */
+    --secondary-hover: 33 100% 90%;
 
-    /* Airbnb Kazan - Accent orange */
-    --accent: 16 97% 58%;
-    --accent-foreground: 0 0% 100%;
+    /* Accent - Variazione del viola */
+    --accent: 318 70% 25%;
+    --accent-foreground: 33 100% 94%;
 
-    /* Airbnb Foggy - Muted grays */
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 46%;
+    /* Muted - Toni neutri */
+    --muted: 33 50% 88%;
+    --muted-foreground: 318 40% 35%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 358 100% 67%;
+    --border: 318 30% 85%;
+    --input: 318 30% 85%;
+    --ring: 318 93% 11%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
-    /* Airbnb-inspired gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(358 100% 67%), hsl(16 97% 58%));
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(0 0% 98%));
-    --shadow-soft: 0 2px 8px -2px hsl(358 100% 67% / 0.12);
-    --shadow-elevated: 0 6px 16px -4px hsl(358 100% 67% / 0.15);
+    /* Designer Italia gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(318 93% 11%), hsl(318 70% 25%));
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(33 100% 98%));
+    --shadow-soft: 0 2px 8px -2px hsl(318 93% 11% / 0.08);
+    --shadow-elevated: 0 6px 16px -4px hsl(318 93% 11% / 0.12);
   }
 
   .dark {
-    /* Airbnb Design System - Dark Mode */
-    --background: 0 0% 7%;
-    --foreground: 0 0% 95%;
+    /* Designer Italia - Dark Mode */
+    --background: 318 93% 8%;
+    --foreground: 33 100% 94%;
 
-    --card: 0 0% 10%;
-    --card-foreground: 0 0% 95%;
+    --card: 318 70% 12%;
+    --card-foreground: 33 100% 94%;
 
-    --popover: 0 0% 10%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 318 70% 12%;
+    --popover-foreground: 33 100% 94%;
 
-    /* Airbnb Rausch - Adjusted for dark mode */
-    --primary: 358 100% 67%;
-    --primary-foreground: 0 0% 100%;
-    --primary-hover: 358 100% 72%;
+    /* Primary - Viola più chiaro per dark mode */
+    --primary: 318 70% 25%;
+    --primary-foreground: 33 100% 94%;
+    --primary-hover: 318 70% 30%;
 
-    /* Airbnb Babu - Teal for dark mode */
-    --secondary: 174 100% 40%;
-    --secondary-foreground: 0 0% 100%;
-    --secondary-hover: 174 100% 45%;
+    /* Secondary - Beige adattato per dark mode */
+    --secondary: 33 60% 30%;
+    --secondary-foreground: 33 100% 94%;
+    --secondary-hover: 33 60% 35%;
 
-    /* Airbnb Kazan - Accent orange */
-    --accent: 16 97% 58%;
-    --accent-foreground: 0 0% 100%;
+    /* Accent */
+    --accent: 318 50% 35%;
+    --accent-foreground: 33 100% 94%;
 
-    /* Airbnb Foggy - Muted for dark */
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 60%;
+    /* Muted for dark */
+    --muted: 318 30% 18%;
+    --muted-foreground: 33 40% 70%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 18%;
-    --input: 0 0% 18%;
-    --ring: 358 100% 67%;
+    --border: 318 30% 20%;
+    --input: 318 30% 20%;
+    --ring: 318 70% 25%;
 
-    --gradient-hero: linear-gradient(135deg, hsl(358 100% 67%), hsl(16 97% 58%));
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 10%), hsl(0 0% 7%));
-    --shadow-soft: 0 2px 8px -2px hsl(358 100% 67% / 0.25);
-    --shadow-elevated: 0 6px 16px -4px hsl(358 100% 67% / 0.3);
+    --gradient-hero: linear-gradient(135deg, hsl(318 70% 25%), hsl(318 50% 35%));
+    --gradient-card: linear-gradient(180deg, hsl(318 70% 12%), hsl(318 93% 8%));
+    --shadow-soft: 0 2px 8px -2px hsl(318 93% 11% / 0.35);
+    --shadow-elevated: 0 6px 16px -4px hsl(318 93% 11% / 0.45);
   }
 }
 

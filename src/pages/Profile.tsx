@@ -140,17 +140,30 @@ const Profile = () => {
           itinerary_id,
           shared_with_email,
           status,
-          created_at,
-          itineraries (
-            title,
-            destination
-          )
+          created_at
         `)
         .eq("shared_with_email", user?.email)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setReceivedShares(data || []);
+      
+      // Load itinerary details separately for each share
+      const sharesWithItineraries = await Promise.all(
+        (data || []).map(async (share) => {
+          const { data: itinerary } = await supabase
+            .from("itineraries")
+            .select("title, destination")
+            .eq("id", share.itinerary_id)
+            .single();
+          
+          return {
+            ...share,
+            itineraries: itinerary || { title: "Itinerario", destination: "N/A" }
+          };
+        })
+      );
+      
+      setReceivedShares(sharesWithItineraries);
     } catch (error: any) {
       console.error("Error loading shares:", error);
     }
