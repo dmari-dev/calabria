@@ -441,7 +441,7 @@ export const VirtualAgentChat = ({ initialCity, autoExpand, expandDirection = 'd
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
             onFocus={() => setIsExpanded(true)}
-            placeholder="Inserisci cosa vuoi fare o dove vuoi andare..."
+            placeholder="Chiedi a Pitagora cosa vuoi fare e cosa vuoi vedere"
             className="flex-1 bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-foreground"
             disabled={isLoading}
           />
