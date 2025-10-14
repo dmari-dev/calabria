@@ -175,28 +175,28 @@ export const Header = () => {
           <nav className="hidden md:flex items-center space-x-8 font-heading">
             {!user ? (
               <>
-                <Link to="/" className="text-sm font-medium text-white transition-colors hover:text-primary">
+                <Link to="/" className="text-base font-medium text-white transition-colors hover:text-white border-b border-transparent hover:border-white pb-1">
                   Home
                 </Link>
-                <Link to="/create-itinerary" className="text-sm font-medium text-white transition-colors hover:text-primary">
+                <Link to="/create-itinerary" className="text-base font-medium text-white transition-colors hover:text-white border-b border-transparent hover:border-white pb-1">
                   Progetto
                 </Link>
-                <Link to="/info" className="text-sm font-medium text-white transition-colors hover:text-primary">
+                <Link to="/info" className="text-base font-medium text-white transition-colors hover:text-white border-b border-transparent hover:border-white pb-1">
                   Info
                 </Link>
-                <Link to="/affiliates" className="text-sm font-medium text-white transition-colors hover:text-primary">
+                <Link to="/affiliates" className="text-base font-medium text-white transition-colors hover:text-white border-b border-transparent hover:border-white pb-1">
                   Affiliates
                 </Link>
               </>
             ) : (
               <>
-                <Link to="/" className="text-sm font-medium text-white transition-colors hover:text-primary">
+                <Link to="/" className="text-base font-medium text-white transition-colors hover:text-white border-b border-transparent hover:border-white pb-1">
                   Home
                 </Link>
-                <Link to="/dashboard" className="text-sm font-medium text-white transition-colors hover:text-primary">
+                <Link to="/dashboard" className="text-base font-medium text-white transition-colors hover:text-white border-b border-transparent hover:border-white pb-1">
                   Dashboard
                 </Link>
-                <Link to="/create-itinerary" className="text-sm font-medium text-white transition-colors hover:text-primary">
+                <Link to="/create-itinerary" className="text-base font-medium text-white transition-colors hover:text-white border-b border-transparent hover:border-white pb-1">
                   Experience
                 </Link>
               </>
