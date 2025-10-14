@@ -287,15 +287,15 @@ export const Header = () => {
             {user && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild className="hidden md:block">
-                  <Button variant="ghost" size="sm" className="gap-2 text-white hover:text-primary">
-                    <Avatar className="h-6 w-6">
+                  <Button variant="ghost" className="flex flex-col items-center gap-1 h-auto py-2 px-3 text-white hover:text-primary hover:bg-white/10">
+                    <Avatar className="h-8 w-8">
                       <AvatarImage src={profile?.avatar_url} alt={profile?.display_name || user.email || "User"} />
                       <AvatarFallback>
                         {profile?.display_name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="text-sm font-medium">
-                      {profile?.display_name || user.email?.split("@")[0] || "Utente"}
+                    <span className="text-xs font-medium">
+                      {profile?.display_name || user.email?.split("@")[0] || "user"}
                     </span>
                   </Button>
                 </DropdownMenuTrigger>
