@@ -34,33 +34,20 @@ export const Header = () => {
   }, [user]);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b backdrop-blur supports-[backdrop-filter]:bg-background/60" style={{ backgroundColor: '#0F151F' }}>
-      <div className="container flex flex-col" style={{ height: '180px' }}>
-        {/* Top row: Logo and Auth buttons */}
-        <div className="flex items-center justify-between pt-6 pb-4">
-          <Link to="/" className="flex items-center space-x-2">
-            <img src={logo} alt="Itinerari Intelligenti" className="h-16 w-auto" />
-          </Link>
-
-          {/* Auth buttons for desktop (non-logged in users) */}
-          {!user && (
-            <div className="hidden md:flex items-center space-x-2 font-heading">
-              <Button variant="ghost" asChild className="text-white hover:text-primary">
-                <Link to="/auth">Accedi</Link>
+    <header className="sticky top-0 z-50 w-full">
+      {/* Top bar */}
+      <div className="bg-muted border-b">
+        <div className="container flex items-center justify-end h-10">
+          <div className="flex items-center gap-4 text-sm font-heading">
+            {!user ? (
+              <Button size="sm" asChild>
+                <Link to="/auth">Accedi all'area personale</Link>
               </Button>
-              <Button asChild className="text-white">
-                <Link to="/auth">Registrati</Link>
-              </Button>
-            </div>
-          )}
-
-          {/* User menu for logged in users */}
-          {user && (
-            <div className="hidden md:flex items-center gap-3 font-heading">
+            ) : (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="gap-2 h-auto py-2 px-3 text-white hover:text-primary">
-                    <Avatar className="h-8 w-8">
+                  <Button variant="ghost" size="sm" className="gap-2">
+                    <Avatar className="h-6 w-6">
                       <AvatarImage src={profile?.avatar_url} alt={profile?.display_name || user.email || "User"} />
                       <AvatarFallback>
                         {profile?.display_name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"}
@@ -84,8 +71,49 @@ export const Header = () => {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            </div>
-          )}
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Main navigation bar */}
+      <div className="border-b" style={{ backgroundColor: '#0F151F' }}>
+        <div className="container flex items-center justify-between h-20">
+          <Link to="/" className="flex items-center space-x-2">
+            <img src={logo} alt="Itinerari Intelligenti" className="h-12 w-auto" />
+          </Link>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-8 font-heading">
+            {!user ? (
+              <>
+                <Link to="/" className="text-sm font-medium text-white transition-colors hover:text-primary">
+                  Home
+                </Link>
+                <Link to="/create-itinerary" className="text-sm font-medium text-white transition-colors hover:text-primary">
+                  Progetto
+                </Link>
+                <Link to="/info" className="text-sm font-medium text-white transition-colors hover:text-primary">
+                  Info
+                </Link>
+                <Link to="/affiliates" className="text-sm font-medium text-white transition-colors hover:text-primary">
+                  Affiliates
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link to="/" className="text-sm font-medium text-white transition-colors hover:text-primary">
+                  Home
+                </Link>
+                <Link to="/dashboard" className="text-sm font-medium text-white transition-colors hover:text-primary">
+                  Dashboard
+                </Link>
+                <Link to="/create-itinerary" className="text-sm font-medium text-white transition-colors hover:text-primary">
+                  Experience
+                </Link>
+              </>
+            )}
+          </nav>
 
           {/* Mobile menu button */}
           <DropdownMenu>
@@ -162,45 +190,6 @@ export const Header = () => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-
-        {/* Desktop Navigation - Below logo, aligned left */}
-        <nav className="hidden md:flex items-center space-x-6 font-heading pb-6">
-          {!user ? (
-            <>
-              <Link to="/" className="text-sm font-medium text-white transition-colors hover:text-primary flex items-center gap-2">
-                <Home className="w-4 h-4" />
-                Home
-              </Link>
-              <Link to="/create-itinerary" className="text-sm font-medium text-white transition-colors hover:text-primary flex items-center gap-2">
-                <Sparkles className="w-4 h-4" />
-                Progetto
-              </Link>
-              <Link to="/info" className="text-sm font-medium text-white transition-colors hover:text-primary flex items-center gap-2">
-                <Info className="w-4 h-4" />
-                Info
-              </Link>
-              <Link to="/affiliates" className="text-sm font-medium text-white transition-colors hover:text-primary flex items-center gap-2">
-                <Users className="w-4 h-4" />
-                Affiliates
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link to="/" className="text-sm font-medium text-white transition-colors hover:text-primary flex items-center gap-2">
-                <Home className="w-4 h-4" />
-                Home
-              </Link>
-              <Link to="/dashboard" className="text-sm font-medium text-white transition-colors hover:text-primary flex items-center gap-2">
-                <LayoutDashboard className="w-4 h-4" />
-                Dashboard
-              </Link>
-              <Link to="/create-itinerary" className="text-sm font-medium text-white transition-colors hover:text-primary flex items-center gap-2">
-                <Sparkles className="w-4 h-4" />
-                Experience
-              </Link>
-            </>
-          )}
-        </nav>
       </div>
     </header>
   );
