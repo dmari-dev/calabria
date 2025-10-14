@@ -146,59 +146,51 @@ const Index = () => {
       {/* Stats Section */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-muted/30 rounded-lg p-8 md:p-12">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              {/* Left - Stats */}
-              <div className="space-y-8">
-                <div className="flex items-start gap-4">
-                  <div className="w-16 h-16 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#C50972' }}>
-                    <Landmark className="w-8 h-8 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-4xl font-bold text-foreground mb-1">66.728</p>
-                    <p className="text-muted-foreground">Beni culturali</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="w-16 h-16 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#C50972' }}>
-                    <Landmark className="w-8 h-8 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-4xl font-bold text-foreground mb-1">1.268</p>
-                    <p className="text-muted-foreground">Luoghi della cultura</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="w-16 h-16 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#C50972' }}>
-                    <Landmark className="w-8 h-8 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-4xl font-bold text-foreground mb-1">128</p>
-                    <p className="text-muted-foreground">Parchi e giardini</p>
-                  </div>
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            {/* Left - Stats */}
+            <div className="bg-muted/30 rounded-lg p-8 space-y-8">
+              <div className="flex items-start gap-4">
+                <Landmark className="w-12 h-12 flex-shrink-0" style={{ color: '#C50972' }} />
+                <div>
+                  <p className="text-4xl font-bold text-foreground mb-1" style={{ fontFamily: 'Titillium Web' }}>66.728</p>
+                  <p className="text-muted-foreground">Beni culturali</p>
                 </div>
               </div>
 
-              {/* Right - Text and CTA */}
-              <div>
-                <h2 className="text-3xl md:text-4xl font-bold mb-6 text-foreground">
-                  I numeri di una ricca eredità culturale
-                </h2>
-                <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-8">
-                  Dati, indicatori e analisi per leggere il sistema di fruizione e valorizzazione del patrimonio dei beni culturali regionale
-                </p>
-                <Button 
-                  variant="outline" 
-                  size="lg"
-                  className="px-8 py-6 text-sm"
-                  style={{ borderRadius: '6px' }}
-                  onClick={() => window.open('https://www.beniculturali.it', '_blank')}
-                >
-                  Visita l&apos;osservatorio
-                </Button>
+              <div className="flex items-start gap-4">
+                <Landmark className="w-12 h-12 flex-shrink-0" style={{ color: '#C50972' }} />
+                <div>
+                  <p className="text-4xl font-bold text-foreground mb-1" style={{ fontFamily: 'Titillium Web' }}>1.268</p>
+                  <p className="text-muted-foreground">Luoghi della cultura</p>
+                </div>
               </div>
+
+              <div className="flex items-start gap-4">
+                <Landmark className="w-12 h-12 flex-shrink-0" style={{ color: '#C50972' }} />
+                <div>
+                  <p className="text-4xl font-bold text-foreground mb-1" style={{ fontFamily: 'Titillium Web' }}>128</p>
+                  <p className="text-muted-foreground">Parchi e giardini</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Right - Text and CTA */}
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-foreground">
+                I numeri di una ricca eredità culturale
+              </h2>
+              <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-8">
+                Dati, indicatori e analisi per leggere il sistema di fruizione e valorizzazione del patrimonio dei beni culturali regionale
+              </p>
+              <Button 
+                variant="outline" 
+                size="lg"
+                className="px-8 py-6 text-sm"
+                style={{ borderRadius: '6px' }}
+                onClick={() => window.open('https://www.beniculturali.it', '_blank')}
+              >
+                Visita l&apos;osservatorio
+              </Button>
             </div>
           </div>
         </div>
