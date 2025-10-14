@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselApi } from "@/components/ui/carousel";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Sparkles, Map, Calendar, Users, Brain, ArrowRight, Landmark, MessageSquare } from "lucide-react";
 import heroImage from "@/assets/hero-tourists.jpg";
 import heroMilano from "@/assets/hero-milano.jpg";
@@ -20,12 +21,10 @@ const Index = () => {
   const [current, setCurrent] = useState(0);
   const [selectedCity, setSelectedCity] = useState<string | undefined>();
   const [isChatExpanded, setIsChatExpanded] = useState(false);
+  const [isChatDialogOpen, setIsChatDialogOpen] = useState(false);
 
   const handleOpenChat = () => {
-    setIsChatExpanded(true);
-    if (chatRef.current) {
-      chatRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
+    setIsChatDialogOpen(true);
   };
 
   useEffect(() => {
@@ -308,6 +307,18 @@ const Index = () => {
           </Card>
         </div>
       </section>
+
+      {/* Chat Dialog */}
+      <Dialog open={isChatDialogOpen} onOpenChange={setIsChatDialogOpen}>
+        <DialogContent className="max-w-4xl h-[80vh] p-0">
+          <DialogHeader className="p-6 pb-0">
+            <DialogTitle className="text-2xl font-bold">Chiedi a Pitagora</DialogTitle>
+          </DialogHeader>
+          <div className="flex-1 overflow-hidden p-6 pt-0">
+            <VirtualAgentChat autoExpand={true} />
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Footer */}
       <footer className="border-t py-8 bg-card/50">
