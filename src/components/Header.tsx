@@ -41,37 +41,37 @@ export const Header = () => {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center flex-1 justify-center space-x-6 font-inter">
+        <nav className="hidden md:flex items-center flex-1 justify-center space-x-6 font-heading">
           {!user ? (
             <>
-              <Link to="/" className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-2">
+              <Link to="/" className="text-sm font-medium text-white transition-colors hover:text-primary flex items-center gap-2">
                 <Home className="w-4 h-4" />
                 Home
               </Link>
-              <Link to="/create-itinerary" className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-2">
+              <Link to="/create-itinerary" className="text-sm font-medium text-white transition-colors hover:text-primary flex items-center gap-2">
                 <Sparkles className="w-4 h-4" />
                 Progetto
               </Link>
-              <Link to="/info" className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-2">
+              <Link to="/info" className="text-sm font-medium text-white transition-colors hover:text-primary flex items-center gap-2">
                 <Info className="w-4 h-4" />
                 Info
               </Link>
-              <Link to="/affiliates" className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-2">
+              <Link to="/affiliates" className="text-sm font-medium text-white transition-colors hover:text-primary flex items-center gap-2">
                 <Users className="w-4 h-4" />
                 Affiliates
               </Link>
             </>
           ) : (
             <>
-              <Link to="/" className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-2">
+              <Link to="/" className="text-sm font-medium text-white transition-colors hover:text-primary flex items-center gap-2">
                 <Home className="w-4 h-4" />
                 Home
               </Link>
-              <Link to="/dashboard" className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-2">
+              <Link to="/dashboard" className="text-sm font-medium text-white transition-colors hover:text-primary flex items-center gap-2">
                 <LayoutDashboard className="w-4 h-4" />
                 Dashboard
               </Link>
-              <Link to="/create-itinerary" className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-2">
+              <Link to="/create-itinerary" className="text-sm font-medium text-white transition-colors hover:text-primary flex items-center gap-2">
                 <Sparkles className="w-4 h-4" />
                 Experience
               </Link>
@@ -81,11 +81,11 @@ export const Header = () => {
 
         {/* Auth buttons for desktop (non-logged in users) */}
         {!user && (
-          <div className="hidden md:flex items-center space-x-2">
-            <Button variant="ghost" asChild>
+          <div className="hidden md:flex items-center space-x-2 font-heading">
+            <Button variant="ghost" asChild className="text-white hover:text-primary">
               <Link to="/auth">Accedi</Link>
             </Button>
-            <Button asChild>
+            <Button asChild className="text-white">
               <Link to="/auth">Registrati</Link>
             </Button>
           </div>
@@ -93,10 +93,10 @@ export const Header = () => {
 
         {/* User menu for logged in users */}
         {user && (
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-3 font-heading">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="gap-2 h-auto py-2 px-3">
+                <Button variant="ghost" className="gap-2 h-auto py-2 px-3 text-white hover:text-primary">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={profile?.avatar_url} alt={profile?.display_name || user.email || "User"} />
                     <AvatarFallback>
