@@ -37,7 +37,8 @@ export const Header = () => {
     <header className="sticky top-0 z-50 w-full">
       {/* Top bar */}
       <div className="bg-muted border-b">
-        <div className="container flex items-center justify-end h-10">
+        <div className="container flex items-center justify-between h-10">
+          <span className="text-sm font-heading text-foreground">Portale itinerary experience</span>
           <div className="flex items-center gap-4 text-sm font-heading">
             {!user ? (
               <Button size="sm" asChild>
