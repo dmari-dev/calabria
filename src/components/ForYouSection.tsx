@@ -66,14 +66,9 @@ export const ForYouSection = () => {
   return (
     <section className="py-12">
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-hero flex items-center justify-center">
-            <Sparkles className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold">For You</h2>
-            <p className="text-sm text-muted-foreground">Itinerari selezionati per te</p>
-          </div>
+        <div>
+          <h2 className="text-2xl font-bold">Itinerari per te</h2>
+          <p className="text-sm text-muted-foreground">Itinerari selezionati per te</p>
         </div>
       </div>
 
