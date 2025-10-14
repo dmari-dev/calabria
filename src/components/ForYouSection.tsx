@@ -67,7 +67,7 @@ export const ForYouSection = () => {
     <section className="py-12">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-bold">Itinerari per te</h2>
+          <h2 className="text-3xl md:text-4xl font-bold">Itinerari per te</h2>
           <p className="text-sm text-muted-foreground">Itinerari selezionati per te</p>
         </div>
       </div>
