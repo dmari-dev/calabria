@@ -3,12 +3,13 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselApi } from "@/components/ui/carousel";
-import { Sparkles, Map, Calendar, Users, Brain, ArrowRight, Landmark, MessageSquare } from "lucide-react";
+import { Sparkles, Map, Calendar, Users, Brain, ArrowRight, Landmark, MessageSquare, Facebook, Instagram, Youtube } from "lucide-react";
 import heroImage from "@/assets/hero-tourists.jpg";
 import heroMilano from "@/assets/hero-milano.jpg";
 import heroFirenze from "@/assets/hero-firenze.jpg";
 import heroVenezia from "@/assets/hero-venezia.jpg";
 import pitagoraImage from "@/assets/pitagora.png";
+import logoCalabria from "@/assets/logo-calabria-istoria.png";
 import heroVideo from "@/assets/hero-video.mp4";
 // import { Header } from "@/components/Header";
 import { ForYouSection } from "@/components/ForYouSection";
@@ -295,9 +296,73 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer className="border-t py-8 bg-card/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-muted-foreground">
-          <p>© 2025 Itinerari Intelligenti. Viaggi culturali personalizzati con AI.</p>
+      <footer className="bg-[#1a1a1a] text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            {/* Logo and Contact */}
+            <div>
+              <img src={logoCalabria} alt="Calabria Istoria" className="h-12 mb-6" />
+              <h3 className="font-bold mb-4">CONTATTI</h3>
+              <div className="text-sm space-y-2 text-gray-300">
+                <p>Regione Calabria</p>
+                <p>Viale Europa - Cittadella Regionale</p>
+                <p>Località Germaneto 88100 Catanzaro</p>
+                <p className="mt-4">info@regionecalabria.it</p>
+                <p className="mt-2">tel. 0961 855786 - 855770</p>
+                <p>Numero Verde: 800 841299</p>
+              </div>
+            </div>
+
+            {/* Social */}
+            <div>
+              <h3 className="font-bold mb-4">SEGUICI SU</h3>
+              <div className="flex gap-4">
+                <a href="#" className="hover:text-primary transition-colors">
+                  <Facebook size={24} />
+                </a>
+                <a href="#" className="hover:text-primary transition-colors">
+                  <Instagram size={24} />
+                </a>
+                <a href="#" className="hover:text-primary transition-colors">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                  </svg>
+                </a>
+                <a href="#" className="hover:text-primary transition-colors">
+                  <Youtube size={24} />
+                </a>
+              </div>
+            </div>
+
+            {/* Newsletter */}
+            <div>
+              <h3 className="font-bold mb-4">NEWSLETTER</h3>
+              <div className="flex gap-2">
+                <input 
+                  type="email" 
+                  placeholder="Indirizzo email"
+                  className="flex-1 px-4 py-2 bg-white text-black rounded"
+                />
+                <Button 
+                  variant="outline" 
+                  className="bg-transparent border-white text-white hover:bg-white hover:text-black"
+                >
+                  Iscriviti
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Links */}
+          <div className="border-t border-gray-700 pt-6">
+            <div className="flex flex-wrap gap-4 text-sm text-gray-400">
+              <a href="#" className="hover:text-white transition-colors">Media Policy</a>
+              <a href="#" className="hover:text-white transition-colors">Note Legali</a>
+              <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+              <a href="#" className="hover:text-white transition-colors">Mappa del sito</a>
+              <a href="#" className="hover:text-white transition-colors">Dichiarazione Accessibilità</a>
+            </div>
+          </div>
         </div>
       </footer>
     </div>
