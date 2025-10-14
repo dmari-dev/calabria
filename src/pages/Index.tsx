@@ -275,29 +275,22 @@ const Index = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <Card className="shadow-elevated border-primary/20 bg-gradient-card">
-            <CardContent className="pt-12 pb-12">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-hero flex items-center justify-center mx-auto mb-6">
-                <Sparkles className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Inizia Adesso
-              </h2>
-              <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-                Crea il tuo primo itinerario culturale personalizzato in pochi minuti
-              </p>
-              <Button 
-                size="lg"
-                className="bg-gradient-hero hover:opacity-90 transition-opacity text-lg px-8"
-                onClick={() => navigate("/auth")}
-              >
-                Inizia Ora
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
-            </CardContent>
-          </Card>
+      <section className="py-20" style={{ backgroundColor: '#EBF1FF' }}>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-16">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
+            Insieme, per la cultura
+          </h2>
+          <p className="text-base text-foreground/80 mb-8 max-w-2xl mx-auto">
+            Una nuova community per scoprire, documentare e promuovere il patrimonio culturale calabrese.
+          </p>
+          <Button 
+            size="lg"
+            className="px-10 py-6 text-sm"
+            style={{ backgroundColor: '#C50972', color: 'white', borderRadius: '6px' }}
+            onClick={() => navigate("/auth")}
+          >
+            Contatti
+          </Button>
         </div>
       </section>
 
