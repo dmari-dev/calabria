@@ -19,13 +19,13 @@ const Index = () => {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [selectedCity, setSelectedCity] = useState<string | undefined>();
+  const [openChat, setOpenChat] = useState(false);
 
   const handleOpenChat = () => {
     if (chatRef.current) {
       chatRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-    // Trigger the chat to expand by setting a city or empty string
-    setSelectedCity('');
+    setOpenChat(true);
   };
 
   useEffect(() => {
@@ -141,7 +141,7 @@ const Index = () => {
       {/* Virtual Agent Chat Bar */}
       <section ref={chatRef} className="w-full py-16" style={{ backgroundColor: '#EBF1FF' }}>
         <div className="max-w-7xl mx-auto px-5" style={{ marginTop: '-100px' }}>
-          <VirtualAgentChat initialCity={selectedCity} autoExpand={!!selectedCity} />
+          <VirtualAgentChat initialCity={selectedCity} autoExpand={openChat || !!selectedCity} />
         </div>
       </section>
 

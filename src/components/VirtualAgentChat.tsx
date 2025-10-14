@@ -50,6 +50,13 @@ export const VirtualAgentChat = ({ initialCity, autoExpand }: VirtualAgentChatPr
     }
   }, [initialCity, hasInitialized]);
 
+  // Espandi quando richiesto dal contenitore (CTA)
+  useEffect(() => {
+    if (autoExpand && !isExpanded) {
+      setIsExpanded(true);
+    }
+  }, [autoExpand, isExpanded]);
+
   // Mostra CTA dopo 3+ scambi di messaggi
   const shouldShowCTA = messages.length >= 6 && !isLoading;
 
