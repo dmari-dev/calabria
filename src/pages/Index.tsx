@@ -156,7 +156,7 @@ const Index = () => {
       <section className="py-0 overflow-hidden">
         <div className="grid md:grid-cols-2">
           {/* Left - Dark content */}
-          <div className="bg-secondary p-12 md:p-16 flex flex-col justify-center">
+          <div className="bg-secondary p-12 md:p-20 flex flex-col justify-center min-h-[600px]">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
               Chiedi a Pitagora
             </h2>
@@ -181,7 +181,7 @@ const Index = () => {
           </div>
 
           {/* Right - Image */}
-          <div className="relative h-[400px] md:h-auto">
+          <div className="relative min-h-[600px]">
             <img 
               src={pitagoraImage} 
               alt="Pitagora" 
