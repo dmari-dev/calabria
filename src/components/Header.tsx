@@ -7,7 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Menu, User, ShieldCheck, Home, Info, Users, LayoutDashboard, Sparkles } from "lucide-react";
+import { Menu, User, ShieldCheck, Home, Info, Users, LayoutDashboard, Sparkles, Facebook, Instagram } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useRole } from "@/hooks/useRole";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -85,7 +85,16 @@ export const Header = () => {
               <img src={logo} alt="Itinerari Intelligenti" className="h-20 w-auto" />
             </Link>
 
-            {/* Mobile menu button */}
+            {/* Social icons - desktop */}
+            <div className="hidden md:flex items-center gap-4">
+              <span className="text-white text-sm font-heading">Seguici su:</span>
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-white hover:text-primary transition-colors">
+                <Facebook className="w-5 h-5" />
+              </a>
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-white hover:text-primary transition-colors">
+                <Instagram className="w-5 h-5" />
+              </a>
+            </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild className="md:hidden">
                 <Button variant="ghost" size="icon" className="text-white">
