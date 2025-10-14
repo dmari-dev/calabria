@@ -19,6 +19,8 @@ export const Header = () => {
   const { user, signOut } = useAuth();
   const { isAdmin } = useRole();
   const [profile, setProfile] = useState<{ display_name?: string; avatar_url?: string } | null>(null);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
     if (user) {
@@ -33,8 +35,33 @@ export const Header = () => {
     }
   }, [user]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        // Scrolling down & past 100px
+        setIsVisible(false);
+      } else {
+        // Scrolling up or at top
+        setIsVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
+
   return (
-    <header className="sticky top-0 w-full" style={{ zIndex: 10000 }}>
+    <header 
+      className="sticky top-0 w-full transition-transform duration-300 ease-in-out" 
+      style={{ 
+        zIndex: 10000,
+        transform: isVisible ? 'translateY(0)' : 'translateY(-100%)'
+      }}
+    >
       {/* Top bar */}
       <div className="bg-muted border-b">
         <div className="container flex items-center justify-between h-10">
