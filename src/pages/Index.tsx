@@ -129,7 +129,7 @@ const Index = () => {
       </section>
 
       {/* Virtual Agent Chat Bar */}
-      <section ref={chatRef} className="py-6 bg-gradient-to-br from-background to-muted/30 -mt-[60px]">
+      <section ref={chatRef} className="w-full py-8" style={{ backgroundColor: '#EBF1FF' }}>
         <div className="max-w-7xl mx-auto px-5">
           <VirtualAgentChat initialCity={selectedCity} autoExpand={!!selectedCity} />
         </div>
