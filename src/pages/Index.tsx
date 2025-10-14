@@ -141,7 +141,7 @@ const Index = () => {
       {/* Virtual Agent Chat Bar */}
       <section ref={chatRef} className="w-full py-16" style={{ backgroundColor: '#EBF1FF' }}>
         <div className="max-w-7xl mx-auto px-5" style={{ marginTop: '-100px' }}>
-          <VirtualAgentChat initialCity={selectedCity} autoExpand={openChat || !!selectedCity} />
+          <VirtualAgentChat initialCity={selectedCity} autoExpand={openChat || !!selectedCity} expandDirection="up" />
         </div>
       </section>
 
@@ -164,7 +164,7 @@ const Index = () => {
               Fatti raccontare i segreti dei luoghi, trova tappe e idee per il tuo viaggio.
             </p>
             <div className="flex-1">
-              <VirtualAgentChat autoExpand={false} />
+              <VirtualAgentChat autoExpand={false} expandDirection="down" />
             </div>
           </div>
 

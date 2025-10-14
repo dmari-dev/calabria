@@ -13,9 +13,10 @@ type Message = { role: 'user' | 'assistant', content: string };
 interface VirtualAgentChatProps {
   initialCity?: string;
   autoExpand?: boolean;
+  expandDirection?: 'up' | 'down';
 }
 
-export const VirtualAgentChat = ({ initialCity, autoExpand }: VirtualAgentChatProps) => {
+export const VirtualAgentChat = ({ initialCity, autoExpand, expandDirection = 'down' }: VirtualAgentChatProps) => {
   const [isExpanded, setIsExpanded] = useState(autoExpand || false);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -286,72 +287,140 @@ export const VirtualAgentChat = ({ initialCity, autoExpand }: VirtualAgentChatPr
 
   return (
     <div className="w-full relative">
-      {/* Expanded Chat Window - Opens upward */}
-      <div
-        className={cn(
-          "absolute left-0 right-0 bottom-full mb-4 transition-all duration-500 ease-in-out overflow-hidden origin-bottom",
-          isExpanded 
-            ? "max-h-[500px] opacity-100" 
-            : "max-h-0 opacity-0"
-        )}
-      >
-        <div className="h-[500px] bg-white rounded-lg shadow-elevated flex flex-col">
-          {/* Header */}
-          <div className="flex items-center gap-2 px-6 py-4 border-b border-border/50 bg-muted/30">
-            <Map className="w-4 h-4 text-primary" />
-            <h3 className="text-sm font-medium text-foreground">Il tuo prossimo itinerario</h3>
-          </div>
-          
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3">
-            {messages.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground">
-                <MessageCircle className="w-10 h-10 mb-2 opacity-20" />
-                <p className="text-sm">Inizia dicendomi dove vuoi andare o cosa vuoi fare! 🌍</p>
-              </div>
-            ) : (
-              <>
-                {messages.map((msg, idx) => (
-                  <div
-                    key={idx}
-                    className={cn(
-                      "flex",
-                      msg.role === 'user' ? "justify-end" : "justify-start"
-                    )}
-                  >
+      {/* Expanded Chat Window - Opens upward or downward based on expandDirection */}
+      {expandDirection === 'up' ? (
+        <div
+          className={cn(
+            "absolute left-0 right-0 bottom-full mb-4 transition-all duration-500 ease-in-out overflow-hidden origin-bottom",
+            isExpanded 
+              ? "max-h-[500px] opacity-100" 
+              : "max-h-0 opacity-0"
+          )}
+        >
+          <div className="h-[500px] bg-white rounded-lg shadow-elevated flex flex-col">
+            {/* Header */}
+            <div className="flex items-center gap-2 px-6 py-4 border-b border-border/50 bg-muted/30">
+              <Map className="w-4 h-4 text-primary" />
+              <h3 className="text-sm font-medium text-foreground">Il tuo prossimo itinerario</h3>
+            </div>
+            
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3">
+              {messages.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground">
+                  <MessageCircle className="w-10 h-10 mb-2 opacity-20" />
+                  <p className="text-sm">Inizia dicendomi dove vuoi andare o cosa vuoi fare! 🌍</p>
+                </div>
+              ) : (
+                <>
+                  {messages.map((msg, idx) => (
                     <div
+                      key={idx}
                       className={cn(
-                        "max-w-[70%] rounded-2xl px-4 py-2",
-                        msg.role === 'user' 
-                          ? "text-white" 
-                          : "bg-muted text-foreground"
+                        "flex",
+                        msg.role === 'user' ? "justify-end" : "justify-start"
                       )}
-                      style={msg.role === 'user' ? { backgroundColor: '#C50972' } : {}}
                     >
-                      <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                    </div>
-                  </div>
-                ))}
-                
-                {/* Loading indicator */}
-                {isLoading && (
-                  <div className="flex justify-start">
-                    <div className="bg-muted rounded-2xl px-4 py-3">
-                      <div className="flex gap-1">
-                        <span className="w-2 h-2 bg-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
-                        <span className="w-2 h-2 bg-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                        <span className="w-2 h-2 bg-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                      <div
+                        className={cn(
+                          "max-w-[70%] rounded-2xl px-4 py-2",
+                          msg.role === 'user' 
+                            ? "text-white" 
+                            : "bg-muted text-foreground"
+                        )}
+                        style={msg.role === 'user' ? { backgroundColor: '#C50972' } : {}}
+                      >
+                        <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
                       </div>
                     </div>
-                  </div>
-                )}
-                
-                <div ref={messagesEndRef} />
-              </>
-            )}
+                  ))}
+                  
+                  {/* Loading indicator */}
+                  {isLoading && (
+                    <div className="flex justify-start">
+                      <div className="bg-muted rounded-2xl px-4 py-3">
+                        <div className="flex gap-1">
+                          <span className="w-2 h-2 bg-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                          <span className="w-2 h-2 bg-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                          <span className="w-2 h-2 bg-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div ref={messagesEndRef} />
+                </>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <div
+          className={cn(
+            "bg-white rounded-lg shadow-elevated transition-all duration-500 ease-in-out overflow-hidden mb-4",
+            isExpanded 
+              ? "max-h-[500px] opacity-100" 
+              : "max-h-0 opacity-0"
+          )}
+        >
+          <div className="h-[500px] flex flex-col">
+            {/* Header */}
+            <div className="flex items-center gap-2 px-6 py-4 border-b border-border/50 bg-muted/30">
+              <Map className="w-4 h-4 text-primary" />
+              <h3 className="text-sm font-medium text-foreground">Il tuo prossimo itinerario</h3>
+            </div>
+            
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3">
+              {messages.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground">
+                  <MessageCircle className="w-10 h-10 mb-2 opacity-20" />
+                  <p className="text-sm">Inizia dicendomi dove vuoi andare o cosa vuoi fare! 🌍</p>
+                </div>
+              ) : (
+                <>
+                  {messages.map((msg, idx) => (
+                    <div
+                      key={idx}
+                      className={cn(
+                        "flex",
+                        msg.role === 'user' ? "justify-end" : "justify-start"
+                      )}
+                    >
+                      <div
+                        className={cn(
+                          "max-w-[70%] rounded-2xl px-4 py-2",
+                          msg.role === 'user' 
+                            ? "text-white" 
+                            : "bg-muted text-foreground"
+                        )}
+                        style={msg.role === 'user' ? { backgroundColor: '#C50972' } : {}}
+                      >
+                        <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {/* Loading indicator */}
+                  {isLoading && (
+                    <div className="flex justify-start">
+                      <div className="bg-muted rounded-2xl px-4 py-3">
+                        <div className="flex gap-1">
+                          <span className="w-2 h-2 bg-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                          <span className="w-2 h-2 bg-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                          <span className="w-2 h-2 bg-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div ref={messagesEndRef} />
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Chat Input Bar */}
       <div className="flex items-center gap-3 bg-white px-4 py-3 rounded-lg shadow-soft border border-white/20"
