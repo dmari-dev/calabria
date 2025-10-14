@@ -34,7 +34,7 @@ export const Header = () => {
   }, [user]);
 
   return (
-    <header className="sticky top-0 z-50 w-full">
+    <header className="sticky top-0 w-full" style={{ zIndex: 10000 }}>
       {/* Top bar */}
       <div className="bg-muted border-b">
         <div className="container flex items-center justify-between h-10">
