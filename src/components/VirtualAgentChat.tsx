@@ -169,90 +169,14 @@ export const VirtualAgentChat = ({ initialCity, autoExpand, expandDirection = 'd
       throw new Error(errorData.error || "Errore nella risposta");
     }
 
-    if (!resp.body) throw new Error("Nessuna risposta dal server");
-
-    const reader = resp.body.getReader();
-    const decoder = new TextDecoder();
-    let textBuffer = "";
-    let streamDone = false;
-    let assistantContent = "";
-
-    // Aggiungi messaggio assistente vuoto
-    setMessages(prev => [...prev, { role: "assistant", content: "" }]);
-
-    while (!streamDone) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      
-      textBuffer += decoder.decode(value, { stream: true });
-
-      let newlineIndex: number;
-      while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
-        let line = textBuffer.slice(0, newlineIndex);
-        textBuffer = textBuffer.slice(newlineIndex + 1);
-
-        if (line.endsWith("\r")) line = line.slice(0, -1);
-        if (line.startsWith(":") || line.trim() === "") continue;
-        if (!line.startsWith("data: ")) continue;
-
-        const jsonStr = line.slice(6).trim();
-        if (jsonStr === "[DONE]") {
-          streamDone = true;
-          break;
-        }
-
-        try {
-          const parsed = JSON.parse(jsonStr);
-          const content = parsed.choices?.[0]?.delta?.content as string | undefined;
-          
-          if (content) {
-            assistantContent += content;
-            setMessages(prev => {
-              const newMessages = [...prev];
-              const lastIndex = newMessages.length - 1;
-              if (newMessages[lastIndex]?.role === "assistant") {
-                newMessages[lastIndex] = {
-                  ...newMessages[lastIndex],
-                  content: assistantContent
-                };
-              }
-              return newMessages;
-            });
-          }
-        } catch {
-          textBuffer = line + "\n" + textBuffer;
-          break;
-        }
-      }
+    const data = await resp.json();
+    
+    if (data.error) {
+      throw new Error(data.error);
     }
 
-    // Flush finale
-    if (textBuffer.trim()) {
-      for (let raw of textBuffer.split("\n")) {
-        if (!raw || raw.startsWith(":") || !raw.startsWith("data: ")) continue;
-        const jsonStr = raw.slice(6).trim();
-        if (jsonStr === "[DONE]") continue;
-        
-        try {
-          const parsed = JSON.parse(jsonStr);
-          const content = parsed.choices?.[0]?.delta?.content as string | undefined;
-          if (content) {
-            assistantContent += content;
-            setMessages(prev => {
-              const newMessages = [...prev];
-              const lastIndex = newMessages.length - 1;
-              if (newMessages[lastIndex]?.role === "assistant") {
-                newMessages[lastIndex] = {
-                  ...newMessages[lastIndex],
-                  content: assistantContent
-                };
-              }
-              return newMessages;
-            });
-          }
-        } catch { /* ignore */ }
-      }
-    }
+    // Aggiungi la risposta completa dell'assistente
+    setMessages(prev => [...prev, { role: "assistant", content: data.response }]);
   };
 
   const handleSendMessage = async () => {
@@ -271,15 +195,6 @@ export const VirtualAgentChat = ({ initialCity, autoExpand, expandDirection = 'd
         title: "Errore",
         description: error instanceof Error ? error.message : "Si è verificato un errore",
         variant: "destructive",
-      });
-      // Rimuovi l'ultimo messaggio assistente vuoto in caso di errore
-      setMessages(prev => {
-        const newMessages = [...prev];
-        if (newMessages[newMessages.length - 1]?.role === "assistant" && 
-            newMessages[newMessages.length - 1]?.content === "") {
-          newMessages.pop();
-        }
-        return newMessages;
       });
     } finally {
       setIsLoading(false);
@@ -344,8 +259,8 @@ export const VirtualAgentChat = ({ initialCity, autoExpand, expandDirection = 'd
                     </div>
                   ))}
                   
-                  {/* Loading indicator - solo se non c'è già un messaggio in arrivo */}
-                  {isLoading && messages[messages.length - 1]?.content === "" && (
+                  {/* Loading indicator */}
+                  {isLoading && (
                     <div className="flex justify-start">
                       <div className="bg-muted rounded-2xl px-4 py-3">
                         <div className="flex gap-1">
@@ -418,8 +333,8 @@ export const VirtualAgentChat = ({ initialCity, autoExpand, expandDirection = 'd
                     </div>
                   ))}
                   
-                  {/* Loading indicator - solo se non c'è già un messaggio in arrivo */}
-                  {isLoading && messages[messages.length - 1]?.content === "" && (
+                  {/* Loading indicator */}
+                  {isLoading && (
                     <div className="flex justify-start">
                       <div className="bg-muted rounded-2xl px-4 py-3">
                         <div className="flex gap-1">

@@ -851,10 +851,10 @@ serve(async (req) => {
     const { messages } = await req.json();
     console.log("Received messages:", messages?.length || 0);
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+    const googleApiKey = Deno.env.get("GOOGLE_API_KEY");
+    if (!googleApiKey) {
+      console.error("GOOGLE_API_KEY not configured");
+      throw new Error("GOOGLE_API_KEY not configured");
     }
 
     console.log("Starting chat with Google Gemini...");
@@ -866,7 +866,7 @@ Parla in prima persona come se fossi veramente Pitagora, condividi la tua saggez
 Hai accesso a informazioni dettagliate sui beni culturali della Calabria, la terra dove hai vissuto e insegnato:
 ${JSON.stringify(heritageData, null, 2)}
 
-Quando l'utente ti fa domande sui luoghi culturali, consulta gli URL nei dati per fornire informazioni accurate e dettagliate ma NON risultare troppo prolisso.
+Quando l'utente ti fa domande sui luoghi culturali, consulta questi dati e gli URL forniti dall'url_context per informazioni accurate e dettagliate ma NON risultare troppo prolisso.
 
 Il tuo compito è:
 1. Aiutare gli utenti a scoprire il patrimonio culturale calabrese con la saggezza di un filosofo antico
@@ -877,80 +877,84 @@ Il tuo compito è:
 Ricorda: sei Pitagora, quindi incorpora elementi della tua filosofia (numeri, armonia, musica delle sfere) nelle tue risposte quando appropriato.
  e usa qualche emoji senza esagerare`;
 
-    // Costruisce i messaggi per Lovable AI e raccoglie estratti dalle fonti
-    const fetchText = async (url: string): Promise<string> => {
-      try {
-        const r = await fetch(url, { headers: { Accept: "text/html,application/xhtml+xml" } });
-        const html = await r.text();
-        const text = html
-          .replace(/<script[\s\S]*?<\/script>/gi, "")
-          .replace(/<style[\s\S]*?<\/style>/gi, "")
-          .replace(/<[^>]+>/g, " ")
-          .replace(/\s+/g, " ")
-          .trim();
-        return text.slice(0, 1200);
-      } catch (_e) {
-        return "";
-      }
-    };
-
-    const sources = await Promise.all(heritageData.map(async (h) => ({ url: h.URL, snippet: await fetchText(h.URL) })));
-
-    const sourcesText = sources
-      .map((s) => (s.snippet ? `Fonte: ${s.url}\n${s.snippet}` : `Fonte: ${s.url}\n(nessun estratto disponibile)`))
-      .join("\n\n");
-
-    const systemPitagora = `${systemPrompt}\n\nUsa le seguenti fonti come riferimento prioritario (cita sempre l'URL pertinente):\n${sourcesText}`;
-
-    const llmMessages = [
-      { role: "system", content: systemPitagora },
-      ...messages.map((m: { role: string; content: string }) => ({ role: m.role, content: m.content })),
+    // Converti i messaggi in formato Gemini con system prompt
+    const geminiMessages = [
+      {
+        role: "user",
+        parts: [{ text: systemPrompt }],
+      },
+      ...messages.map((msg: any) => ({
+        role: msg.role === "assistant" ? "model" : "user",
+        parts: [{ text: msg.content }],
+      })),
     ];
 
-    // requestBody rimosso: usiamo Lovable AI Gateway con llmMessages e streaming
-
-    console.log("Calling Lovable AI Gateway with streaming...");
-
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+    // Prepara payload con url_context per grounding
+    const requestBody: any = {
+      contents: geminiMessages,
+      generationConfig: {
+        temperature: 0.7,
+        topK: 40,
+        topP: 0.95,
+        maxOutputTokens: 8192,
       },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: llmMessages,
-        stream: true,
-      }),
-    });
+    };
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
-      throw new Error(`AI gateway error: ${response.status}`);
+    // Aggiungi url_context con gli URL dei beni culturali
+    const heritageUrls = heritageData.map(h => h.URL);
+    requestBody.url_context = {
+      urls: heritageUrls.slice(0, 10), // Limita a 10 URL per non sovraccaricare
+    };
+
+    console.log("Calling Google Gemini generateContent API with url_context...");
+
+    const geminiResponse = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${googleApiKey}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      }
+    );
+
+    if (!geminiResponse.ok) {
+      const errorText = await geminiResponse.text();
+      console.error("Google API error:", geminiResponse.status, errorText);
+      throw new Error(
+        `Google API error: ${geminiResponse.status} - ${errorText}`
+      );
     }
 
-    // Proxy diretto dello stream del Lovable AI Gateway (formato OpenAI SSE)
-    console.log("Proxying AI gateway stream...");
-    return new Response(response.body, {
-      headers: {
-        ...corsHeaders,
-        "Content-Type": "text/event-stream",
-        "Cache-Control": "no-cache, no-transform",
-        Connection: "keep-alive",
-        "X-Accel-Buffering": "no",
-      },
-    });
-  } catch (error) {
-    console.error("Chat error:", error);
+    const geminiData = await geminiResponse.json();
+    console.log("Gemini response received successfully");
+    
+    const fullText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
+    // Ritorna risposta JSON completa
     return new Response(
       JSON.stringify({
-        error: error instanceof Error ? error.message : "Errore sconosciuto",
+        response: fullText,
+        grounding_metadata: geminiData.candidates?.[0]?.groundingMetadata,
+      }),
+      {
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  } catch (error) {
+    console.error("Error in chat function:", error);
+    return new Response(
+      JSON.stringify({
+        error: error instanceof Error ? error.message : "Unknown error",
       }),
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
+      }
     );
   }
 });
