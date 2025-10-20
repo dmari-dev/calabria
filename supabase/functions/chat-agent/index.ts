@@ -851,13 +851,12 @@ serve(async (req) => {
     const { messages } = await req.json();
     console.log("Received messages:", messages?.length || 0);
 
-    const googleApiKey = Deno.env.get("GOOGLE_API_KEY");
-    if (!googleApiKey) {
-      console.error("GOOGLE_API_KEY not configured");
-      throw new Error("GOOGLE_API_KEY not configured");
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_API_KEY) {
+      throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    console.log("Starting chat with Google Gemini...");
+    console.log("Preparing system prompt and grounded sources...");
 
     // System prompt come Pitagora con i dati dei beni culturali
     const systemPrompt = `Sei Pitagora di Samo, il grande filosofo e matematico greco che visse in Magna Grecia, nell'attuale Calabria.
@@ -866,95 +865,89 @@ Parla in prima persona come se fossi veramente Pitagora, condividi la tua saggez
 Hai accesso a informazioni dettagliate sui beni culturali della Calabria, la terra dove hai vissuto e insegnato:
 ${JSON.stringify(heritageData, null, 2)}
 
-Quando l'utente ti fa domande sui luoghi culturali, consulta questi dati e gli URL forniti dall'url_context per informazioni accurate e dettagliate ma NON risultare troppo prolisso.
+Quando l'utente ti fa domande sui luoghi culturali, usa i contenuti delle fonti allegate qui sotto e cita sempre l'URL pertinente.
+Rispondi sempre in italiano, con un tono saggio ma accessibile, senza essere prolisso, e aggiungi qualche emoji con moderazione.`;
 
-Il tuo compito è:
-1. Aiutare gli utenti a scoprire il patrimonio culturale calabrese con la saggezza di un filosofo antico
-2. Condividere aneddoti e riflessioni sulla Magna Grecia e la tua vita in Calabria
-3. Guidare gli utenti nella pianificazione di viaggi culturali, sempre mantenendo il tuo carattere filosofico
-4. Rispondere sempre in italiano, con un tono saggio, colto ma accessibile
+    // Recupera brevi estratti dalle fonti per "grounding" server-side
+    const fetchText = async (url: string): Promise<string> => {
+      try {
+        const r = await fetch(url, { headers: { Accept: "text/html,application/xhtml+xml" } });
+        const html = await r.text();
+        const text = html
+          .replace(/<script[\s\S]*?<\/script>/gi, "")
+          .replace(/<style[\s\S]*?<\/style>/gi, "")
+          .replace(/<[^>]+>/g, " ")
+          .replace(/\s+/g, " ")
+          .trim();
+        return text.slice(0, 1200);
+      } catch (_e) {
+        return "";
+      }
+    };
 
-Ricorda: sei Pitagora, quindi incorpora elementi della tua filosofia (numeri, armonia, musica delle sfere) nelle tue risposte quando appropriato.
- e usa qualche emoji senza esagerare`;
+    const sources = await Promise.all(
+      heritageData.slice(0, 10).map(async (h) => ({ url: h.URL, snippet: await fetchText(h.URL) }))
+    );
 
-    // Converti i messaggi in formato Gemini con system prompt
-    const geminiMessages = [
-      {
-        role: "user",
-        parts: [{ text: systemPrompt }],
-      },
-      ...messages.map((msg: any) => ({
-        role: msg.role === "assistant" ? "model" : "user",
-        parts: [{ text: msg.content }],
-      })),
+    const sourcesText = sources
+      .map((s) => (s.snippet ? `Fonte: ${s.url}\n${s.snippet}` : `Fonte: ${s.url}\n(nessun estratto disponibile)`))
+      .join("\n\n");
+
+    const systemWithSources = `${systemPrompt}\n\nUsa le seguenti fonti come riferimento prioritario (cita sempre l'URL pertinente):\n${sourcesText}`;
+
+    // Costruisci i messaggi per il gateway (formato OpenAI-compatibile)
+    const llmMessages = [
+      { role: "system", content: systemWithSources },
+      ...messages.map((m: { role: string; content: string }) => ({ role: m.role, content: m.content })),
     ];
 
-    // Prepara payload con url_context per grounding
-    const requestBody: any = {
-      contents: geminiMessages,
-      generationConfig: {
-        temperature: 0.7,
-        topK: 40,
-        topP: 0.95,
-        maxOutputTokens: 8192,
+    console.log("Calling Lovable AI Gateway (non-streaming)...");
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
       },
-    };
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash", // default consigliato
+        messages: llmMessages,
+        stream: false,
+      }),
+    });
 
-    // Aggiungi url_context con gli URL dei beni culturali
-    const heritageUrls = heritageData.map(h => h.URL);
-    requestBody.url_context = {
-      urls: heritageUrls.slice(0, 10), // Limita a 10 URL per non sovraccaricare
-    };
-
-    console.log("Calling Google Gemini generateContent API with url_context...");
-
-    const geminiResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${googleApiKey}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
+    if (!response.ok) {
+      const t = await response.text();
+      console.error("AI gateway error:", response.status, t);
+      if (response.status === 429) {
+        return new Response(JSON.stringify({ error: "Limite di richieste superato, riprova tra poco." }), {
+          status: 429,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
-    );
-
-    if (!geminiResponse.ok) {
-      const errorText = await geminiResponse.text();
-      console.error("Google API error:", geminiResponse.status, errorText);
-      throw new Error(
-        `Google API error: ${geminiResponse.status} - ${errorText}`
-      );
+      if (response.status === 402) {
+        return new Response(
+          JSON.stringify({ error: "Credito esaurito per l'AI. Aggiungi fondi e riprova." }),
+          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+      throw new Error("AI gateway error");
     }
 
-    const geminiData = await geminiResponse.json();
-    console.log("Gemini response received successfully");
-    
-    const fullText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    const data = await response.json();
+    const content: string = data?.choices?.[0]?.message?.content || "";
 
-    // Ritorna risposta JSON completa
     return new Response(
       JSON.stringify({
-        response: fullText,
-        grounding_metadata: geminiData.candidates?.[0]?.groundingMetadata,
+        response: content,
+        sources: sources.map((s) => s.url),
       }),
-      {
-        headers: {
-          ...corsHeaders,
-          "Content-Type": "application/json",
-        },
-      }
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (error) {
-    console.error("Error in chat function:", error);
+    console.error("Chat error:", error);
     return new Response(
-      JSON.stringify({
-        error: error instanceof Error ? error.message : "Unknown error",
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      JSON.stringify({ error: error instanceof Error ? error.message : "Errore sconosciuto" }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   }
 });
