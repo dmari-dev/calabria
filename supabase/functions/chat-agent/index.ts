@@ -94,11 +94,12 @@ Ricorda: sei Pitagora, quindi incorpora elementi della tua filosofia (numeri, ar
     console.log("Calling Google Gemini API with streaming...");
     
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?alt=sse&key=${GOOGLE_API_KEY}`,
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "x-goog-api-key": GOOGLE_API_KEY,
         },
         body: JSON.stringify(requestBody),
       }
