@@ -126,9 +126,17 @@ Ricorda: sei Pitagora, quindi incorpora elementi della tua filosofia (numeri, ar
       });
     }
 
-    // Payload per l'API di Google Gemini (urlContext rimosso perché non supportato in streaming)
+    // Payload per l'API di Google Gemini con urlContext per approfondire i beni culturali
+    const heritageUrls = heritageData.map((h) => h.URL);
     const requestBody = {
       contents,
+      tools: [
+        {
+          urlContext: {
+            allowedUrls: heritageUrls,
+          },
+        },
+      ],
       generationConfig: {
         temperature: 0.8,
         topP: 0.95,
