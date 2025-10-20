@@ -134,36 +134,104 @@ Ricorda: sei Pitagora, quindi incorpora elementi della tua filosofia (numeri, ar
       ...messages.map((m: { role: string; content: string }) => ({ role: m.role, content: m.content })),
     ];
 
-    // requestBody rimosso: usiamo Lovable AI Gateway con llmMessages e streaming
+    // Costruisce la storia della conversazione per Google Gemini (per urlContext)
+    const contents: Array<{ role: "user" | "model"; parts: Array<{ text: string }> }> = [
+      { role: "user", parts: [{ text: systemPitagora }] },
+      {
+        role: "model",
+        parts: [{
+          text: "Salve, viandante. Sono Pitagora di Samo. Che la saggezza degli antichi ti accompagni nel tuo viaggio attraverso la Magna Grecia. Come posso guidarti nella scoperta del patrimonio culturale di questa terra che ho tanto amato?",
+        }],
+      },
+    ];
+
+    for (const msg of messages as Array<{ role: string; content: string }>) {
+      contents.push({
+        role: msg.role === "assistant" ? "model" : "user",
+        parts: [{ text: msg.content }],
+      });
+    }
 
 
-    console.log("Calling Lovable AI Gateway with streaming...");
+    // PRIORITÀ LINK: usa urlContext (non-stream) e simula streaming SSE
+    const GOOGLE_API_KEY = Deno.env.get("GOOGLE_API_KEY");
+    if (!GOOGLE_API_KEY) throw new Error("GOOGLE_API_KEY is not configured");
+
+    const heritageUrls = heritageData.map((h) => h.URL);
+    const requestBody = {
+      contents,
+      tools: [
+        {
+          urlContext: {
+            allowedUrls: heritageUrls,
+          },
+        },
+      ],
+      generationConfig: {
+        temperature: 0.8,
+        topP: 0.95,
+        topK: 40,
+        maxOutputTokens: 2048,
+      },
+    };
+
+    console.log("Calling Google Gemini (generateContent) with urlContext...");
 
     const response = await fetch(
-      "https://ai.gateway.lovable.dev/v1/chat/completions",
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "x-goog-api-key": GOOGLE_API_KEY,
         },
-        body: JSON.stringify({
-          model: "google/gemini-2.5-flash",
-          messages: llmMessages,
-          stream: true,
-        }),
+        body: JSON.stringify(requestBody),
       },
     );
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
-      throw new Error(`AI gateway error: ${response.status}`);
+      console.error("Google Gemini (generateContent) error:", response.status, errorText);
+      return new Response(
+        JSON.stringify({ error: "AI error", details: errorText }),
+        {
+          status: response.status,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
     }
 
-    // Proxy diretto dello stream del Lovable AI Gateway (formato OpenAI SSE)
-    console.log("Proxying AI gateway stream...");
-    return new Response(response.body, {
+    const data = await response.json();
+    const parts = data?.candidates?.[0]?.content?.parts ?? [];
+    const fullText: string = parts.map((p: any) => p?.text || "").join("");
+
+    const encoder = new TextEncoder();
+    const chunkSize = 60;
+
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          let i = 0;
+          while (i < fullText.length) {
+            const piece = fullText.slice(i, i + chunkSize);
+            i += chunkSize;
+            const sse = `data: ${JSON.stringify({
+              choices: [{ delta: { content: piece } }],
+            })}\n\n`;
+            controller.enqueue(encoder.encode(sse));
+            // Piccola pausa per permettere al client di rendere i chunk
+            await new Promise((r) => setTimeout(r, 15));
+          }
+          controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+          controller.close();
+        } catch (e) {
+          console.error("Streaming build error:", e);
+          controller.error(e);
+        }
+      },
+    });
+
+    return new Response(stream, {
       headers: {
         ...corsHeaders,
         "Content-Type": "text/event-stream",
