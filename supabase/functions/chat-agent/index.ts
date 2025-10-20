@@ -157,14 +157,11 @@ Ricorda: sei Pitagora, quindi incorpora elementi della tua filosofia (numeri, ar
     const GOOGLE_API_KEY = Deno.env.get("GOOGLE_API_KEY");
     if (!GOOGLE_API_KEY) throw new Error("GOOGLE_API_KEY is not configured");
 
-    const heritageUrls = heritageData.map((h) => h.URL);
     const requestBody = {
       contents,
       tools: [
         {
-          urlContext: {
-            allowedUrls: heritageUrls,
-          },
+          url_context: {},
         },
       ],
       generationConfig: {
