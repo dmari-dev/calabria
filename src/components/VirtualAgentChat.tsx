@@ -331,8 +331,14 @@ export const VirtualAgentChat = ({ initialCity, autoExpand, expandDirection = 'd
                         )}
                         style={msg.role === 'user' ? { backgroundColor: '#C50972' } : {}}
                       >
-                         <div className="text-sm prose prose-sm max-w-none dark:prose-invert">
-                           <ReactMarkdown>{msg.content}</ReactMarkdown>
+                         <div className="text-sm prose prose-sm max-w-none dark:prose-invert break-words overflow-wrap-anywhere">
+                           <ReactMarkdown 
+                             components={{
+                               a: ({node, ...props}) => <a {...props} className="break-all underline" target="_blank" rel="noopener noreferrer" />
+                             }}
+                           >
+                             {msg.content}
+                           </ReactMarkdown>
                          </div>
                       </div>
                     </div>
@@ -399,8 +405,14 @@ export const VirtualAgentChat = ({ initialCity, autoExpand, expandDirection = 'd
                         )}
                         style={msg.role === 'user' ? { backgroundColor: '#C50972' } : {}}
                       >
-                         <div className="text-sm prose prose-sm max-w-none dark:prose-invert">
-                           <ReactMarkdown>{msg.content}</ReactMarkdown>
+                         <div className="text-sm prose prose-sm max-w-none dark:prose-invert break-words overflow-wrap-anywhere">
+                           <ReactMarkdown 
+                             components={{
+                               a: ({node, ...props}) => <a {...props} className="break-all underline" target="_blank" rel="noopener noreferrer" />
+                             }}
+                           >
+                             {msg.content}
+                           </ReactMarkdown>
                          </div>
                       </div>
                     </div>
