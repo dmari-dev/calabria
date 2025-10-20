@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import ReactMarkdown from "react-markdown";
 
 type Message = { role: 'user' | 'assistant', content: string };
 
@@ -330,7 +331,9 @@ export const VirtualAgentChat = ({ initialCity, autoExpand, expandDirection = 'd
                         )}
                         style={msg.role === 'user' ? { backgroundColor: '#C50972' } : {}}
                       >
-                        <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                         <div className="text-sm prose prose-sm max-w-none dark:prose-invert">
+                           <ReactMarkdown>{msg.content}</ReactMarkdown>
+                         </div>
                       </div>
                     </div>
                   ))}
@@ -396,7 +399,9 @@ export const VirtualAgentChat = ({ initialCity, autoExpand, expandDirection = 'd
                         )}
                         style={msg.role === 'user' ? { backgroundColor: '#C50972' } : {}}
                       >
-                        <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                         <div className="text-sm prose prose-sm max-w-none dark:prose-invert">
+                           <ReactMarkdown>{msg.content}</ReactMarkdown>
+                         </div>
                       </div>
                     </div>
                   ))}
