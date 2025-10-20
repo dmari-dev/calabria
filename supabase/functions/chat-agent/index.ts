@@ -77,10 +77,10 @@ serve(async (req) => {
     const { messages } = await req.json();
     console.log("Received messages:", messages?.length || 0);
 
-    const GOOGLE_API_KEY = Deno.env.get("GOOGLE_API_KEY");
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
-    if (!GOOGLE_API_KEY) {
-      throw new Error("GOOGLE_API_KEY is not configured");
+    if (!LOVABLE_API_KEY) {
+      throw new Error("LOVABLE_API_KEY is not configured");
     }
 
     console.log("Starting chat with Google Gemini...");
@@ -102,108 +102,68 @@ Il tuo compito è:
 
 Ricorda: sei Pitagora, quindi incorpora elementi della tua filosofia (numeri, armonia, musica delle sfere) nelle tue risposte quando appropriato.`;
 
-    // Costruisce la storia della conversazione per Google Gemini
-    const contents = [
-      {
-        role: "user",
-        parts: [{ text: systemPrompt }],
-      },
-      {
-        role: "model",
-        parts: [
-          {
-            text: "Salve, viandante. Sono Pitagora di Samo. Che la saggezza degli antichi ti accompagni nel tuo viaggio attraverso la Magna Grecia. Come posso guidarti nella scoperta del patrimonio culturale di questa terra che ho tanto amato?",
-          },
-        ],
-      },
-    ];
-
-    // Aggiungi la storia della conversazione
-    for (const msg of messages) {
-      contents.push({
-        role: msg.role === "assistant" ? "model" : "user",
-        parts: [{ text: msg.content }],
-      });
-    }
-
-    // Payload per l'API di Google Gemini con urlContext per approfondire i beni culturali
-    const heritageUrls = heritageData.map((h) => h.URL);
-    const requestBody = {
-      contents,
-      tools: [
-        {
-          urlContext: {
-            allowedUrls: heritageUrls,
-          },
-        },
-      ],
-      generationConfig: {
-        temperature: 0.8,
-        topP: 0.95,
-        topK: 40,
-        maxOutputTokens: 2048,
-      },
+    // Costruisce i messaggi per Lovable AI e raccoglie estratti dalle fonti
+    const fetchText = async (url: string): Promise<string> => {
+      try {
+        const r = await fetch(url, { headers: { Accept: "text/html,application/xhtml+xml" } });
+        const html = await r.text();
+        const text = html
+          .replace(/<script[\s\S]*?<\/script>/gi, "")
+          .replace(/<style[\s\S]*?<\/style>/gi, "")
+          .replace(/<[^>]+>/g, " ")
+          .replace(/\s+/g, " ")
+          .trim();
+        return text.slice(0, 1200);
+      } catch (_e) {
+        return "";
+      }
     };
 
-    console.log("Calling Google Gemini API with streaming...");
+    const sources = await Promise.all(
+      heritageData.map(async (h) => ({ url: h.URL, snippet: await fetchText(h.URL) }))
+    );
+
+    const sourcesText = sources
+      .map((s) => (s.snippet ? `Fonte: ${s.url}\n${s.snippet}` : `Fonte: ${s.url}\n(nessun estratto disponibile)`))
+      .join("\n\n");
+
+    const systemPitagora = `${systemPrompt}\n\nUsa le seguenti fonti come riferimento prioritario (cita sempre l'URL pertinente):\n${sourcesText}`;
+
+    const llmMessages = [
+      { role: "system", content: systemPitagora },
+      ...messages.map((m: { role: string; content: string }) => ({ role: m.role, content: m.content })),
+    ];
+
+    // requestBody rimosso: usiamo Lovable AI Gateway con llmMessages e streaming
+
+
+    console.log("Calling Lovable AI Gateway with streaming...");
 
     const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse",
+      "https://ai.gateway.lovable.dev/v1/chat/completions",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-goog-api-key": GOOGLE_API_KEY,
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
         },
-        body: JSON.stringify(requestBody),
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash",
+          messages: llmMessages,
+          stream: true,
+        }),
       },
     );
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("Google Gemini API error:", response.status, errorText);
-      throw new Error(`Google Gemini API error: ${response.status}`);
+      console.error("AI gateway error:", response.status, errorText);
+      throw new Error(`AI gateway error: ${response.status}`);
     }
 
-    // Crea uno stream transformer per convertire il formato di Google in SSE compatibile
-    const transformStream = new TransformStream({
-      async transform(chunk, controller) {
-        const text = new TextDecoder().decode(chunk);
-        const lines = text.split("\n");
-
-        for (const line of lines) {
-          if (line.startsWith("data: ")) {
-            try {
-              const jsonData = JSON.parse(line.slice(6));
-              const content = jsonData?.candidates?.[0]?.content?.parts?.[0]?.text;
-
-              if (content) {
-                // Formatta nel formato SSE compatibile con il frontend
-                const sseData = `data: ${JSON.stringify({
-                  choices: [
-                    {
-                      delta: {
-                        content: content,
-                      },
-                    },
-                  ],
-                })}\n\n`;
-                controller.enqueue(new TextEncoder().encode(sseData));
-              }
-            } catch (e) {
-              console.error("Error parsing SSE line:", e);
-            }
-          }
-        }
-      },
-      flush(controller) {
-        // Segnala la fine dello stream
-        controller.enqueue(new TextEncoder().encode("data: [DONE]\n\n"));
-      },
-    });
-
-    console.log("Streaming response from Gemini...");
-    return new Response(response.body?.pipeThrough(transformStream), {
+    // Proxy diretto dello stream del Lovable AI Gateway (formato OpenAI SSE)
+    console.log("Proxying AI gateway stream...");
+    return new Response(response.body, {
       headers: {
         ...corsHeaders,
         "Content-Type": "text/event-stream",
