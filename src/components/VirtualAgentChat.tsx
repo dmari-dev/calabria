@@ -338,8 +338,8 @@ export const VirtualAgentChat = ({ initialCity, autoExpand, expandDirection = 'd
                     </div>
                   ))}
                   
-                  {/* Loading indicator */}
-                  {isLoading && (
+                  {/* Loading indicator - solo se non c'è già un messaggio in arrivo */}
+                  {isLoading && messages[messages.length - 1]?.content === "" && (
                     <div className="flex justify-start">
                       <div className="bg-muted rounded-2xl px-4 py-3">
                         <div className="flex gap-1">
@@ -406,8 +406,8 @@ export const VirtualAgentChat = ({ initialCity, autoExpand, expandDirection = 'd
                     </div>
                   ))}
                   
-                  {/* Loading indicator */}
-                  {isLoading && (
+                  {/* Loading indicator - solo se non c'è già un messaggio in arrivo */}
+                  {isLoading && messages[messages.length - 1]?.content === "" && (
                     <div className="flex justify-start">
                       <div className="bg-muted rounded-2xl px-4 py-3">
                         <div className="flex gap-1">
