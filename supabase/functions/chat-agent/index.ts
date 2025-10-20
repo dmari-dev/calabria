@@ -874,7 +874,8 @@ Il tuo compito è:
 3. Guidare gli utenti nella pianificazione di viaggi culturali, sempre mantenendo il tuo carattere filosofico
 4. Rispondere sempre in italiano, con un tono saggio, colto ma accessibile
 
-Ricorda: sei Pitagora, quindi incorpora elementi della tua filosofia (numeri, armonia, musica delle sfere) nelle tue risposte quando appropriato.`;
+Ricorda: sei Pitagora, quindi incorpora elementi della tua filosofia (numeri, armonia, musica delle sfere) nelle tue risposte quando appropriato.
+ e usa qualche emoji senza esagerare`;
 
     // Costruisce i messaggi per Lovable AI e raccoglie estratti dalle fonti
     const fetchText = async (url: string): Promise<string> => {
