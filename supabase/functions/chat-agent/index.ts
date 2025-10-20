@@ -126,17 +126,9 @@ Ricorda: sei Pitagora, quindi incorpora elementi della tua filosofia (numeri, ar
       });
     }
 
-    // Payload per l'API di Google Gemini con urlContext abilitato
-    const heritageUrls = heritageData.map((h) => h.URL);
+    // Payload per l'API di Google Gemini (urlContext rimosso perché non supportato in streaming)
     const requestBody = {
       contents,
-      tools: [
-        {
-          urlContext: {
-            allowedUrls: heritageUrls,
-          },
-        },
-      ],
       generationConfig: {
         temperature: 0.8,
         topP: 0.95,
@@ -148,7 +140,7 @@ Ricorda: sei Pitagora, quindi incorpora elementi della tua filosofia (numeri, ar
     console.log("Calling Google Gemini API with streaming...");
 
     const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse",
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse",
       {
         method: "POST",
         headers: {
