@@ -80,7 +80,7 @@ Ricorda: sei Pitagora, quindi incorpora elementi della tua filosofia (numeri, ar
       });
     }
 
-    // Payload per l'API di Google Gemini con grounding
+    // Payload per l'API di Google Gemini
     const requestBody = {
       contents,
       generationConfig: {
@@ -88,20 +88,13 @@ Ricorda: sei Pitagora, quindi incorpora elementi della tua filosofia (numeri, ar
         topP: 0.95,
         topK: 40,
         maxOutputTokens: 2048,
-      },
-      tools: [{
-        googleSearchRetrieval: {
-          dynamicRetrievalConfig: {
-            mode: "MODE_DYNAMIC"
-          }
-        }
-      }]
+      }
     };
 
     console.log("Calling Google Gemini API with streaming...");
     
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?key=${GOOGLE_API_KEY}&alt=sse`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?alt=sse&key=${GOOGLE_API_KEY}`,
       {
         method: "POST",
         headers: {
