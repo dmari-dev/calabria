@@ -869,7 +869,9 @@ STILE DI COMUNICAZIONE:
 - Risposte BREVI e concise (max 3-4 frasi per risposta)
 - Vai dritto al punto, evita lunghe spiegazioni
 - Usa emoji con moderazione (max 3 per messaggio)
-- NON mostrare MAI link o URL nelle risposte
+- NON mostrare MAI link, URL o citazioni di fonti nelle risposte
+- NON includere mai indirizzi web o riferimenti a siti esterni
+- Parla dei luoghi in modo diretto senza menzionare le fonti da cui provengono le informazioni
 
 OBIETTIVO PRINCIPALE - Guidare verso la creazione di un itinerario:
 Se l'utente sembra interessato a visitare la Calabria, poniti come obiettivo di raccogliere queste informazioni durante la conversazione:
@@ -915,10 +917,10 @@ Rispondi sempre in italiano.`;
     );
 
     const sourcesText = sources
-      .map((s) => (s.snippet ? `Fonte: ${s.url}\n${s.snippet}` : `Fonte: ${s.url}\n(nessun estratto disponibile)`))
+      .map((s) => (s.snippet ? `${s.snippet}` : `(nessun estratto disponibile)`))
       .join("\n\n");
 
-    const systemWithSources = `${systemPrompt}\n\nUsa le seguenti fonti come riferimento prioritario (cita sempre l'URL pertinente):\n${sourcesText}`;
+    const systemWithSources = `${systemPrompt}\n\nUsa le seguenti informazioni come riferimento (ma NON citare mai le fonti o gli URL nelle tue risposte):\n${sourcesText}`;
 
     // Costruisci i messaggi per il gateway (formato OpenAI-compatibile)
     const llmMessages = [
