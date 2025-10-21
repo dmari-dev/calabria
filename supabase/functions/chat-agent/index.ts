@@ -880,7 +880,6 @@ Se l'utente sembra interessato a visitare la Calabria, poniti come obiettivo di 
 
 Una volta raccolte queste informazioni, suggerisci brevemente di creare un itinerario personalizzato.
 
-Quando citi luoghi culturali, menziona l'URL delle fonti.
 Rispondi sempre in italiano.`;
 
     // Recupera brevi estratti dalle fonti per "grounding" server-side
