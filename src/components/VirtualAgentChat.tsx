@@ -125,6 +125,7 @@ export const VirtualAgentChat = ({ initialCity, autoExpand, expandDirection = 'd
         {
           body: {
             itineraryId: itinerary.id,
+            chatContext: messages
           },
         }
       );

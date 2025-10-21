@@ -12,7 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    const { itineraryId } = await req.json();
+    const { itineraryId, chatContext } = await req.json();
     
     if (!itineraryId) {
       throw new Error("itineraryId è richiesto");
@@ -45,12 +45,18 @@ serve(async (req) => {
     // Prepara il prompt per l'AI
     const systemPrompt = `Sei un esperto di viaggi culturali in Italia. Crea itinerari dettagliati, autentici e personalizzati che valorizzano il patrimonio culturale italiano.`;
     
+    // Prepara il contesto della conversazione se presente
+    let conversationContext = '';
+    if (chatContext && chatContext.length > 0) {
+      conversationContext = `\n\nContesto della conversazione con l'utente:\n${chatContext.map((msg: any) => `${msg.role === 'user' ? 'Utente' : 'Pitagora'}: ${msg.content}`).join('\n')}\n\nBASANDOTI sulla conversazione sopra, crea un itinerario che includa i luoghi e le esperienze discusse.`;
+    }
+    
     const userPrompt = `Crea un itinerario culturale dettagliato per ${itinerary.destination} di ${days} giorni (dal ${new Date(itinerary.start_date).toLocaleDateString('it-IT')} al ${new Date(itinerary.end_date).toLocaleDateString('it-IT')}).
 
 Dettagli del viaggio:
 - Partecipanti: ${itinerary.participants_count} ${itinerary.participants_type || 'persone'}
 - Ritmo di viaggio: ${itinerary.travel_pace === 'relaxed' ? 'rilassato' : itinerary.travel_pace === 'moderate' ? 'moderato' : 'intenso'}
-- Interessi specifici: ${itinerary.specific_interests || 'cultura generale'}
+- Interessi specifici: ${itinerary.specific_interests || 'cultura generale'}${conversationContext}
 
 Struttura l'itinerario in formato JSON con questa struttura:
 {
