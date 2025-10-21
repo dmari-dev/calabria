@@ -37,18 +37,20 @@ serve(async (req) => {
 
     console.log("Generazione itinerario per:", itinerary);
 
-    // Estrai la durata dal chatContext se disponibile
+    // Estrai la durata dal chatContext - PRIORITÀ ALLA CONVERSAZIONE
     let days =
       Math.ceil(
         (new Date(itinerary.end_date).getTime() - new Date(itinerary.start_date).getTime()) / (1000 * 60 * 60 * 24),
       ) + 1;
 
+    // Estrai il numero di giorni dalla conversazione con pattern multipli
     if (chatContext && chatContext.length > 0) {
       const conversationText = chatContext.map((msg: any) => msg.content).join(" ");
-      const daysMatch = conversationText.match(/(\d+)\s*giorni?/i);
+      // Cerca pattern: "X giorni", "X giorno", "per X giorni"
+      const daysMatch = conversationText.match(/(?:per\s+)?(\d+)\s*giorn[oi]/i);
       if (daysMatch) {
         days = parseInt(daysMatch[1]);
-        console.log("Durata estratta dalla chat:", days, "giorni");
+        console.log("Durata ESATTA estratta dalla chat:", days, "giorni");
       }
     }
 
@@ -61,9 +63,10 @@ serve(async (req) => {
       conversationContext = `\n\nContesto della conversazione con l'utente:\n${chatContext.map((msg: any) => `${msg.role === "user" ? "Utente" : "Pitagora"}: ${msg.content}`).join("\n")}\n\nBASANDOTI sulla conversazione sopra, crea un itinerario che includa i luoghi e le esperienze discusse.`;
     }
 
-    const userPrompt = `Crea un itinerario culturale dettagliato per ${itinerary.destination} di ${days} giorni (dal ${new Date(itinerary.start_date).toLocaleDateString("it-IT")} al ${new Date(itinerary.end_date).toLocaleDateString("it-IT")}).
+    const userPrompt = `IMPORTANTE: Crea un itinerario di ESATTAMENTE ${days} giorni per ${itinerary.destination}.
 
 Dettagli del viaggio:
+- Durata: ${days} giorni (dal ${new Date(itinerary.start_date).toLocaleDateString("it-IT")} al ${new Date(itinerary.end_date).toLocaleDateString("it-IT")})
 - Partecipanti: ${itinerary.participants_count} ${itinerary.participants_type || "persone"}
 - Ritmo di viaggio: ${itinerary.travel_pace === "relaxed" ? "rilassato" : itinerary.travel_pace === "moderate" ? "moderato" : "intenso"}
 - Interessi specifici: ${itinerary.specific_interests || "cultura generale"}${conversationContext}
@@ -96,11 +99,13 @@ Struttura l'itinerario in formato JSON con questa struttura:
 }
 
 Includi attività culturali autentiche, musei, monumenti, esperienze gastronomiche locali e momenti di immersione nel patrimonio italiano. Sii specifico con orari, luoghi e consigli pratici.
-CREAZIONE ITINERARIO:
-Quando crei l'itinerario, devi ASSOLUTAMENTE utilizzare SOLO i luoghi e i beni culturali di cui hai parlato durante la conversazione con l'utente.
-NON inventare luoghi nuovi, NON usare esempi generici.
-Se hai menzionato "Palazzo Ariani", "Chiesa del Carmine" e "Torre dei Corvi" durante la chat, l'itinerario DEVE includere ESATTAMENTE questi luoghi.
-Ricorda i luoghi specifici menzionati durante tutta la conversazione e usali per costruire l'itinerario.`;
+
+REGOLE CRITICHE PER LA CREAZIONE DELL'ITINERARIO:
+1. DURATA: L'itinerario DEVE avere ESATTAMENTE ${days} giorni, non uno di più, non uno di meno
+2. LUOGHI: Utilizza SOLO i luoghi e i beni culturali menzionati durante la conversazione con l'utente
+3. NON inventare luoghi nuovi, NON usare esempi generici
+4. Se hai parlato di "Palazzo Ariani", "Chiesa del Carmine" e "Torre dei Corvi", l'itinerario DEVE includere ESATTAMENTE questi luoghi
+5. Ricorda TUTTI i luoghi specifici menzionati durante la conversazione e distribuiscili nei ${days} giorni`;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
