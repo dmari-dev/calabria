@@ -240,7 +240,7 @@ export const VirtualAgentChat = ({ initialCity, autoExpand, expandDirection = 'd
                     >
                       <div
                         className={cn(
-                          "max-w-[70%] rounded-2xl px-4 py-2",
+                          "max-w-[70%] rounded-2xl px-4 py-2 overflow-hidden",
                           msg.role === 'user' 
                             ? "text-white" 
                             : "bg-muted text-foreground"
@@ -251,7 +251,7 @@ export const VirtualAgentChat = ({ initialCity, autoExpand, expandDirection = 'd
                            <ReactMarkdown 
                              components={{
                                p: ({children}) => <span className="inline">{children}</span>,
-                               a: ({node, ...props}) => <a {...props} className="text-current underline hover:opacity-80 break-all" target="_blank" rel="noopener noreferrer" />,
+                               a: ({node, ...props}) => <a {...props} className="text-current underline hover:opacity-80 break-words" target="_blank" rel="noopener noreferrer" />,
                                strong: ({children}) => <strong className="font-semibold">{children}</strong>,
                                em: ({children}) => <em className="italic">{children}</em>,
                                ul: ({children}) => <ul className="list-disc list-inside">{children}</ul>,
@@ -320,7 +320,7 @@ export const VirtualAgentChat = ({ initialCity, autoExpand, expandDirection = 'd
                     >
                       <div
                         className={cn(
-                          "max-w-[70%] rounded-2xl px-4 py-2",
+                          "max-w-[70%] rounded-2xl px-4 py-2 overflow-hidden",
                           msg.role === 'user' 
                             ? "text-white" 
                             : "bg-muted text-foreground"
@@ -331,7 +331,7 @@ export const VirtualAgentChat = ({ initialCity, autoExpand, expandDirection = 'd
                            <ReactMarkdown 
                              components={{
                                p: ({children}) => <span className="inline">{children}</span>,
-                               a: ({node, ...props}) => <a {...props} className="text-current underline hover:opacity-80 break-all" target="_blank" rel="noopener noreferrer" />,
+                               a: ({node, ...props}) => <a {...props} className="text-current underline hover:opacity-80 break-words" target="_blank" rel="noopener noreferrer" />,
                                strong: ({children}) => <strong className="font-semibold">{children}</strong>,
                                em: ({children}) => <em className="italic">{children}</em>,
                                ul: ({children}) => <ul className="list-disc list-inside">{children}</ul>,
