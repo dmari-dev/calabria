@@ -37,10 +37,17 @@ serve(async (req) => {
 
     console.log("Generazione itinerario per:", itinerary);
 
-    // Calcola il numero di giorni
-    const startDate = new Date(itinerary.start_date);
-    const endDate = new Date(itinerary.end_date);
-    const days = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+    // Estrai la durata dal chatContext se disponibile
+    let days = Math.ceil((new Date(itinerary.end_date).getTime() - new Date(itinerary.start_date).getTime()) / (1000 * 60 * 60 * 24)) + 1;
+    
+    if (chatContext && chatContext.length > 0) {
+      const conversationText = chatContext.map((msg: any) => msg.content).join(' ');
+      const daysMatch = conversationText.match(/(\d+)\s*giorni?/i);
+      if (daysMatch) {
+        days = parseInt(daysMatch[1]);
+        console.log("Durata estratta dalla chat:", days, "giorni");
+      }
+    }
 
     // Prepara il prompt per l'AI
     const systemPrompt = `Sei un esperto di viaggi culturali in Italia. Crea itinerari dettagliati, autentici e personalizzati che valorizzano il patrimonio culturale italiano.`;
