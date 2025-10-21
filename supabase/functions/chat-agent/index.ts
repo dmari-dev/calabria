@@ -871,7 +871,7 @@ STILE DI COMUNICAZIONE:
 - Usa emoji con moderazione (max 3 per messaggio)
 
 OBIETTIVO PRINCIPALE - Guidare verso la creazione di un itinerario:
-Se l'utente sembra interessato a visitare la Calabria, poniti come obiettivo di raccogliere queste informazioni con domande dirette e semplici:
+Se l'utente sembra interessato a visitare la Calabria, poniti come obiettivo di raccogliere queste informazioni con domande di follow up durante la conversazione:
 1. "Dove vuoi andare?" (chiedi regione/città specifica)
 2. "Quanti giorni durerà il viaggio?"
 3. "Quante persone siete?"
@@ -901,7 +901,7 @@ Rispondi sempre in italiano.`;
     };
 
     const sources = await Promise.all(
-      heritageData.slice(0, 10).map(async (h) => ({ url: h.URL, snippet: await fetchText(h.URL) }))
+      heritageData.slice(0, 10).map(async (h) => ({ url: h.URL, snippet: await fetchText(h.URL) })),
     );
 
     const sourcesText = sources
@@ -940,10 +940,10 @@ Rispondi sempre in italiano.`;
         });
       }
       if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "Credito esaurito per l'AI. Aggiungi fondi e riprova." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-        );
+        return new Response(JSON.stringify({ error: "Credito esaurito per l'AI. Aggiungi fondi e riprova." }), {
+          status: 402,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
       throw new Error("AI gateway error");
     }
@@ -960,9 +960,9 @@ Rispondi sempre in italiano.`;
     );
   } catch (error) {
     console.error("Chat error:", error);
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Errore sconosciuto" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-    );
+    return new Response(JSON.stringify({ error: error instanceof Error ? error.message : "Errore sconosciuto" }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });
