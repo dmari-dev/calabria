@@ -37,22 +37,8 @@ serve(async (req) => {
 
     console.log("Generazione itinerario per:", itinerary);
 
-    // Estrai la durata dal chatContext - PRIORITÀ ALLA CONVERSAZIONE
-    let days =
-      Math.ceil(
-        (new Date(itinerary.end_date).getTime() - new Date(itinerary.start_date).getTime()) / (1000 * 60 * 60 * 24),
-      ) + 1;
-
-    // Estrai il numero di giorni dalla conversazione con pattern multipli
-    if (chatContext && chatContext.length > 0) {
-      const conversationText = chatContext.map((msg: any) => msg.content).join(" ");
-      // Cerca pattern: "X giorni", "X giorno", "per X giorni"
-      const daysMatch = conversationText.match(/(?:per\s+)?(\d+)\s*giorn[oi]/i);
-      if (daysMatch) {
-        days = parseInt(daysMatch[1]);
-        console.log("Durata ESATTA estratta dalla chat:", days, "giorni");
-      }
-    }
+    // Prepara la conversazione completa - Gemini estrarrà le info necessarie
+    console.log("Conversazione completa passata a Gemini per estrazione automatica delle informazioni");
 
     // Prepara il prompt per l'AI
     const systemPrompt = `Sei un esperto di viaggi culturali in Italia. Crea itinerari dettagliati, autentici e personalizzati che valorizzano il patrimonio culturale italiano.`;
@@ -63,22 +49,25 @@ serve(async (req) => {
       conversationContext = `\n\nContesto della conversazione con l'utente:\n${chatContext.map((msg: any) => `${msg.role === "user" ? "Utente" : "Pitagora"}: ${msg.content}`).join("\n")}\n\nBASANDOTI sulla conversazione sopra, crea un itinerario che includa i luoghi e le esperienze discusse.`;
     }
 
-    const userPrompt = `ATTENZIONE CRITICA: L'itinerario DEVE contenere ESATTAMENTE ${days} giorni. VERIFICA SEMPRE che l'array "days" contenga esattamente ${days} elementi.
+    const userPrompt = `Analizza la conversazione con l'utente e crea un itinerario culturale dettagliato per ${itinerary.destination}.
 
-Crea un itinerario per ${itinerary.destination}.
-
-Dettagli del viaggio:
-- Durata: ESATTAMENTE ${days} giorni (dal ${new Date(itinerary.start_date).toLocaleDateString("it-IT")} al ${new Date(itinerary.end_date).toLocaleDateString("it-IT")})
+INFORMAZIONI DALL'ITINERARIO BASE:
+- Destinazione: ${itinerary.destination}
+- Date indicate: dal ${new Date(itinerary.start_date).toLocaleDateString("it-IT")} al ${new Date(itinerary.end_date).toLocaleDateString("it-IT")}
 - Partecipanti: ${itinerary.participants_count} ${itinerary.participants_type || "persone"}
 - Ritmo di viaggio: ${itinerary.travel_pace === "relaxed" ? "rilassato" : itinerary.travel_pace === "moderate" ? "moderato" : "intenso"}
 - Interessi specifici: ${itinerary.specific_interests || "cultura generale"}${conversationContext}
+
+ESTRAI DALLA CONVERSAZIONE:
+1. Il numero ESATTO di giorni che l'utente ha menzionato
+2. I luoghi specifici e i beni culturali discussi
+3. Le preferenze e gli interessi espressi dall'utente
 
 Struttura l'itinerario in formato JSON con questa struttura:
 {
   "overview": "Una panoramica generale dell'itinerario (2-3 frasi)",
   "highlights": ["punto saliente 1", "punto saliente 2", "punto saliente 3"],
   "days": [
-    // DEVE contenere ESATTAMENTE ${days} elementi, da day: 1 a day: ${days}
     {
       "day": 1,
       "title": "Titolo della giornata",
@@ -92,7 +81,6 @@ Struttura l'itinerario in formato JSON con questa struttura:
         }
       ]
     }
-    // ... fino a day: ${days}
   ],
   "practical_info": {
     "best_time": "Periodo migliore per visitare",
@@ -102,16 +90,14 @@ Struttura l'itinerario in formato JSON con questa struttura:
   }
 }
 
-Includi attività culturali autentiche, musei, monumenti, esperienze gastronomiche locali e momenti di immersione nel patrimonio italiano. Sii specifico con orari, luoghi e consigli pratici.
-
-REGOLE CRITICHE (NON NEGOZIABILI):
-1. DURATA: L'array "days" DEVE avere ESATTAMENTE ${days} elementi (da 1 a ${days})
-2. CONTA I GIORNI: Prima di rispondere, conta che ci siano esattamente ${days} giorni nell'itinerario
-3. LUOGHI: Utilizza SOLO i luoghi e i beni culturali menzionati durante la conversazione con l'utente
-4. NON inventare luoghi nuovi, NON usare esempi generici
-5. Distribuisci i luoghi discussi nei ${days} giorni dell'itinerario
-
-VERIFICA FINALE: Prima di generare la risposta, CONTROLLA che l'array "days" contenga ESATTAMENTE ${days} elementi.`;
+REGOLE CRITICHE:
+1. DURATA: Usa il numero ESATTO di giorni menzionato dall'utente nella conversazione
+2. LUOGHI: Utilizza SOLO i luoghi e i beni culturali specifici menzionati durante la conversazione
+3. NON inventare luoghi nuovi, NON usare esempi generici
+4. Se l'utente ha parlato di "Palazzo Ariani", "Chiesa del Carmine" e "Torre dei Corvi", l'itinerario DEVE includere ESATTAMENTE questi luoghi
+5. Distribuisci i luoghi discussi nel numero di giorni indicato dall'utente
+6. Includi attività culturali autentiche, musei, monumenti, esperienze gastronomiche locali
+7. Sii specifico con orari, luoghi e consigli pratici`;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
