@@ -96,8 +96,10 @@ REGOLE CRITICHE:
 3. NON inventare luoghi nuovi, NON usare esempi generici
 4. Se l'utente ha parlato di "Palazzo Ariani", "Chiesa del Carmine" e "Torre dei Corvi", l'itinerario DEVE includere ESATTAMENTE questi luoghi
 5. Distribuisci i luoghi discussi nel numero di giorni indicato dall'utente
-6. Includi attività culturali autentiche, musei, monumenti, esperienze gastronomiche locali
-7. Sii specifico con orari, luoghi e consigli pratici`;
+6. FOCUS BENI CULTURALI: Le attività devono essere SOLO visite a beni culturali (musei, monumenti, chiese, palazzi storici, siti archeologici, ecc.)
+7. NON INCLUDERE pranzi o cene come attività nell'itinerario
+8. Puoi includere passeggiate o esplorazione delle zone limitrofe ai beni culturali discussi
+9. Sii specifico con orari, luoghi e consigli pratici per ogni bene culturale`;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
