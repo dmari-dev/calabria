@@ -247,10 +247,16 @@ export const VirtualAgentChat = ({ initialCity, autoExpand, expandDirection = 'd
                         )}
                         style={msg.role === 'user' ? { backgroundColor: '#C50972' } : {}}
                       >
-                         <div className="text-sm prose prose-sm max-w-none dark:prose-invert break-words overflow-wrap-anywhere">
+                         <div className="text-sm leading-relaxed [&>*]:my-0 [&_p]:my-0 [&_ul]:my-1 [&_ol]:my-1 [&_li]:my-0.5">
                            <ReactMarkdown 
                              components={{
-                               a: ({node, ...props}) => <a {...props} className="break-all underline" target="_blank" rel="noopener noreferrer" />
+                               p: ({children}) => <span className="inline">{children}</span>,
+                               a: ({node, ...props}) => <a {...props} className="text-current underline hover:opacity-80 break-all" target="_blank" rel="noopener noreferrer" />,
+                               strong: ({children}) => <strong className="font-semibold">{children}</strong>,
+                               em: ({children}) => <em className="italic">{children}</em>,
+                               ul: ({children}) => <ul className="list-disc list-inside">{children}</ul>,
+                               ol: ({children}) => <ol className="list-decimal list-inside">{children}</ol>,
+                               li: ({children}) => <li className="inline-block w-full">{children}</li>
                              }}
                            >
                              {msg.content}
@@ -321,10 +327,16 @@ export const VirtualAgentChat = ({ initialCity, autoExpand, expandDirection = 'd
                         )}
                         style={msg.role === 'user' ? { backgroundColor: '#C50972' } : {}}
                       >
-                         <div className="text-sm prose prose-sm max-w-none dark:prose-invert break-words overflow-wrap-anywhere">
+                         <div className="text-sm leading-relaxed [&>*]:my-0 [&_p]:my-0 [&_ul]:my-1 [&_ol]:my-1 [&_li]:my-0.5">
                            <ReactMarkdown 
                              components={{
-                               a: ({node, ...props}) => <a {...props} className="break-all underline" target="_blank" rel="noopener noreferrer" />
+                               p: ({children}) => <span className="inline">{children}</span>,
+                               a: ({node, ...props}) => <a {...props} className="text-current underline hover:opacity-80 break-all" target="_blank" rel="noopener noreferrer" />,
+                               strong: ({children}) => <strong className="font-semibold">{children}</strong>,
+                               em: ({children}) => <em className="italic">{children}</em>,
+                               ul: ({children}) => <ul className="list-disc list-inside">{children}</ul>,
+                               ol: ({children}) => <ol className="list-decimal list-inside">{children}</ol>,
+                               li: ({children}) => <li className="inline-block w-full">{children}</li>
                              }}
                            >
                              {msg.content}
