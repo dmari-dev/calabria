@@ -96,7 +96,11 @@ Struttura l'itinerario in formato JSON con questa struttura:
 }
 
 Includi attività culturali autentiche, musei, monumenti, esperienze gastronomiche locali e momenti di immersione nel patrimonio italiano. Sii specifico con orari, luoghi e consigli pratici.
-Includi OBBLIGATORIAMENTE i luoghi citati nella conversazione, al massimo estendi con qualcos'altro se c'è la possibilità`;
+CREAZIONE ITINERARIO:
+Quando crei l'itinerario, devi ASSOLUTAMENTE utilizzare SOLO i luoghi e i beni culturali di cui hai parlato durante la conversazione con l'utente.
+NON inventare luoghi nuovi, NON usare esempi generici.
+Se hai menzionato "Palazzo Ariani", "Chiesa del Carmine" e "Torre dei Corvi" durante la chat, l'itinerario DEVE includere ESATTAMENTE questi luoghi.
+Ricorda i luoghi specifici menzionati durante tutta la conversazione e usali per costruire l'itinerario.`;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
