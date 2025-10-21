@@ -878,6 +878,8 @@ Se l'utente sembra interessato a visitare la Calabria, poniti come obiettivo di 
 4. "Siete un nucleo familiare?"
 5. "Preferisci un viaggio moderato o intenso?"
 
+Non porre tutte le domande in un singolo messaggio, ma piuttosto diluiscile nella conversazione e inizia a farle da subito
+
 Una volta raccolte queste informazioni, suggerisci brevemente di creare un itinerario personalizzato.
 
 Rispondi sempre in italiano.`;
