@@ -13,14 +13,14 @@ serve(async (req) => {
 
   try {
     const { itineraryId, chatContext } = await req.json();
-    
+
     if (!itineraryId) {
       throw new Error("itineraryId è richiesto");
     }
 
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
     );
 
     // Recupera i dettagli dell'itinerario
@@ -38,10 +38,13 @@ serve(async (req) => {
     console.log("Generazione itinerario per:", itinerary);
 
     // Estrai la durata dal chatContext se disponibile
-    let days = Math.ceil((new Date(itinerary.end_date).getTime() - new Date(itinerary.start_date).getTime()) / (1000 * 60 * 60 * 24)) + 1;
-    
+    let days =
+      Math.ceil(
+        (new Date(itinerary.end_date).getTime() - new Date(itinerary.start_date).getTime()) / (1000 * 60 * 60 * 24),
+      ) + 1;
+
     if (chatContext && chatContext.length > 0) {
-      const conversationText = chatContext.map((msg: any) => msg.content).join(' ');
+      const conversationText = chatContext.map((msg: any) => msg.content).join(" ");
       const daysMatch = conversationText.match(/(\d+)\s*giorni?/i);
       if (daysMatch) {
         days = parseInt(daysMatch[1]);
@@ -51,19 +54,19 @@ serve(async (req) => {
 
     // Prepara il prompt per l'AI
     const systemPrompt = `Sei un esperto di viaggi culturali in Italia. Crea itinerari dettagliati, autentici e personalizzati che valorizzano il patrimonio culturale italiano.`;
-    
+
     // Prepara il contesto della conversazione se presente
-    let conversationContext = '';
+    let conversationContext = "";
     if (chatContext && chatContext.length > 0) {
-      conversationContext = `\n\nContesto della conversazione con l'utente:\n${chatContext.map((msg: any) => `${msg.role === 'user' ? 'Utente' : 'Pitagora'}: ${msg.content}`).join('\n')}\n\nBASANDOTI sulla conversazione sopra, crea un itinerario che includa i luoghi e le esperienze discusse.`;
+      conversationContext = `\n\nContesto della conversazione con l'utente:\n${chatContext.map((msg: any) => `${msg.role === "user" ? "Utente" : "Pitagora"}: ${msg.content}`).join("\n")}\n\nBASANDOTI sulla conversazione sopra, crea un itinerario che includa i luoghi e le esperienze discusse.`;
     }
-    
-    const userPrompt = `Crea un itinerario culturale dettagliato per ${itinerary.destination} di ${days} giorni (dal ${new Date(itinerary.start_date).toLocaleDateString('it-IT')} al ${new Date(itinerary.end_date).toLocaleDateString('it-IT')}).
+
+    const userPrompt = `Crea un itinerario culturale dettagliato per ${itinerary.destination} di ${days} giorni (dal ${new Date(itinerary.start_date).toLocaleDateString("it-IT")} al ${new Date(itinerary.end_date).toLocaleDateString("it-IT")}).
 
 Dettagli del viaggio:
-- Partecipanti: ${itinerary.participants_count} ${itinerary.participants_type || 'persone'}
-- Ritmo di viaggio: ${itinerary.travel_pace === 'relaxed' ? 'rilassato' : itinerary.travel_pace === 'moderate' ? 'moderato' : 'intenso'}
-- Interessi specifici: ${itinerary.specific_interests || 'cultura generale'}${conversationContext}
+- Partecipanti: ${itinerary.participants_count} ${itinerary.participants_type || "persone"}
+- Ritmo di viaggio: ${itinerary.travel_pace === "relaxed" ? "rilassato" : itinerary.travel_pace === "moderate" ? "moderato" : "intenso"}
+- Interessi specifici: ${itinerary.specific_interests || "cultura generale"}${conversationContext}
 
 Struttura l'itinerario in formato JSON con questa struttura:
 {
@@ -92,7 +95,8 @@ Struttura l'itinerario in formato JSON con questa struttura:
   }
 }
 
-Includi attività culturali autentiche, musei, monumenti, esperienze gastronomiche locali e momenti di immersione nel patrimonio italiano. Sii specifico con orari, luoghi e consigli pratici.`;
+Includi attività culturali autentiche, musei, monumenti, esperienze gastronomiche locali e momenti di immersione nel patrimonio italiano. Sii specifico con orari, luoghi e consigli pratici.
+Includi OBBLIGATORIAMENTE i luoghi citati nella conversazione, al massimo estendi con qualcos'altro se c'è la possibilità`;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
@@ -119,18 +123,18 @@ Includi attività culturali autentiche, musei, monumenti, esperienze gastronomic
     if (!response.ok) {
       const errorText = await response.text();
       console.error("Errore AI gateway:", response.status, errorText);
-      
+
       if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "Limite di richieste superato, riprova tra poco." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        return new Response(JSON.stringify({ error: "Limite di richieste superato, riprova tra poco." }), {
+          status: 429,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
       if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "Crediti insufficienti per Lovable AI." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        return new Response(JSON.stringify({ error: "Crediti insufficienti per Lovable AI." }), {
+          status: 402,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
       throw new Error("Errore nella generazione AI");
     }
@@ -154,15 +158,14 @@ Includi attività culturali autentiche, musei, monumenti, esperienze gastronomic
       throw new Error("Impossibile salvare l'itinerario generato");
     }
 
-    return new Response(
-      JSON.stringify({ success: true, content: generatedContent }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ success: true, content: generatedContent }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   } catch (error) {
     console.error("Errore in generate-itinerary:", error);
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Errore sconosciuto" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ error: error instanceof Error ? error.message : "Errore sconosciuto" }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });
