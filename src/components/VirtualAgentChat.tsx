@@ -59,8 +59,8 @@ export const VirtualAgentChat = ({ initialCity, autoExpand, expandDirection = 'd
     }
   }, [autoExpand, isExpanded]);
 
-  // Mostra CTA dopo 3+ scambi di messaggi
-  const shouldShowCTA = messages.length >= 6 && !isLoading;
+  // Mostra CTA dopo 5+ scambi di messaggi
+  const shouldShowCTA = messages.length >= 10 && !isLoading;
 
   const handleCreateItinerary = async () => {
     if (!user) {
