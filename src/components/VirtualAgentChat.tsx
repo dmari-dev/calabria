@@ -240,14 +240,14 @@ export const VirtualAgentChat = ({ initialCity, autoExpand, expandDirection = 'd
                     >
                       <div
                         className={cn(
-                          "max-w-[70%] rounded-2xl px-4 py-2 overflow-hidden",
+                          "max-w-[70%] rounded-2xl px-4 py-2",
                           msg.role === 'user' 
                             ? "text-white" 
                             : "bg-muted text-foreground"
                         )}
                         style={msg.role === 'user' ? { backgroundColor: '#C50972' } : {}}
                       >
-                         <div className="text-sm leading-relaxed [&>*]:my-0 [&_p]:my-0 [&_ul]:my-1 [&_ol]:my-1 [&_li]:my-0.5">
+                         <div className="text-sm leading-relaxed break-words [&>*]:my-0 [&_p]:my-0 [&_ul]:my-1 [&_ol]:my-1 [&_li]:my-0.5">
                            <ReactMarkdown 
                              components={{
                                p: ({children}) => <span className="inline">{children}</span>,
@@ -320,14 +320,14 @@ export const VirtualAgentChat = ({ initialCity, autoExpand, expandDirection = 'd
                     >
                       <div
                         className={cn(
-                          "max-w-[70%] rounded-2xl px-4 py-2 overflow-hidden",
+                          "max-w-[70%] rounded-2xl px-4 py-2",
                           msg.role === 'user' 
                             ? "text-white" 
                             : "bg-muted text-foreground"
                         )}
                         style={msg.role === 'user' ? { backgroundColor: '#C50972' } : {}}
                       >
-                         <div className="text-sm leading-relaxed [&>*]:my-0 [&_p]:my-0 [&_ul]:my-1 [&_ol]:my-1 [&_li]:my-0.5">
+                         <div className="text-sm leading-relaxed break-words [&>*]:my-0 [&_p]:my-0 [&_ul]:my-1 [&_ol]:my-1 [&_li]:my-0.5">
                            <ReactMarkdown 
                              components={{
                                p: ({children}) => <span className="inline">{children}</span>,
