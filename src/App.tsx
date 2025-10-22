@@ -10,8 +10,6 @@ import Dashboard from "./pages/Dashboard";
 import CreateItinerary from "./pages/CreateItinerary";
 import Itinerary from "./pages/Itinerary";
 import Profile from "./pages/Profile";
-import Info from "./pages/Info";
-import Affiliates from "./pages/Affiliates";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
@@ -34,8 +32,6 @@ const App = () => (
           <Route path="/create-itinerary" element={<CreateItinerary />} />
           <Route path="/itinerary/:id" element={<Itinerary />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/info" element={<Info />} />
-          <Route path="/affiliates" element={<Affiliates />} />
           <Route path="/admin" element={<Admin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

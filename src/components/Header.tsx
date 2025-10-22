@@ -7,7 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Menu, User, ShieldCheck, Home, Info, Users, LayoutDashboard, Sparkles, Facebook, Instagram } from "lucide-react";
+import { Menu, User, ShieldCheck, Home, LayoutDashboard, Sparkles, Facebook, Instagram } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useRole } from "@/hooks/useRole";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -146,18 +146,6 @@ export const Header = () => {
                           Progetto
                         </Link>
                       </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/info" className="flex items-center gap-2">
-                          <Info className="w-4 h-4" />
-                          Info
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/affiliates" className="flex items-center gap-2">
-                          <Users className="w-4 h-4" />
-                          Affiliates
-                        </Link>
-                      </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem asChild>
                         <Link to="/auth">Accedi</Link>
@@ -210,12 +198,6 @@ export const Header = () => {
                   <Link to="/create-itinerary" className="text-base font-medium text-white transition-colors border-b border-transparent hover:border-white pb-1">
                     Progetto
                   </Link>
-                  <Link to="/info" className="text-base font-medium text-white transition-colors border-b border-transparent hover:border-white pb-1">
-                    Info
-                  </Link>
-                  <Link to="/affiliates" className="text-base font-medium text-white transition-colors border-b border-transparent hover:border-white pb-1">
-                    Affiliates
-                  </Link>
                 </>
               ) : (
                 <>
@@ -260,12 +242,6 @@ export const Header = () => {
                   </Link>
                   <Link to="/create-itinerary" className="text-sm font-medium text-white transition-colors hover:text-primary">
                     Progetto
-                  </Link>
-                  <Link to="/info" className="text-sm font-medium text-white transition-colors hover:text-primary">
-                    Info
-                  </Link>
-                  <Link to="/affiliates" className="text-sm font-medium text-white transition-colors hover:text-primary">
-                    Affiliates
                   </Link>
                 </>
               ) : (
@@ -329,12 +305,6 @@ export const Header = () => {
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link to="/create-itinerary">Progetto</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/info">Info</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/affiliates">Affiliates</Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
